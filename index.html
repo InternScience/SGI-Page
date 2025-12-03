@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGI-Bench — Scientific General Intelligence</title>
+    <meta name="description" content="SGI-Bench: Scientist-aligned benchmark for Scientific General Intelligence across Deliberation, Conception, Action, and Perception.">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        // 说明：Tailwind 配置仅用于样式定制（字体、颜色、动画等），不会改变页面逻辑或文本内容。
+        // 动画滚动速度：下方 'scroll' 与 'scroll-reverse' 的持续时间为 60s（越小越快，越大越慢）。
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f8fafc', 900: '#0f172a' }
+                    },
+                    animation: {
+                        'scroll': 'scroll 60s linear infinite',          // 轮播滚动动画（60秒一轮）
+                        'scroll-reverse': 'scrollReverse 60s linear infinite', // 反向滚动动画（60秒一轮）
+                    },
+                    keyframes: {
+                        // 横向滚动关键帧（Gallery 使用）。如需更快滚动，将 60s 改小；如需更慢，将其改大。
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        scrollReverse: {
+                            '0%': { transform: 'translateX(-50%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ================================================================================================
+           全局图片尺寸变量（单位：px）—— 仅影响 Gallery 卡片大小，安全修改不会改变逻辑或文本
+           修改方法：直接更改下方四个数值即可生效
+             - 桌面端：--img-h-desktop（高度）、--img-w-desktop（宽度）
+             - 移动端：--img-h-mobile（高度）、--img-w-mobile（宽度）
+           提示：如果希望所有卡片更大，适当增大宽度与高度；若希望更小则减小。
+           ================================================================================================ */
+        :root {
+            --img-h-desktop: 220px;
+            --img-w-desktop: 330px;
+            --img-h-mobile: 140px;
+            --img-w-mobile: 210px;
+        }
+
+        body {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(#e2e8f0 1px, transparent 1px),
+                radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 入场动画（元素从下向上淡入）：时长 0.8s
+           新手提示：如果希望更快显示，将 0.8s 改为更小（如 0.5s）；更慢则增大该值。 */
+        .fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        /* 延迟时间类（仅影响动画开始时间）
+           - delay-100：延迟 0.1s
+           - delay-200：延迟 0.2s
+           - delay-300：延迟 0.3s
+           修改方式：改写对应数值即可调整动画延时，不会改变功能或文本。 */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gallery 悬停时暂停滚动（仅视觉效果，不影响数据或逻辑） */
+        .group:hover .animate-scroll, .group:hover .animate-scroll-reverse {
+            animation-play-state: paused;
+        }
+
+        /* 表头排序样式说明：鼠标悬停颜色变化，升序/降序图标颜色强调；仅视觉提示。 */
+        th.cursor-pointer:hover { background-color: rgba(0,0,0,0.02); }
+        th i { color: #cbd5e1; transition: color 0.2s; margin-left: 6px; }
+        th:hover i { color: #64748b; }
+        th.asc i.fa-sort-up { color: #0f172a; }
+        th.desc i.fa-sort-down { color: #0f172a; }
+
+        /* 灯箱淡入淡出过渡：0.3s。更改时长仅影响打开/关闭速度，不影响图片内容或功能。 */
+        #lightbox { transition: opacity 0.3s ease; }
+        #lightbox.hidden { opacity: 0; pointer-events: none; }
+        #lightbox:not(.hidden) { opacity: 1; pointer-events: auto; }
+
+        /* Gallery 卡片 —— 使用上方 CSS 变量控制尺寸 */
+        .gallery-item {
+            /* 将 Tailwind 的 @apply 展开为原生 CSS，避免 CDN 模式下无法处理构建期指令 */
+            /* glass 效果（与 .glass 类一致） */
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            /* 间距与圆角 */
+            padding: 0.5rem;            /* p-2 */
+            border-radius: 0.75rem;     /* rounded-xl */
+            /* 布局与交互 */
+            flex-shrink: 0;             /* flex-shrink-0 */
+            transition: transform 150ms ease; /* transition-transform */
+            cursor: pointer;            /* cursor-pointer */
+            position: relative;         /* relative */
+            overflow: hidden;           /* overflow-hidden */
+
+            /* 尺寸由 CSS 变量控制（移动端） */
+            height: var(--img-h-mobile);
+            width: var(--img-w-mobile);
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);     /* hover:scale-[1.02] */
+        }
+
+        @media (min-width: 768px) {
+            .gallery-item {
+                height: var(--img-h-desktop);
+                width: var(--img-w-desktop);
+            }
+        }
+
+        .gallery-item img {
+            /* 展开 @apply 为原生 CSS，确保在无构建步骤时也能生效 */
+            width: 100%;         /* w-full */
+            height: 100%;        /* h-full */
+            object-fit: cover;   /* object-cover */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        /* Leaderboard 头图：白框与图片宽度联动且水平居中 */
+        :root {
+            --lb-img-w-desktop: 900px; /* 桌面端统一宽度（可调） */
+            --lb-img-w-mobile: 320px;  /* 移动端统一宽度（可调） */
+        }
+        .leaderboard-figure-wrap {
+            display: flex;              /* 使用块级 flex，便于 margin: auto 居中 */
+            align-items: center;
+            justify-content: center;
+            width: var(--lb-img-w-mobile); /* 宽度由变量控制，等比例缩放 */
+            margin-left: auto;          /* 水平居中 */
+            margin-right: auto;         /* 水平居中 */
+            max-width: 100%;            /* 防止溢出父容器 */
+        }
+        .leaderboard-figure {
+            width: 100%;                /* 固定宽度，保持等比例 */
+            height: auto;               /* 高度自适应，不做限制 */
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin-left: auto;          /* 确保图片在白框内部水平居中 */
+            margin-right: auto;         /* 与上同理 */
+        }
+        @media (min-width: 768px) {
+            .leaderboard-figure-wrap { width: var(--lb-img-w-desktop); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- 全局调参指南：
+         1) 尺寸（宽/高）：
+            - Gallery 卡片：CSS :root 变量 --img-h-desktop / --img-w-desktop / --img-h-mobile / --img-w-mobile（单位 px）
+            - Leaderboard 头图白框与宽度：:root 变量 --lb-img-w-desktop / --lb-img-w-mobile（单位 px）
+            - 灯箱预览：#lightbox-img 的 max-h-[90vh] 控制最大高度（相对视口高度）；需要更大/更小可改 90vh。
+            - 各组件内的尺寸类：如 w-8 h-8（图标）、h-16（导航栏高度）、min-h-[85vh]（Hero 高度），可按需调整。
+         2) 速度与等待：
+            - 横向滚动速度：Tailwind 动画 'scroll' / 'scroll-reverse' 的持续时间 60s（在 <head> 中 tailwind.config.animation）。
+            - 入场动画速度：.fade-in-up 动画时长 0.8s；延迟类 .delay-100/200/300 分别为 0.1/0.2/0.3s。
+            - 灯箱淡入淡出：#lightbox 的过渡时间 0.3s；点击关闭时脚本中的 setTimeout 200ms。
+            - Demo 播放速度：STREAM_SPEED（每字符毫秒，默认 25，越小越快）；对话气泡宽度：DIALOG_MAX_WIDTH（默认 700px）。
+            - Demo 等待节奏：脚本中的 setDemoTimeout/setDemoInterval 数值，例如 1000ms（阶段间隔）、180ms（进度条更新间隔）、2000ms（插入报告延迟）。
+         3) 其它：
+            - Gallery 每张卡片的间距：HTML 中 gallery-item 外层使用 mx-4，可调节横向间隙。
+            - 渐变遮罩宽度：左右遮罩 w-12（移动端）/ md:w-32（桌面端），可按需修改以改变边缘淡入区域。
+         以上改动均不影响页面逻辑，仅改变视觉与节奏。 -->
+
+    <!-- ==================================================================================================== -->
+    <!-- 导航栏（Navbar）板块：页面顶部导航与图标。此处仅用于跳转与展示，不涉及交互逻辑改动。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass border-b border-white/50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- 导航栏高度由 h-16 控制（约 64px）；可改为 h-20 等以增大高度 -->
+<div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                    <span class="font-bold text-xl tracking-tight">SGI-Bench</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Home</a>
+                    <a href="#about" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">About</a>
+                    <a href="#agent-demo" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Demo</a>
+                    <a href="#gallery" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Gallery</a>
+                    <a href="#leaderboard" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Leaderboard</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-slate-500 hover:text-slate-900 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="https://github.com/PrismaX-Team/SGI-Bench" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity" title="GitHub">
+                        <img src="images/github.jpg" alt="GitHub" class="w-8 h-8 rounded-full border border-slate-200">
+                    </a>
+                    <a href="https://huggingface.co/collections/PrismaX/sgi-bench" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity" title="HuggingFace">
+                        <img src="images/huggingface.jpg" alt="HuggingFace" class="w-8 h-8 rounded-full border border-slate-200">
+                    </a>
+                    <a href="https://www.google.com" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity" title="ArXiv">
+                        <img src="images/arxiv.jpg" alt="ArXiv" class="w-8 h-8 rounded-full border border-slate-200">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md border-b border-slate-200 absolute w-full">
+            <div class="px-4 pt-2 pb-4 space-y-1">
+                <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Home</a>
+                <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">About</a>
+                <a href="#agent-demo" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Demo</a>
+                <a href="#gallery" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Gallery</a>
+                <a href="#leaderboard" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50">Leaderboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================================================================================================== -->
+    <!-- 介绍（Hero）板块：封面标题、简介段落与预览图。仅视觉呈现，不改变任何逻辑与文本。 -->
+    <!-- 图像点击后会打开灯箱（Lightbox），此处不用修改功能。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Hero -->
+<!-- Hero 高度由 min-h-[85vh] 控制（占视口高度的 85%）；pt-32/pb-20 控制上下内边距 -->
+<section id="home" class="relative pt-32 pb-20 px-4 max-w-7xl mx-auto min-h-[85vh] flex flex-col justify-center text-center">
+        <div class="max-w-4xl mx-auto space-y-8">
+            <div class="fade-in-up inline-flex items-center px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-medium shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> SGI-Bench v1.0 — Scientist-aligned Evaluation
+            </div>
+
+            <h1 class="fade-in-up delay-100 text-5xl md:text-7xl font-bold text-slate-900 leading-tight">
+                Scientific General <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-900">Intelligence</span>
+            </h1>
+
+            <p class="fade-in-up delay-200 text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed px-4">
+                Scientific General Intelligence (SGI) is defined as an AI system that can autonomously navigate the full, iterative cycle of scientific inquiry—Deliberation, Conception, Action, and Perception—with the versatility and proficiency of a human scientist. SGI-Bench operationalizes this definition via four scientist-aligned task families: deep research, idea generation, AI-assisted experiments (dry/wet), and multimodal experimental reasoning. The benchmark spans 10 disciplines and ~1,000 expert-curated samples inspired by Science's 125 Big Questions.
+            </p>
+
+            <div class="fade-in-up delay-300 mt-12 p-2 glass rounded-2xl mx-auto max-w-full sm:max-w-4xl">
+                <img src="paper/imgs/teaser.png" alt="SGI Overview" class="w-full h-auto rounded-xl shadow-sm cursor-pointer hover:opacity-95 transition" onclick="openModal(this.src)" onerror="this.parentElement.innerHTML='<div class=\'h-64 flex items-center justify-center bg-slate-100 rounded-xl text-slate-400\'>Image teaser.jpg missing</div>'">
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- 关于（About）板块：框架、数据构建、评估框架、TTRL、以及 Demo 子板块入口。 -->
+    <!-- 此板块包含多个子区域，每个区域仅展示图文内容。 -->
+    <!-- ==================================================================================================== -->
+    <!-- About -->
+    <section id="about" class="py-24 px-4 max-w-7xl mx-auto space-y-32">
+        <!-- SGI & Tasks -->
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div class="fade-in-up order-2 md:order-1">
+                <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                    <img src="paper/imgs/pipeline.png" alt="SGI-Bench Pipeline" class="rounded-xl w-full cursor-pointer hover:opacity-95 transition" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/800x600?text=Pipeline+Image'">
+                </div>
+            </div>
+            <div class="order-1 md:order-2 space-y-6 fade-in-up delay-100">
+                <h2 class="text-3xl font-bold text-slate-900">SGI Framework & Tasks</h2>
+                <div class="mt-4 grid sm:grid-cols-2 gap-4">
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-blue-500">
+
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600"><i class="fas fa-magnifying-glass"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Deliberation</h4>
+                            <p class="text-sm text-slate-500">Deep research with multi-hop retrieval and meta-analysis style quantitative synthesis.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-purple-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600"><i class="fas fa-lightbulb"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Conception</h4>
+                            <p class="text-sm text-slate-500">Structured idea generation and multi-dimensional comparative evaluation.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-green-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600"><i class="fas fa-code"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Action</h4>
+                            <p class="text-sm text-slate-500">AI-assisted experiments: dry (code/simulation) and wet (lab protocol).</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-orange-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600"><i class="fas fa-eye"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Perception</h4>
+                            <p class="text-sm text-slate-500">Multimodal reasoning: process, observation, simulation, experiment, visualization images.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-base md:text-base text-slate-600 leading-relaxed">
+                    Grounded in the Practical Inquiry Model (PIM), SGI‑Bench views science as an iterative cycle that links deliberation, conception, action and perception at a high level. Under this lens, Scientific General Intelligence (SGI) denotes an AI’s capacity to traverse that cycle coherently and autonomously—integrating knowledge retrieval, idea formation, action execution, and interpretation into a unified loop of inquiry.
+                </p>
+            </div>
+        </div>
+
+        <!-- Scientist-Aligned Data Construction -->
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div class="fade-in-up order-2 md:order-1">
+                <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                    <img src="paper/imgs/subjects.png" alt="Scientist-Aligned Data Construction" class="rounded-xl w-full cursor-pointer hover:opacity-95 transition" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/800x600/f1f5f9/94a3b8?text=Data+Construction+Image'">
+                </div>
+            </div>
+            <div class="order-1 md:order-2 space-y-6 fade-in-up delay-100">
+                <h2 class="text-3xl font-bold text-slate-900">Scientist-Aligned Data</h2>
+                <div class="mt-4 grid sm:grid-cols-2 gap-4">
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-teal-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-600"><i class="fas fa-database"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Raw Corpus</h4>
+                            <p class="text-sm text-slate-500">Expert-curated texts/images across 10 domains from Science’s 125 Big Questions.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-indigo-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="fas fa-pen-nib"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Question Construction</h4>
+                            <p class="text-sm text-slate-500">100+ graduate/PhD annotators; continuous expert review for scientific value.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-amber-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600"><i class="fas fa-check-double"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Data Cleaning</h4>
+                            <p class="text-sm text-slate-500">Rule-based validation, model checks, expert QA for executability and unique answers.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-rose-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-600"><i class="fas fa-signal"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Difficulty Filtering</h4>
+                            <p class="text-sm text-slate-500">Remove samples solvable by >50% strong LLMs to maintain high challenge.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-base md:text-base text-slate-600 leading-relaxed">
+                    SGI-Bench data is scientist-aligned and high-fidelity: an expert-sourced corpus spanning 10 disciplines (inspired by Science’s 125 Big Questions), questions constructed by 100+ graduate/PhD annotators with continuous scientist-in-the-loop review, multi-stage cleaning (rules + model checks + expert QA) to ensure executability and unique answers, and difficulty filtering that removes items solved by >50% strong LLMs—yielding authentic, challenging, and broadly representative scientific tasks.
+                </p>
+            </div>
+        </div>
+        <!-- Agentic Evaluation Framework -->
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div class="order-1 md:order-2 space-y-6 fade-in-up delay-100">
+                <h2 class="text-3xl font-bold text-slate-900">Agentic Evaluation Framework</h2>
+                <div class="mt-4 grid sm:grid-cols-2 gap-4">
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-emerald-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600"><i class="fas fa-list-check"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Four Stages</h4>
+                            <p class="text-sm text-slate-500">Question Selection → Metric Customization → Predict & Eval → Report Generation.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-cyan-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-cyan-50 flex items-center justify-center text-cyan-600"><i class="fas fa-toolbox"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Tool Pool</h4>
+                            <p class="text-sm text-slate-500">Web search, PDF parser, Python interpreter, file reader, metric functions.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-blue-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600"><i class="fas fa-gauge-high"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Task Metrics</h4>
+                            <p class="text-sm text-slate-500">EM/SLA; Implementation Similarity; PassAll@k/SER; MCA/RV.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-orange-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600"><i class="fas fa-sliders"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Customizable</h4>
+                            <p class="text-sm text-slate-500">Add scientist-aligned metrics (e.g., rigor, feasibility) on demand.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-base md:text-base text-slate-600 leading-relaxed">
+                    An agent-based evaluation stack coordinating specialized agents and tools to assess models end-to-end with task-specific and customizable metrics. By formalizing question selection, metric construction, scoring, and reporting into traceable stages, it strengthens reproducibility, mitigates evaluator–model coupling bias, and offers scientist‑aligned, actionable insights for model selection and iteration.
+                </p>
+            </div>
+            <div class="fade-in-up order-2 md:order-1">
+                <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                    <img src="paper/imgs/evaluation-framework.png" alt="Evaluation Framework" class="rounded-xl w-full cursor-pointer hover:opacity-95 transition" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/800x600?text=Evaluation+Framework'">
+                </div>
+            </div>
+        </div>
+        <!-- Test-Time Reinforcement Learning (TTRL) -->
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div class="fade-in-up order-2 md:order-1">
+                <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                    <img src="paper/imgs/grpo_reward_curves.png" alt="TTRL Training Dynamics" class="rounded-xl w-full cursor-pointer hover:opacity-95 transition" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/800x600?text=TTRL+Reward+Curves'">
+                </div>
+            </div>
+            <div class="order-1 md:order-2 space-y-6 fade-in-up delay-100">
+                <h2 class="text-3xl font-bold text-slate-900">Test-Time Reinforcement Learning (TTRL)</h2>
+                <div class="mt-4 grid sm:grid-cols-2 gap-4">
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-emerald-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600"><i class="fas fa-bullseye"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Objective</h4>
+                            <p class="text-sm text-slate-500">Handle no-ground-truth idea generation by optimizing novelty at test time with online retrieval as the moving baseline.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-indigo-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="fas fa-award"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Reward Design</h4>
+                            <p class="text-sm text-slate-500">R = R_format + R_novelty. Enforce XML format (&lt;think&gt;, &lt;answer&gt;); reward embedding dissimilarity from retrieved works using a gating threshold.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-sky-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center text-sky-600"><i class="fas fa-gears"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Training Setup</h4>
+                            <p class="text-sm text-slate-500">GRPO on Qwen3‑8B (ms-swift); group sampling G=8, high temperature, bfloat16; online retrieval n=4.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-amber-500">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600"><i class="fas fa-chart-line"></i></div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Dynamics & Results</h4>
+                            <p class="text-sm text-slate-500">Format reward saturates quickly; novelty steadily increases. Average novelty improves from 49.36 → 62.06 without labels.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-base md:text-base text-slate-600 leading-relaxed">
+                    TTRL converts open-ended scientific exploration into a measurable test-time optimization process and can be extended to multi-objective scientist-aligned rewards (rigor, feasibility, safety, cost). In practice, it improves idea novelty without labels by coupling strict output structure with retrieval-grounded rewards, and generalizes to multi‑objective optimization that balances creativity with rigor and feasibility—making scientific ideation auditable and adaptable at inference time.
+                </p>
+            </div>
+        </div>
+
+        <!-- ==================================================================================================== -->
+        <!-- Demo（SGIEvalAgent 演示）子板块：包含对话流演示与可调常量（宽度与播放速度）。 -->
+        <!-- 重要：演示板块的全局常量请见下方脚本中的“SGIEvalAgent Demo 常量入口”注释行后，便于快速定位修改。 -->
+        <!-- ==================================================================================================== -->
+        <!-- SGIEvalAgent Chat Demo -->
+        <div class="space-y-1">
+            <h2 id="agent-demo" class="text-3xl font-bold text-slate-900 mb-4 scroll-mt-24 md:scroll-mt-28">SGIEvalAgent Demo</h2>
+            <div class="fade-in-up mt-2">
+                <div class="glass rounded-2xl p-4 md:p-6">
+                    <div class="flex items-center justify-end mb-4">
+                        <button id="redo-demo" class="text-xs px-2.5 py-1 rounded-md bg-slate-900 text-white hover:opacity-90">Replay</button>
+                    </div>
+                    <div id="agent-chat" class="mt-4 space-y-3 pr-1"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- 图库（Gallery）板块：横向滚动图片展示。滚动速度由 Tailwind 动画持续时间控制（见 head 中配置）。 -->
+    <!-- 鼠标悬停时暂停滚动，仅视觉效果。图片点击打开灯箱。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Gallery -->
+    <section id="gallery" class="py-20 border-y border-slate-200 bg-white/40 backdrop-blur-sm overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 mb-12 text-center fade-in-up">
+            <h2 class="text-3xl font-bold text-slate-900">Visual Analysis Cases</h2>
+            <p class="text-slate-500 mt-3 max-w-2xl mx-auto">
+                Explore scientific multimodal inputs across process, observation, experiment, simulation, and visualization images.
+                <span class="hidden sm:inline text-slate-400 text-sm">(Click images to expand)</span>
+            </p>
+        </div>
+
+        <div class="relative w-full fade-in-up delay-100 space-y-6">
+<!-- 左侧遮罩宽度：移动端 w-12，桌面端 md:w-32；调大可增强边缘淡入区域 -->
+<div class="absolute left-0 top-0 bottom-0 w-12 md:w-32 z-10 bg-gradient-to-r from-[#f8fafc] to-transparent pointer-events-none"></div>
+<!-- 右侧遮罩宽度：移动端 w-12，桌面端 md:w-32；与左侧保持一致 -->
+<div class="absolute right-0 top-0 bottom-0 w-12 md:w-32 z-10 bg-gradient-to-l from-[#f8fafc] to-transparent pointer-events-none"></div>
+
+            <!-- Row 1 -->
+<!-- Gallery 每行：卡片间距由子元素上的 mx-4 控制；横向滚动速度见 head 中 Tailwind 动画 60s -->
+<div class="group flex overflow-hidden w-full">
+                <div class="flex w-max animate-scroll group-hover:[animation-play-state:paused]">
+                    <div class="gallery-item mx-4"><img src="images/science_1.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_5.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_9.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_13.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_17.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_21.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_25.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_29.jpg" onclick="openModal(this.src)"></div>
+                    <!-- Duplicate -->
+                    <div class="gallery-item mx-4"><img src="images/science_1.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_5.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_9.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_13.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_17.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_21.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_25.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_29.jpg" onclick="openModal(this.src)"></div>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="group flex overflow-hidden w-full">
+                <div class="flex w-max animate-scroll-reverse group-hover:[animation-play-state:paused]">
+                    <div class="gallery-item mx-4"><img src="images/science_2.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_6.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_10.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_14.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_18.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_22.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_26.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_30.jpg" onclick="openModal(this.src)"></div>
+                    <!-- Duplicate -->
+                    <div class="gallery-item mx-4"><img src="images/science_2.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_6.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_10.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_14.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_18.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_22.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_26.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_30.jpg" onclick="openModal(this.src)"></div>
+                </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="group flex overflow-hidden w-full">
+                <div class="flex w-max animate-scroll group-hover:[animation-play-state:paused]">
+                    <div class="gallery-item mx-4"><img src="images/science_3.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_7.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_11.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_15.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_19.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_23.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_27.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_31.jpg" onclick="openModal(this.src)"></div>
+                    <!-- Duplicate -->
+                    <div class="gallery-item mx-4"><img src="images/science_3.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_7.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_11.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_15.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_19.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_23.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_27.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_31.jpg" onclick="openModal(this.src)"></div>
+                </div>
+            </div>
+
+            <!-- Row 4 -->
+            <div class="group flex overflow-hidden w-full">
+                <div class="flex w-max animate-scroll-reverse group-hover:[animation-play-state:paused]">
+                    <div class="gallery-item mx-4"><img src="images/science_4.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_8.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_12.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_16.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_20.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_24.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_28.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_32.jpg" onclick="openModal(this.src)"></div>
+                    <!-- Duplicate -->
+                    <div class="gallery-item mx-4"><img src="images/science_4.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_8.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_12.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_16.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_20.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_24.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_28.jpg" onclick="openModal(this.src)"></div>
+                    <div class="gallery-item mx-4"><img src="images/science_32.jpg" onclick="openModal(this.src)"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- 排行（Leaderboard）板块：两张表格（Idea Generation / Dry Experiment）。表格数据由脚本渲染。 -->
+    <!-- 修改提示：只需改脚本数组 IDEA_DATA / DRY_DATA 即可更新表格，不建议改表格结构。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Leaderboard -->
+    <section id="leaderboard" class="py-8 px-4 max-w-7xl mx-auto scroll-mt-8 md:scroll-mt-12">
+        <div class="text-center mb-12 fade-in-up">
+            <h2 class="text-3xl font-bold text-slate-900">Leaderboard</h2>
+            <p class="text-slate-500 mt-2">Tables below reflect the exact results reported in SGI-Bench Evaluation.</p>
+        </div>
+
+        <!-- Table - Overview (硬编码，交集模型；结构与其他表一致) -->
+        <div class="mb-24 fade-in-up">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-4">
+                <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-sm"><i class="fas fa-table"></i></span>
+                    Overview
+                </h3>
+                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
+                    <button onclick="filterTable('t-ov', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t-ov" data-f="all">All Models</button>
+                    <button onclick="filterTable('t-ov', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t-ov" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t-ov', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t-ov" data-f="closed">Proprietary</button>
+                </div>
+            </div>
+            <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table id="t-ov" class="w-full text-left text-sm whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6 cursor-pointer" onclick="sort('t-ov', 0)">Model <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t-ov', 1)">Type <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t-ov', 2)">Deep Research<i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t-ov', 3)">Idea Generation<i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t-ov', 4)">Dry Experiment<i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t-ov', 5)">Wet Experiment<i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t-ov', 6)">Experimental Reasoning<i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer bg-slate-100/50" onclick="sort('t-ov', 7)">SGI-Score <i class="fas fa-sort ml-1"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="t-ov-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm leading-relaxed bg-white/50 p-4 rounded-lg border border-slate-100">
+                <p><strong class="text-slate-700">Overview Results Across SGI-Bench Tasks:</strong> Aggregated performance across Deep Research, Idea Generation, Dry/Wet Experiment, and Scientific Experimental Reasoning. The scores for Deep Research are based on the exact match metric (the strictest metric). Idea Generation scores are the average of four metrics evaluating ideas. Dry Experiment scores are based on PassAll@5 (the strictest metric). Wet Experiment scores are the average of action sequence similarity and parameter accuracy. Experimental Reasoning scores are based on the multi-choice accuracy metric (the strictest metric). The SGI-Score is the average across these tasks, reflecting the overall capability of an AI model in various scientific research scenarios. Note: The Experimental Reasoning metrics for Qwen3-Max and Qwen3-8B come from their multimodal versions.</p>
+            </div>
+        </div>
+
+        <!-- Table 0: Deep Research Metrics -->
+        <div class="mb-24 fade-in-up delay-50">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-4">
+                <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fas fa-magnifying-glass"></i></span>
+                    Deep Research
+                </h3>
+                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
+                    <button onclick="filterTable('t0', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t0" data-f="all">All Models</button>
+                    <button onclick="filterTable('t0', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t0" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t0', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t0" data-f="closed">Proprietary</button>
+                </div>
+            </div>
+
+            <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
+                <img src="paper/imgs/deepresearch_case1.png" alt="Deep Research Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Deep+Research+Case'">
+            </div>
+
+            <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table id="t0" class="w-full text-left text-sm whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6 cursor-pointer" onclick="sort('t0', 0)">Model <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t0', 1)">Type <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer bg-slate-100/50" onclick="sort('t0', 2)">Exact Match Accuracy <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t0', 3)">Step-Level Accuracy <i class="fas fa-sort ml-1"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="t0-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm leading-relaxed bg-white/50 p-4 rounded-lg border border-slate-100">
+                <p><strong class="text-slate-700">Analysis:</strong> Models can often generate partially correct reasoning steps with moderate Step-Level Accuracy (SLA, up to ~60%) but fail to maintain end-to-end coherence, leading to low Exact-Match accuracy (~10-20% best cases); performance is especially weak on data and property questions where evidence is numerically dispersed across sources, with category accuracy rarely exceeding 30%, revealing failures in cross-paper numeric aggregation and mechanism synthesis rather than retrieval.</p>
+            </div>
+        </div>
+
+        <!-- Table 1: Idea Generation -->
+        <div class="mb-24 fade-in-up delay-100">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-4">
+                <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-sm"><i class="fas fa-lightbulb"></i></span>
+                    Idea Generation
+                </h3>
+                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
+                    <button onclick="filterTable('t1', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t1" data-f="all">All Models</button>
+                    <button onclick="filterTable('t1', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t1" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t1', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t1" data-f="closed">Proprietary</button>
+                </div>
+            </div>
+
+            <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
+                <img src="paper/imgs/idea_case.png" alt="Idea Generation Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Idea+Generation+Case'">
+            </div>
+            <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+                <div class="overflow-x-auto">
+<table id="t1" class="w-full text-left text-sm whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6 cursor-pointer" onclick="sort('t1', 0)">Model <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t1', 1)">Type <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer bg-slate-100/50" onclick="sort('t1', 2)">Effectiveness <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t1', 3)">Novelty <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t1', 4)">Detailedness <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t1', 5)">Feasibility <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t1', 6)">Average <i class="fas fa-sort ml-1"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="t1-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm leading-relaxed bg-white/50 p-4 rounded-lg border border-slate-100">
+                <p><strong class="text-slate-700">Analysis:</strong> Models show high Novelty, especially closed-source like o3 and GPT-5, but Effectiveness is moderate and Feasibility remains low. Even top models with detailed ideas struggle to produce practical plans. Highest Feasibility scores are around 20–23, with open-source models generally lower despite decent Detailedness.</p>
+            </div>
+        </div>
+
+        <!-- Table 2: Dry Experiment Metrics -->
+        <div class="mb-24 fade-in-up delay-200">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-4">
+                <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fas fa-code"></i></span>
+                    Dry Experiment (Code Generation)
+                </h3>
+                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
+                    <button onclick="filterTable('t2', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t2" data-f="all">All Models</button>
+                    <button onclick="filterTable('t2', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t2" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t2', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t2" data-f="closed">Proprietary</button>
+                </div>
+            </div>
+
+            <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
+                <img src="paper/imgs/code_case1.png" alt="Dry Experiment Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Dry+Experiment+Case'">
+            </div>
+            <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table id="t2" class="w-full text-left text-sm whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6 cursor-pointer" onclick="sort('t2', 0)">Model <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t2', 1)">Type <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer bg-slate-100/50" onclick="sort('t2', 2)">PassAll@5 <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t2', 3)">PassAll@3 <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t2', 4)">PassAll@1 <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t2', 5)">AET (s) <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t2', 6)">SER <i class="fas fa-sort ml-1"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="t2-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm leading-relaxed bg-white/50 p-4 rounded-lg border border-slate-100">
+                <p><strong class="text-slate-700">Analysis:</strong> Most models generate syntactically valid, runnable code (SER >90%, best 98.85) but show low test-case correctness when evaluated strictly (PassAll@1 ~42.07% → PassAll@5 ~36.64% best), and collapse on numerical integration and simulation fidelity, exposing that code fluency does not imply scientific computational competence, with numerical and physics-aware algorithm selection being the dominant failure mode.</p>
+            </div>
+        </div>
+
+        <!-- Table 3: Wet Experiment Metrics -->
+        <div class="mb-24 fade-in-up delay-300">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-4">
+                <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center text-sm"><i class="fas fa-flask"></i></span>
+                    Wet Experiment (Lab Protocol)
+                </h3>
+                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
+                    <button onclick="filterTable('t3', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t3" data-f="all">All Models</button>
+                    <button onclick="filterTable('t3', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t3" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t3', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t3" data-f="closed">Proprietary</button>
+                </div>
+            </div>
+
+            <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
+                <img src="paper/imgs/wet_case1.png" alt="Wet Experiment Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Wet+Experiment+Case'">
+            </div>
+            <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table id="t3" class="w-full text-left text-sm whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6 cursor-pointer" onclick="sort('t3', 0)">Model <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t3', 1)">Type <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer bg-slate-100/50" onclick="sort('t3', 2)">Action Sequence Similarity <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t3', 3)">Parameter Accuracy <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t3', 4)">Average <i class="fas fa-sort ml-1"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="t3-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm leading-relaxed bg-white/50 p-4 rounded-lg border border-slate-100">
+                <p><strong class="text-slate-700">Analysis:</strong> LLMs can list reasonable lab actions but fail to organize them into correct experimental trajectories, showing uniformly low sequence similarity and parameter accuracy despite permutation equivalence checks, frequently adding irrelevant steps, omitting essential operations, or misordering branches, and struggling with temporal sampling, multi-sample pipeline alignment, and clear sample-purpose delineation.</p>
+            </div>
+        </div>
+
+        <!-- Table 4: Experimental Reasoning -->
+        <div class="mb-24 fade-in-up delay-300">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-4">
+                <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center text-sm"><i class="fas fa-brain"></i></span>
+                    Experimental Reasoning
+                </h3>
+                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
+                    <button onclick="filterTable('t4', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t4" data-f="all">All Models</button>
+                    <button onclick="filterTable('t4', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t4" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t4', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t4" data-f="closed">Proprietary</button>
+                </div>
+            </div>
+
+            <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
+                <img src="paper/imgs/mm_case_1.png" alt="Experimental Reasoning Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Experimental+Reasoning+Case'">
+            </div>
+            <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table id="t4" class="w-full text-left text-sm whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
+                                <th class="p-4 pl-6 cursor-pointer" onclick="sort('t4', 0)">Model <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t4', 1)">Type <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer bg-slate-100/50" onclick="sort('t4', 2)">Multi-choice Accuracy <i class="fas fa-sort ml-1"></i></th>
+                                <th class="p-4 cursor-pointer" onclick="sort('t4', 3)">Reasoning Validity <i class="fas fa-sort ml-1"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="t4-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm leading-relaxed bg-white/50 p-4 rounded-lg border border-slate-100">
+                <p><strong class="text-slate-700">Analysis:</strong> Open-source models substantially lag behind closed ones in Multi-choice Accuracy (MCA), but most LLMs produce better Reasoning Validity than answer accuracy, achieving strong causal detection yet weak comparative reasoning, particularly on cross-image contrast, materials/life/Earth science domains, revealing persistent cognitive bottlenecks in subtle discrimination and numeric extraction over heterogeneous scientific visual evidence.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- 结论（Conclusion）板块：研究总结文本，仅展示内容，无需改逻辑。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Conclusion -->
+    <section id="conclusion" class="py-2 px-4 max-w-4xl mx-auto">
+        <div class="glass rounded-2xl p-8 md:p-10 fade-in-up">
+            <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Conclusion</h2>
+            <div class="text-slate-600 leading-relaxed space-y-4">
+                <p>
+                    This work advances the study of Scientific General Intelligence (SGI) from both theory and practice. Grounded in the Practical Inquiry Model, we formalize SGI as the capacity to navigate the iterative cycle of Deliberation, Conception, Action, and Perception with the versatility of a human scientist. Building on this principle-grounded definition, we operationalize SGI through SGI-Bench—a comprehensive, scientist-aligned benchmark that instantiates four core task families: Scientific Deep Research, Idea Generation, AI-Assisted Scientific Experiment (dry/wet), and Scientific Experimental Reasoning. Complemented by our agentic evaluation framework and multi-metric protocol, SGI-Bench enables scalable, transparent, and domain-faithful assessment.
+                </p>
+                <p>
+                    Experiments reveal a consistent pattern: in Deep Research, models show step-level alignment but low exact-match accuracy (10--20%), with brittleness in quantitative reasoning; in Idea Generation, hypotheses are fluent but underspecified and infeasible; in Dry Experiment, code is executable but PassAll@k remains low; in Wet Experiment, sequences show omissions and misordering; and in Experimental Reasoning, causal reasoning outperforms comparative, with persistent multimodal challenges. These highlight gaps between linguistic fluency and integrated scientific cognition. Moreover, SGI exhibits dynamic capacity: Test-Time Reinforcement Learning with novelty rewards improves idea generation without reference answers.
+                </p>
+                <p>
+                    Taken together, SGI-Bench clarifies both what SGI is and where current systems fail.By integrating principled task design, multi-metric evaluation, and agentic tool use, our framework provides a concrete foundation for systematically advancing SGI. Looking forward, the combination of numerically robust reasoning, planning-aware conception, executable experimentation, comparative multimodal inference, dynamic test-time learning, and efficient tool ecosystems charts a clear path toward AI systems capable of genuine scientific discovery—bridging isolated competencies into fully integrated scientific intelligence.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- 引用（Citation）板块：BibTeX 展示与复制按钮。复制功能由脚本实现。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Citation -->
+    <section id="citation" class="py-8 px-4 max-w-4xl mx-auto">
+        <div class="glass rounded-2xl p-8 md:p-10 fade-in-up">
+            <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Citation</h2>
+            <div class="relative bg-slate-900 rounded-lg p-6 overflow-x-auto group">
+                <pre class="text-slate-300 font-mono text-sm leading-relaxed"><code>@article{sgi2025,
+  title={SGI-Bench: Scientific Intelligence Benchmark via Scientist-Aligned Workflows},
+  author={Research Team},
+  journal={arXiv preprint arXiv:2401.xxxxx},
+  year={2025}
+}</code></pre>
+                <button onclick="copyCitation()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors p-2"><i class="far fa-copy"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- 页脚（Footer）板块：版权信息与图标展示。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Footer -->
+    <footer class="py-12 border-t border-slate-200 bg-white text-center">
+        <div class="flex justify-center gap-6 mb-4">
+            <a href="https://github.com/PrismaX-Team/SGI-Bench" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity" title="GitHub">
+                <img src="images/github.jpg" alt="GitHub" class="w-8 h-8 rounded-full border border-slate-200">
+            </a>
+            <a href="https://huggingface.co/collections/PrismaX/sgi-bench" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity" title="HuggingFace">
+                <img src="images/huggingface.jpg" alt="HuggingFace" class="w-8 h-8 rounded-full border border-slate-200">
+            </a>
+            <a href="https://www.google.com" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity" title="ArXiv">
+                <img src="images/arxiv.jpg" alt="ArXiv" class="w-8 h-8 rounded-full border border-slate-200">
+            </a>
+        </div>
+        <p class="text-slate-500 text-sm">&copy; 2025 SGI-Bench. Licensed under MIT.</p>
+    </footer>
+
+    <!-- ==================================================================================================== -->
+    <!-- 灯箱（Lightbox Modal）板块：点击图片时全屏预览。淡入/淡出由 #lightbox 的过渡时间控制（见上方 CSS）。 -->
+    <!-- ==================================================================================================== -->
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="hidden fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeModal()">
+        <button class="absolute top-6 right-6 text-white/70 hover:text-white text-4xl focus:outline-none">&times;</button>
+<!-- 灯箱图片最大高度由 max-h-[90vh] 控制（视口高度的 90%）；缩放过渡时长由 duration-300 控制（300ms） -->
+<img id="lightbox-img" src="" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl transform transition-transform duration-300 scale-95 object-contain" onclick="event.stopPropagation()">
+    </div>
+
+    <!-- ==================================================================================================== -->
+    <!-- 脚本（Scripts）板块：数据渲染、排序、UI 辅助、Demo 演示（包含可调常量）。 -->
+    <!-- 注意：如下所有注释仅为说明用途，未改变任何逻辑或文本内容。 -->
+    <!-- ==================================================================================================== -->
+    <script>
+        // =========================
+        // Data from sections/4-evaluation.tex (exact values)
+        // =========================
+
+        // Deep Research
+        const DEEP_DATA = [
+            // Open-source LLMs (前10个)
+            { model: "DeepSeek-V3.2", type: "Open", em: 12.7, sla: 43.71 },
+            { model: "DeepSeek-R1", type: "Open", em: 15.03, sla: 44.25 },
+            { model: "Intern-S1", type: "Open", em: 15.74, sla: 56.83 },
+            { model: "Intern-S1-mini", type: "Open", em: 11.06, sla: 49.30 },
+            { model: "Kimi-k2", type: "Open", em: 13.11, sla: 52.64 },
+            { model: "Qwen3-VL-235B-A22B", type: "Open", em: 11.97, sla: 53.85 },
+            { model: "Qwen3-235B-A22B", type: "Open", em: 14.19, sla: 60.26 },
+            { model: "Qwen3-Max", type: "Open", em: 15.38, sla: 60.08 },
+            { model: "Qwen3-8B", type: "Open", em: 8.18, sla: 44.3 },
+            { model: "Llama-4-Scout", type: "Open", em: 7.86, sla: 46.05 },
+            // Closed-source LLMs
+            { model: "GPT-4o", type: "Closed", em: 7.86, sla: 45.65 },
+            { model: "GPT-4.1", type: "Closed", em: 11.32, sla: 50.84 },
+            { model: "GPT-5", type: "Closed", em: 14.47, sla: 48.78 },
+            { model: "GPT-5.1", type: "Closed", em: 11.64, sla: 50.32 },
+            { model: "o3", type: "Closed", em: 12.89, sla: 47.31 },
+            { model: "o4-mini", type: "Closed", em: 11.95, sla: 45.49 },
+            { model: "Gemini-2.5-Flash", type: "Closed", em: 10.69, sla: 53.07 },
+            { model: "Gemini-2.5-Pro", type: "Closed", em: 15.09, sla: 52.5 },
+            { model: "Gemini-3-Pro", type: "Closed", em: 18.48, sla: 53.53 },
+            { model: "Claude-Opus-4.1", type: "Closed", em: 12.93, sla: 55.04 },
+            { model: "Claude-Sonnet-4.5", type: "Closed", em: 13.84, sla: 57.08 },
+            { model: "Grok-3", type: "Closed", em: 13.52, sla: 64.43 },
+            { model: "Grok-4", type: "Closed", em: 13.31, sla: 50.03 },
+        ];
+        const Task1_Mapping = Object.fromEntries(
+            DEEP_DATA.map(item => [item.model, item.em])
+        );
+
+        // Idea Generation
+        const IDEA_DATA = [
+            // Open-source LLM
+            { model: "DeepSeek-V3.2",        type: "Open",   eff: 28.085,  nov: 54.085, det: 47.34,  feas: 20.275 },
+            { model: "DeepSeek-R1",          type: "Open",   eff: 27.73,   nov: 63.635, det: 50.06,  feas: 19.195 },
+            { model: "Intern-S1",            type: "Open",   eff: 26.38,   nov: 56.465, det: 49.095, feas: 20.415 },
+            { model: "Intern-S1-mini",       type: "Open",   eff: 24.945,  nov: 55.705, det: 48.065, feas: 15.44  },
+            { model: "Kimi-k2",              type: "Open",   eff: 25.24,   nov: 69.49,  det: 59.2,   feas: 18.74  },
+            { model: "Qwen3-VL-235B-A22B",   type: "Open",   eff: 27.235,  nov: 59.53,  det: 50.23,  feas: 20.135 },
+            { model: "Qwen3-235B-A22B",      type: "Open",   eff: 26.63,   nov: 62.05,  det: 49.725, feas: 19.4   },
+            { model: "Qwen3-Max",            type: "Open",   eff: 28.74,   nov: 59.01,  det: 50.61,  feas: 20.975 },
+            { model: "Qwen3-8B",             type: "Open",   eff: 26.115,  nov: 49.36,  det: 47.085, feas: 20.575 },
+            { model: "Llama-4-Scout",        type: "Open",   eff: 28.495,  nov: 33.25,  det: 43.08,  feas: 14.06  },
+
+            // Closed-source LLM
+            { model: "GPT-4o",               type: "Closed", eff: 27.28,   nov: 48.185, det: 47.845, feas: 20.505 },
+            { model: "GPT-4.1",              type: "Closed", eff: 27.49,   nov: 48.715, det: 47.88,  feas: 21.87  },
+            { model: "GPT-5",                type: "Closed", eff: 40.92,   nov: 76.075, det: 85.72,  feas: 18.87  },
+            { model: "GPT-5.1",              type: "Closed", eff: 36.07,   nov: 66.98,  det: 66.62,  feas: 18.825 },
+            { model: "o3",                   type: "Closed", eff: 29.415,  nov: 73.735, det: 58.215, feas: 22.9   },
+            { model: "o4-mini",              type: "Closed", eff: 27.255,  nov: 63.33,  det: 50.53,  feas: 22.005 },
+            { model: "Gemini-2.5-Flash",     type: "Closed", eff: 28.445,  nov: 56.91,  det: 50.49,  feas: 20.685 },
+            { model: "Gemini-2.5-Pro",       type: "Closed", eff: 30.98,   nov: 57.54,  det: 52.205, feas: 19.055 },
+            { model: "Gemini-3-Pro",         type: "Closed", eff: 28.375,  nov: 59.41,  det: 51.07,  feas: 19.87  },
+            { model: "Claude-Opus-4.1",      type: "Closed", eff: 26.52,   nov: 64.395, det: 50.16,  feas: 20.07  },
+            { model: "Claude-Sonnet-4.5",    type: "Closed", eff: 32.01,   nov: 58.0,   det: 61.75,  feas: 21.025 },
+            { model: "Grok-3",               type: "Closed", eff: 28.37,   nov: 46.27,  det: 48.345, feas: 20.93  },
+            { model: "Grok-4",               type: "Closed", eff: 28.46,   nov: 50.93,  det: 49.475, feas: 19.6   },
+        ];
+        for (const row of IDEA_DATA) {
+            row.avg = (row.eff+row.nov+row.det+row.feas)/4;
+        }
+        const Task2_Mapping = Object.fromEntries(
+            IDEA_DATA.map(item => [item.model, item.avg])
+        );
+
+        // Dry Experiment Metrics —— 同上，为表格数据源（仅展示用）。
+        const DRY_DATA = [
+            // Open-source LLM
+            { model: "DeepSeek-V3.2", type: "Open", p5: 23.62, p3: 26.94, p1: 29.52, aet: 29.96, ser: 68.27 },
+            { model: "DeepSeek-R1", type: "Open", p5: 33.33, p3: 35.56, p1: 37.41, aet: 28.09, ser: 91.70 },
+            { model: "Intern-S1", type: "Open", p5: 28.79, p3: 31.44, p1: 34.09, aet: 31.04, ser: 87.58 },
+            { model: "Intern-S1-mini", type: "Open", p5: 16.97, p3: 17.34, p1: 18.08, aet: 14.55, ser: 79.83 },
+            { model: "Kimi-k2", type: "Open", p5: 29.52, p3: 32.10, p1: 36.16, aet: 33.42, ser: 90.26 },
+            { model: "Qwen3-VL-235B-A22B", type: "Open", p5: 28.41, p3: 31.37, p1: 33.58, aet: 32.74, ser: 91.22 },
+            { model: "Qwen3-235B-A22B", type: "Open", p5: 28.89, p3: 31.48, p1: 34.44, aet: 30.68, ser: 90.81 },
+            { model: "Qwen3-Max", type: "Open", p5: 33.21, p3: 35.42, p1: 37.27, aet: 35.25, ser: 90.33 },
+            { model: "Qwen3-8B", type: "Open", p5: 18.45, p3: 20.30, p1: 21.03, aet: 21.13, ser: 71.51 },
+            { model: "Llama-4-Scout", type: "Open", p5: 20.37, p3: 21.48, p1: 22.59, aet: 24.24, ser: 68.52 },
+            // Closed-source LLM
+            { model: "GPT-4o", type: "Closed", p5: 26.94, p3: 29.89, p1: 32.10, aet: 37.90, ser: 79.78 },
+            { model: "GPT-4.1", type: "Closed", p5: 34.32, p3: 37.64, p1: 40.22, aet: 40.54, ser: 94.10 },
+            { model: "GPT-5", type: "Closed", p5: 29.89, p3: 32.84, p1: 34.69, aet: 34.54, ser: 75.50 },
+            { model: "GPT-5.1", type: "Closed", p5: 31.00, p3: 35.42, p1: 38.01, aet: 23.87, ser: 96.53 },
+            { model: "o3", type: "Closed", p5: 31.73, p3: 34.32, p1: 37.64, aet: 34.06, ser: 85.17 },
+            { model: "o4-mini", type: "Closed", p5: 35.79, p3: 39.11, p1: 41.70, aet: 31.34, ser: 87.60 },
+            { model: "Gemini-2.5-Flash", type: "Closed", p5: 21.03, p3: 22.51, p1: 24.72, aet: 15.09, ser: 44.65 },
+            { model: "Gemini-2.5-Pro", type: "Closed", p5: 22.51, p3: 23.99, p1: 24.72, aet: 13.94, ser: 44.65 },
+            { model: "Gemini-3-Pro", type: "Closed", p5: 36.64, p3: 40.46, p1: 41.98, aet: 21.16, ser: 98.85 },
+            { model: "Claude-Opus-4.1", type: "Closed", p5: 34.69, p3: 37.27, p1: 40.59, aet: 31.67, ser: 94.32 },
+            { model: "Claude-Sonnet-4.5", type: "Closed", p5: 35.79, p3: 38.75, p1: 42.07, aet: 31.59, ser: 94.83 },
+            { model: "Grok-3", type: "Closed", p5: 27.31, p3: 29.15, p1: 32.10, aet: 35.30, ser: 91.22 },
+            { model: "Grok-4", type: "Closed", p5: 33.71, p3: 37.12, p1: 40.53, aet: 33.74, ser: 94.09 },
+        ];
+        const Task3_Mapping = Object.fromEntries(
+            DRY_DATA.map(item => [item.model, item.p5])
+        );
+
+        // Wet Experiment Metrics —— 同上，为表格数据源（仅展示用）。
+        const WET_DATA = [
+            // Open-source LLMs (前10个)
+            { model: "DeepSeek-V3.2", type: "Open", ss: 17.8, pa: 24.11 },
+            { model: "DeepSeek-R1", type: "Open", ss: 16.15, pa: 26.09 },
+            { model: "Intern-S1", type: "Open", ss: 26.72, pa: 31.32 },
+            { model: "Intern-S1-mini", type: "Open", ss: 8.49, pa: 16.35 },
+            { model: "Kimi-k2", type: "Open", ss: 21.18, pa: 30.34 },
+            { model: "Qwen3-VL-235B-A22B", type: "Open", ss: 23.55, pa: 37.05 },
+            { model: "Qwen3-235B-A22B", type: "Open", ss: 22.04, pa: 30.76 },
+            { model: "Qwen3-Max", type: "Open", ss: 29.95, pa: 37.28 },
+            { model: "Qwen3-8B", type: "Open", ss: 9.51, pa: 10.4 },
+            { model: "Llama-4-Scout", type: "Open", ss: 17.23, pa: 26.09 },
+            // Closed-source LLMs
+            { model: "GPT-4o", type: "Closed", ss: 25.72, pa: 36.91 },
+            { model: "GPT-4.1", type: "Closed", ss: 32.65, pa: 40.62 },
+            { model: "GPT-5", type: "Closed", ss: 11.94, pa: 20.68 },
+            { model: "GPT-5.1", type: "Closed", ss: 18.14, pa: 27.41 },
+            { model: "o3", type: "Closed", ss: 26.78, pa: 33.3 },
+            { model: "o4-mini", type: "Closed", ss: 26.62, pa: 31.1 },
+            { model: "Gemini-2.5-Flash", type: "Closed", ss: 14.63, pa: 22.46 },
+            { model: "Gemini-2.5-Pro", type: "Closed", ss: 18.41, pa: 25.68 },
+            { model: "Gemini-3-Pro", type: "Closed", ss: 28.18, pa: 36.72 },
+            { model: "Claude-Opus-4.1", type: "Closed", ss: 22.04, pa: 28.72 },
+            { model: "Claude-Sonnet-4.5", type: "Closed", ss: 27.63, pa: 32.67 },
+            { model: "Grok-3", type: "Closed", ss: 35.55, pa: 40.29 },
+            { model: "Grok-4", type: "Closed", ss: 27.21, pa: 30.81 },
+        ];
+        for (const row of WET_DATA) {
+            row.avg = (row.ss+row.pa)/2;
+        }
+        const Task4_Mapping = Object.fromEntries(
+            WET_DATA.map(item => [item.model, item.avg])
+        );
+
+        // Experimental Reasoning Metrics —— 同上，为表格数据源（仅展示用）。
+        const ER_DATA = [
+            // Open-source LLMs (前6个)
+            { model: "Intern-S1", type: "Open", mca: 28.87, rv: 43.02 },
+            { model: "Intern-S1-mini", type: "Open", mca: 16.84, rv: 26.94 },
+            { model: "Qwen3-VL-235B-A22B", type: "Open", mca: 31.62, rv: 50.55 },
+            { model: "Qwen3-VL-Max", type: "Open", mca: 37.80, rv: 37.80 },
+            { model: "Qwen3-VL-8B", type: "Open", mca: 23.37, rv: 42.34 },
+            { model: "Llama-4-Scout", type: "Open", mca: 25.77, rv: 42.61 },
+            // Closed-source LLMs
+            { model: "GPT-4o", type: "Closed", mca: 32.30, rv: 45.36 },
+            { model: "GPT-4.1", type: "Closed", mca: 38.49, rv: 53.47 },
+            { model: "GPT-5", type: "Closed", mca: 38.14, rv: 56.74 },
+            { model: "GPT-5.1", type: "Closed", mca: 34.02, rv: 47.46 },
+            { model: "o3", type: "Closed", mca: 32.65, rv: 52.96 },
+            { model: "o4-mini", type: "Closed", mca: 33.33, rv: 53.02 },
+            { model: "Gemini-2.5-Flash", type: "Closed", mca: 34.36, rv: 53.13 },
+            { model: "Gemini-2.5-Pro", type: "Closed", mca: 41.24, rv: 57.15 },
+            { model: "Gemini-3-Pro", type: "Closed", mca: 41.92, rv: 56.53 },
+            { model: "Claude-Opus-4.1", type: "Closed", mca: 38.83, rv: 51.89 },
+            { model: "Claude-Sonnet-4.5", type: "Closed", mca: 37.80, rv: 52.47 },
+            { model: "Grok-4", type: "Closed", mca: 30.24, rv: 42.37 },
+        ];
+        const Task5_Mapping = Object.fromEntries(
+            ER_DATA.map(item => [item.model, item.mca])
+        );
+
+        // Overview —— 硬编码交集模型（每列为各任务的第一指标）
+        const OVERVIEW_DATA = [
+            // Open-source
+            { model: "Intern-S1",         type: "Open" },
+            { model: "Intern-S1-mini",    type: "Open" },
+            { model: "Qwen3-VL-235B-A22B",type: "Open" },
+            { model: "Qwen3-Max",         type: "Open", task5: 37.80 },
+            { model: "Qwen3-8B",          type: "Open", task5: 23.37 },
+            { model: "Llama-4-Scout",     type: "Open" },
+            // Closed-source
+            { model: "GPT-4o",            type: "Closed" },
+            { model: "GPT-4.1",           type: "Closed" },
+            { model: "GPT-5",             type: "Closed" },
+            { model: "GPT-5.1",           type: "Closed" },
+            { model: "o3",                type: "Closed" },
+            { model: "o4-mini",           type: "Closed" },
+            { model: "Gemini-2.5-Flash",  type: "Closed" },
+            { model: "Gemini-2.5-Pro",    type: "Closed" },
+            { model: "Gemini-3-Pro",      type: "Closed" },
+            { model: "Claude-Opus-4.1",   type: "Closed" },
+            { model: "Claude-Sonnet-4.5", type: "Closed" },
+            { model: "Grok-4",            type: "Closed" },
+        ];
+
+        for (const row of OVERVIEW_DATA) {
+            if (row.task1 === undefined || row.task1 === null) {
+                row.task1 = Task1_Mapping[row.model];
+            }
+            if (row.task2 === undefined || row.task2 === null) {
+                row.task2 = Task2_Mapping[row.model];
+            }
+            if (row.task3 === undefined || row.task3 === null) {
+                row.task3 = Task3_Mapping[row.model];
+            }
+            if (row.task4 === undefined || row.task4 === null) {
+                row.task4 = Task4_Mapping[row.model];
+            }
+            if (row.task5 === undefined || row.task5 === null) {
+                row.task5 = Task5_Mapping[row.model];
+            }
+            row.sgi = (row.task1+row.task2+row.task3+row.task4+row.task5)/5;
+        }
+
+
+        // Render tables —— 将数据渲染到页面表格中（不修改渲染逻辑仅注释说明）。
+        function renderTables() {
+            // Deep Research
+            const t0Body = document.getElementById('t0-body');
+            t0Body.innerHTML = DEEP_DATA.map(row => `
+                <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
+                    <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs ${row.type === 'Open' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 border border-slate-200'} font-medium">
+                            ${row.type}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700">${row.em === "" ? "" : row.em.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.sla === "" ? "" : row.sla.toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            // Idea Generation
+            const t1Body = document.getElementById('t1-body');
+            t1Body.innerHTML = IDEA_DATA.map(row => `
+                <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
+                    <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs ${row.type === 'Open' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 border border-slate-200'} font-medium">
+                            ${row.type}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700">${row.eff === "" ? "" : row.eff.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.nov === "" ? "" : row.nov.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.det === "" ? "" : row.det.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.feas === "" ? "" : row.feas.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.avg === "" ? "" : row.avg.toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            // Dry Experiment
+            const t2Body = document.getElementById('t2-body');
+            t2Body.innerHTML = DRY_DATA.map(row => `
+                <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
+                    <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs ${row.type === 'Open' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 border border-slate-200'} font-medium">
+                            ${row.type}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700">${row.p5 === "" ? "" : row.p5.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.p3 === "" ? "" : row.p3.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.p1 === "" ? "" : row.p1.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.aet === "" ? "" : row.aet.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.ser === "" ? "" : row.ser.toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            // Wet Experiment
+            const t3Body = document.getElementById('t3-body');
+            t3Body.innerHTML = WET_DATA.map(row => `
+                <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
+                    <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs ${row.type === 'Open' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 border border-slate-200'} font-medium">
+                            ${row.type}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700">${row.ss === "" ? "" : row.ss.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.pa === "" ? "" : row.pa.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.avg === "" ? "" : row.avg.toFixed(2)}</td>
+                </tr>
+            `).join('');
+            
+            // Experimental Reasoning
+            const t4Body = document.getElementById('t4-body');
+            t4Body.innerHTML = ER_DATA.map(row => `
+                <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
+                    <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs ${row.type === 'Open' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 border border-slate-200'} font-medium">
+                            ${row.type}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700">${row.mca === "" ? "" : row.mca.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.rv === "" ? "" : row.rv.toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            
+        }
+
+        // 渲染 Overview 表
+        function renderOverview() {
+            const tOvBody = document.getElementById('t-ov-body');
+            if (!tOvBody) return;
+            tOvBody.innerHTML = OVERVIEW_DATA.map(row => `
+                <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
+                    <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs ${row.type === 'Open' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 border border-slate-200'} font-medium">
+                            ${row.type}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700">${row.task1 === "" ? "" : row.task1.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.task2 === "" ? "" : row.task2.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.task3 === "" ? "" : row.task3.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.task4 === "" ? "" : row.task4.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.task5 === "" ? "" : row.task5.toFixed(2)}</td>
+                    <td class="p-4 text-slate-900 font-semibold">${row.sgi === "" ? "" : row.sgi.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTables();
+            renderOverview();
+            initAgentDemo();
+        });
+
+        // Avatar mapping for SGIEvalAgent Demo —— 头像映射（仅视觉，不影响逻辑）
+        function getAvatar(role) {
+            switch (role) {
+                case 'User': return 'images/user/1.png';
+                case 'Questioning Agent': return 'images/user/2.png';
+                case 'Customization Agent': return 'images/user/3.png';
+                case 'Evaluation Agent': return 'images/user/4.png';
+                case 'Reporting Agent': return 'images/user/5.png';
+                default: return 'images/user/1.png';
+            }
+        }
+
+        // UI helpers —— 灯箱打开/关闭辅助方法（修改时长请见 CSS 的过渡时间设置）。
+        function openModal(src) {
+            const modal = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            modal.classList.remove('hidden');
+            setTimeout(() => img.classList.replace('scale-95', 'scale-100'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            img.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") closeModal();
+        });
+
+        // 表格过滤（过滤按钮仅影响显示与隐藏行，不改变数据或排序逻辑）。
+        function filterTable(tid, type) {
+            document.querySelectorAll(`button[data-t="${tid}"]`).forEach(b => {
+                const isSelected = b.getAttribute('data-f') === type;
+                b.className = isSelected
+                    ? "px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap"
+                    : "px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap";
+            });
+            const rows = document.getElementById(tid).querySelector('tbody').querySelectorAll('tr');
+            rows.forEach(row => {
+                row.style.display = (type === 'all' || row.getAttribute('data-type') === type) ? '' : 'none';
+            });
+        }
+
+        // 表头排序（点击表头进行升降序切换）。仅修改排序显示顺序，不改动原数据。
+        function sort(tid, n) {
+            const table = document.getElementById(tid);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const headers = table.querySelectorAll('th');
+            const header = headers[n];
+            const isAsc = header.classList.contains('asc');
+
+            // reset header styles/icons for this table
+            headers.forEach(th => {
+                th.classList.remove('asc', 'desc', 'text-slate-900');
+                const icon = th.querySelector('i');
+                if (icon) icon.className = 'fas fa-sort ml-1';
+            });
+
+            const clean = (s) => s.replace(/%|k|M/g, '').trim();
+
+            rows.sort((a, b) => {
+                const aText = clean(a.cells[n].innerText);
+                const bText = clean(b.cells[n].innerText);
+
+                const aNum = parseFloat(aText);
+                const bNum = parseFloat(bText);
+                const aIsNum = aText !== '' && Number.isFinite(aNum);
+                const bIsNum = bText !== '' && Number.isFinite(bNum);
+
+                let cmp;
+                if (aIsNum && bIsNum) {
+                    // numeric compare
+                    cmp = aNum - bNum;
+                } else {
+                    // text compare; push empty strings to the end
+                    if (aText === '' && bText !== '') cmp = 1;
+                    else if (aText !== '' && bText === '') cmp = -1;
+                    else cmp = aText.localeCompare(bText, 'en', { numeric: true, sensitivity: 'base' });
+                }
+                // toggle asc/desc
+                return isAsc ? -cmp : cmp;
+            });
+
+            rows.forEach(r => tbody.appendChild(r));
+            header.classList.add(isAsc ? 'desc' : 'asc', 'text-slate-900');
+            const icon = header.querySelector('i');
+            if (icon) icon.className = isAsc ? 'fas fa-sort-down ml-1' : 'fas fa-sort-up ml-1';
+        }
+
+        // 复制 Citation（BibTeX）文本到剪贴板，仅影响复制按钮图标状态与剪贴板内容。
+        function copyCitation() {
+            const code = document.querySelector('code').innerText;
+            navigator.clipboard.writeText(code);
+            const btn = document.querySelector('button[onclick="copyCitation()"] i');
+            btn.className = "fas fa-check text-green-400";
+            setTimeout(() => btn.className = "far fa-copy", 2000);
+        }
+
+        // ====================================================================================================
+        // SGIEvalAgent Demo（演示板块）—— 全局可调常量入口
+        // 目的：让不懂前端的人也能快速定位并修改演示的“播放速度”和“对话气泡宽度”
+        // 修改方法（三选一，互不冲突）：
+        //   1) 直接改下面两行的默认值（永久生效）；
+        //   2) 通过 URL 参数临时修改：?speed=NN（每字符毫秒），?bubble=NN（最大宽度px）；
+        //   3) 通过在控制台或其它脚本设置 window.SGI_STREAM_SPEED / window.SGI_DIALOG_MAX_WIDTH（需>0）。
+        // 注意：这些常量仅影响 Demo 播放与气泡宽度；不改变页面其它功能与文本。
+        // ====================================================================================================
+
+        // ===== SGIEvalAgent Chat Demo Logic =====
+        // Stream speed config (ms per char). You can override via URL ?speed=NN or set window.SGI_STREAM_SPEED before init.
+        const STREAM_SPEED = (() => {
+            try {
+                const p = new URLSearchParams(window.location.search).get('speed');
+                const n = p ? parseInt(p, 10) : NaN;
+                if (Number.isFinite(n) && n > 0) return n;
+                if (typeof window !== 'undefined' && window.SGI_STREAM_SPEED && window.SGI_STREAM_SPEED > 0) return window.SGI_STREAM_SPEED;
+            } catch (e) {}
+            return 25; // default —— 播放速度（每字符毫秒）。数值越小速度越快，越大越慢。
+        })();
+
+ // Dialog bubble max width config (px). Override via URL ?bubble=NN or set window.SGI_DIALOG_MAX_WIDTH
+const DIALOG_MAX_WIDTH = (() => {
+    try {
+        const p = new URLSearchParams(window.location.search).get('bubble');
+        const n = p ? parseInt(p, 10) : NaN;
+        if (Number.isFinite(n) && n > 0) return n;
+        if (typeof window !== 'undefined' && window.SGI_DIALOG_MAX_WIDTH && window.SGI_DIALOG_MAX_WIDTH > 0) return window.SGI_DIALOG_MAX_WIDTH;
+    } catch (e) {}
+    return 700; // default —— 对话气泡最大宽度（单位：px）。增大可显示更宽文本。
+})();
+
+// 用户头像的超链接目标（可通过 URL 参数 ?userAvatarUrl=... 或 window.SGI_USER_AVATAR_URL 覆盖）
+const USER_AVATAR_URL = (() => {
+    try {
+        const p = new URLSearchParams(window.location.search).get('userAvatarUrl');
+        const u = p || (typeof window !== 'undefined' && window.SGI_USER_AVATAR_URL);
+        if (u) return u;
+    } catch (e) {}
+    return 'https://black-yt.github.io/'; // default —— 用户头像点击跳转目标
+})();
+
+        // ===== Demo timer management (only affects SGIEvalAgent Demo) =====
+        const __demoTimers = [];
+        function setDemoTimeout(fn, delay) {
+            // 说明：演示中使用的“延迟定时器”。delay 为毫秒，增大则等待更久。仅影响 Demo 播放节奏。
+            const id = setTimeout(fn, delay);
+            __demoTimers.push({ type: 't', id });
+            return id;
+        }
+        function setDemoInterval(fn, delay) {
+            // 说明：演示中使用的“循环定时器”（如进度条）。delay 为毫秒，越小更新越频繁。
+            const id = setInterval(fn, delay);
+            __demoTimers.push({ type: 'i', id });
+            return id;
+        }
+        function clearAllDemoTimers() {
+            __demoTimers.forEach(t => {
+                if (t.type === 't') clearTimeout(t.id);
+                else clearInterval(t.id);
+            });
+            __demoTimers.length = 0;
+        }
+        function renderDemoFinal(chat, query) {
+            clearAllDemoTimers();
+            chat.innerHTML = '';
+
+            // User (right aligned), show full text immediately
+            const u = addMsgContainer('User', 'fa-user', 'right');
+            if (u) {
+                // keep bubble right aligned but text left aligned
+                u.classList.remove('text-right');
+                u.classList.add('text-left');
+                u.textContent = query;
+            }
+
+            // Questioning Agent
+const qa = addMsgContainer('Questioning Agent', 'fa-list-check');
+if (qa) {
+    qa.textContent = 'Selected idea-generation questions across Physics, Chemistry, Biology, and seven other disciplines from SGI-Bench (For rapid evaluation, 10 samples were collected for each discipline) to reflect cross-disciplinary scientific ideation.';
+}
+
+            // Customization Agent
+const ca = addMsgContainer('Customization Agent', 'fa-sliders');
+if (ca) {
+    ca.textContent = 'User-customized metric: Rigor (scientific strictness). Scoring criteria: 1) Logical self-consistency and tight structure (Problem→Hypothesis→Method→Metrics→Expected result); 2) Solid theory & literature grounding (properly inherits/challenges prior work); 3) Precise, verifiable problem definition (clear goals/constraints/metrics/success conditions); 4) Deep integration with research background (terms used correctly and aligned with domain definitions); 5) Methodological soundness and reproducibility (executable steps, IO loop, rationale for design choices); 6) Risk awareness & scientific criticism (bias/assumption risks/failure modes, conservative conclusions). Major deductions: missing reasoning chain, unstated key assumptions, terminology misuse, vague metrics, misaligned inheritance of background.';
+}
+
+            // Evaluation Agent
+            const ev = addMsgContainer('Evaluation Agent', 'fa-gauge-high');
+            if (ev) {
+                ev.textContent = 'Running inference and scoring...';
+                const barWrap = document.createElement('div');
+                barWrap.className = 'w-full bg-slate-100 h-2 rounded mt-2';
+                barWrap.innerHTML = '<div class="h-2 rounded bg-emerald-500 transition-all" style="width:100%"></div>';
+                ev.appendChild(barWrap);
+            }
+
+            // Reporting Agent + final report card
+            const rep = addMsgContainer('Reporting Agent', 'fa-file-lines');
+            if (rep) {
+                rep.textContent = 'Generating evaluation report...';
+
+                const card = document.createElement('div');
+card.className = 'glass p-3 rounded-lg border border-slate-200 mt-2';
+card.innerHTML =
+    '<div class="text-sm font-semibold text-slate-800 mb-2">Evaluation Report — Rigor (Idea Generation)</div>' +
+    '<div class="text-sm text-slate-700 leading-relaxed">' +
+        '<p class="mb-2">We evaluate models on the user-defined <em>Rigor</em> metric for idea generation. Observations from the chart:</p>' +
+        '<ul class="list-disc pl-5 space-y-1">' +
+            '<li>Closed-source LLMs generally achieve higher rigor; top performers cluster around the GPT‑5/o3/o4‑mini families.</li>' +
+            '<li>Intra-family improvements are evident (e.g., Qwen3‑Max > Qwen3‑235B‑A22B; GPT‑5 > GPT‑4.1), indicating sensitive capture of technical iteration.</li>' +
+            '<li>Open-source progress is notable: Qwen3‑Max reaches parity with GPT‑4.1 on rigor.</li>' +
+            '<li>Heterogeneity persists: Grok‑4 is comparable to GPT‑4.1 and Qwen3‑Max, underscoring multi-dimensional trade-offs across instruction following, creativity, and methodological soundness.</li>' +
+        '</ul>' +
+        '<p class="mt-2">Rigor foregrounds methodological soundness and internal coherence—models that score higher propose more structured, verifiable plans rather than purely fluent narratives.</p>' +
+    '</div>' +
+    '<div class="mt-3">' +
+        '<img src="paper/imgs/idea_custom_metric.png" alt="Custom Metric — idea_custom_metric.png" class="block w-full max-w-sm md:max-w-md max-h-64 md:max-h-80 h-auto rounded border border-slate-200 cursor-pointer mx-auto object-contain" onclick="openModal(this.src)">' +
+        '<div class="text-xs text-slate-500 mt-1 text-center">Figure: Rigor of Ideas Generated by Different LLMs (Custom Metric)</div>' +
+    '</div>';
+                rep.parentElement.appendChild(card);
+            }
+
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function initAgentDemo() {
+            const chat = document.getElementById('agent-chat');
+            const replay = document.getElementById('redo-demo');
+            if (!chat) return;
+
+const query = 'I want to know which model has the best rigor in idea generation across science disciplines.';
+
+            const run = () => {
+                clearAllDemoTimers();
+                chat.innerHTML = '';
+
+                // 直接从用户消息开始（去掉输入框打字动画）
+                addMsgStreaming('User', 'fa-user', query, STREAM_SPEED, () => {
+                    // Question Selection —— 完整流式完成后再进入下一条
+addMsgStreaming(
+    'Questioning Agent',
+    'fa-list-check',
+    'Selected idea-generation questions across Physics, Chemistry, Biology, and seven other disciplines from SGI-Bench (For rapid evaluation, 10 samples were collected for each discipline) to reflect cross-disciplinary scientific ideation.',
+    STREAM_SPEED,
+    () => {
+                            // Metric Customization —— 顺序串行
+addMsgStreaming(
+    'Customization Agent',
+    'fa-sliders',
+    'User-customized metric: Rigor (scientific strictness). Scoring criteria: 1) Logical self-consistency and tight structure (Problem→Hypothesis→Method→Metrics→Expected result); 2) Solid theory & literature grounding (properly inherits/challenges prior work); 3) Precise, verifiable problem definition (clear goals/constraints/metrics/success conditions); 4) Deep integration with research background (terms used correctly and aligned with domain definitions); 5) Methodological soundness and reproducibility (executable steps, IO loop, rationale for design choices); 6) Risk awareness & scientific criticism (bias/assumption risks/failure modes, conservative conclusions). Major deductions: missing reasoning chain, unstated key assumptions, terminology misuse, vague metrics, misaligned inheritance of background.',
+    STREAM_SPEED,
+    () => {
+                                    // Predict & Eval —— 文字流式 + 进度条，完成后再进入下一条
+                                    const content = addMsgContainer('Evaluation Agent', 'fa-gauge-high');
+                                    if (!content) return;
+                                    streamText(content, 'Running inference and scoring...', STREAM_SPEED, () => {
+                                        setDemoTimeout(() => {
+                                            const barId = 'prog-' + Date.now();
+                                            const barWrap = document.createElement('div');
+                                            barWrap.className = 'w-full bg-slate-100 h-2 rounded mt-2';
+                                            barWrap.innerHTML = '<div id="' + barId + '" class="h-2 rounded bg-emerald-500 transition-all" style="width:0%"></div>';
+                                            // 将进度条插入到 Evaluation Agent 的对话框内部
+                                            content.appendChild(barWrap);
+
+                                            let p = 0;
+                                            const progressEl = () => document.getElementById(barId);
+                                            const timer = setDemoInterval(() => {
+                                                p += Math.random() * 5 + 5;
+                                                if (p >= 100) {
+                                                    p = 100;
+                                                    clearInterval(timer);
+
+                                                    // Reporting —— 先流式提示，完成后插入报告卡片
+                                                    setDemoTimeout(() => {
+                                                        const repContent = addMsgContainer('Reporting Agent', 'fa-file-lines');
+                                                        streamText(repContent, 'Generating evaluation report...', STREAM_SPEED, () => {
+                                                            setDemoTimeout(() => {
+                                                                const card = document.createElement('div');
+card.className = 'glass p-3 rounded-lg border border-slate-200 mt-2';
+card.innerHTML =
+    '<div class="text-sm font-semibold text-slate-800 mb-2">Evaluation Report — Rigor (Idea Generation)</div>' +
+    '<div class="text-sm text-slate-700 leading-relaxed">' +
+        '<p class="mb-2">We evaluate models on the user-defined <em>Rigor</em> metric for idea generation. Observations from the chart:</p>' +
+        '<ul class="list-disc pl-5 space-y-1">' +
+            '<li>Closed-source LLMs generally achieve higher rigor; top performers cluster around the GPT‑5/o3/o4‑mini families.</li>' +
+            '<li>Intra-family improvements are evident (e.g., Qwen3‑Max > Qwen3‑235B‑A22B; GPT‑5 > GPT‑4.1), indicating sensitive capture of technical iteration.</li>' +
+            '<li>Open-source progress is notable: Qwen3‑Max reaches parity with GPT‑4.1 on rigor.</li>' +
+            '<li>Heterogeneity persists: Grok‑4 is comparable to GPT‑4.1 and Qwen3‑Max, underscoring multi-dimensional trade-offs across instruction following, creativity, and methodological soundness.</li>' +
+        '</ul>' +
+        '<p class="mt-2">Rigor foregrounds methodological soundness and internal coherence—models that score higher propose more structured, verifiable plans rather than purely fluent narratives.</p>' +
+    '</div>' +
+    '<div class="mt-3">' +
+        '<img src="paper/imgs/idea_custom_metric.png" alt="Custom Metric — idea_custom_metric.png" class="block w-full max-w-sm md:max-w-md max-h-64 md:max-h-80 h-auto rounded border border-slate-200 cursor-pointer mx-auto object-contain" onclick="openModal(this.src)">' +
+        '<div class="text-xs text-slate-500 mt-1 text-center">Figure: Rigor of Ideas Generated by Different LLMs (Custom Metric)</div>' +
+    '</div>';
+                                                                repContent.parentElement.appendChild(card);
+                                                                chat.scrollTop = chat.scrollHeight;
+                                                            }, 2000); // 报告卡片插入延迟（毫秒），可调整播放节奏
+                                                        });
+                                                    }, 1000); // Reporting 启动前的延迟（毫秒），可调整节奏
+                                                }
+                                                if (progressEl()) progressEl().style.width = p + '%';
+                                                chat.scrollTop = chat.scrollHeight;
+                                            }, 180); // 进度条更新间隔（毫秒）。越小越平滑，但更新更频繁。
+                                        }, 1000); // 进度条出现前的延迟（毫秒）。可调整节奏。
+                                    });
+                                }
+                            );
+                        }
+                    );
+                }, 'right');
+            };
+
+            replay && replay.addEventListener('click', () => {
+                // 锁定 demo 区域高度，避免回放时页面长度改变
+                const h = chat.offsetHeight;
+                chat.style.height = h + 'px';
+                chat.style.overflowY = 'auto';
+
+                clearAllDemoTimers();
+                run();
+
+                // 当最终报告卡片出现后，解除高度锁定
+                const unlock = setInterval(() => {
+                    if (chat.querySelector('.glass.p-3.rounded-lg.border.border-slate-200.mt-2')) {
+                        clearInterval(unlock);
+                        chat.style.height = '';
+                        chat.style.overflowY = '';
+                    }
+                }, 500);
+            });
+
+            // 首次加载：直接展示播放完毕的最终状态（包含用户对话气泡）
+            renderDemoFinal(chat, query);
+        }
+
+        function addMsg(role, icon, html) {
+            const chat = document.getElementById('agent-chat');
+            if (!chat) return;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-3';
+            wrapper.innerHTML =
+                '<div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200 bg-white flex items-center justify-center">' +
+                    '<img src="' + getAvatar(role) + '" alt="' + role + ' avatar" class="w-full h-full object-cover">' +
+                '</div>' +
+                '<div class="flex-1">' +
+                    '<div class="text-xs font-semibold text-slate-600">' + role + '</div>' +
+                    '<div class="mt-1 p-3 rounded-lg bg-white border border-slate-200 text-sm text-slate-700">' + html + '</div>' +
+                '</div>';
+            chat.appendChild(wrapper);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        // ===== 流式输出辅助函数（顺序串行，一个对话框完成后再开始下一个）=====
+        // align: 'left' | 'right'，并使用较窄气泡以更好体现左右差异
+        function addMsgContainer(role, icon, align = 'left') {
+            const chat = document.getElementById('agent-chat');
+            if (!chat) return null;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-3' + (align === 'right' ? ' justify-end' : '');
+
+if (align === 'right') {
+                // 用户消息：靠右（头像增加可点击超链接）
+                wrapper.innerHTML =
+                    '<div class="flex-1 flex flex-col items-end">' +
+                        '<div class="text-xs font-semibold text-slate-600 text-right">' + role + '</div>' +
+                        '<div class="mt-1 p-3 rounded-lg bg-white border border-slate-200 text-sm text-slate-700 w-fit text-right"></div>' +
+                    '</div>' +
+                    '<a href="' + USER_AVATAR_URL + '" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full overflow-hidden border border-slate-200 bg-white flex items-center justify-center" title="User">' +
+                        '<img src="' + getAvatar(role) + '" alt="' + role + ' avatar" class="w-full h-full object-cover">' +
+                    '</a>';
+            } else {
+                // Agent消息：靠左
+                wrapper.innerHTML =
+                    '<div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200 bg-white flex items-center justify-center">' +
+                        '<img src="' + getAvatar(role) + '" alt="' + role + ' avatar" class="w-full h-full object-cover">' +
+                    '</div>' +
+                    '<div class="flex-1">' +
+                        '<div class="text-xs font-semibold text-slate-600">' + role + '</div>' +
+                        '<div class="mt-1 p-3 rounded-lg bg-white border border-slate-200 text-sm text-slate-700 w-fit"></div>' +
+                    '</div>';
+            }
+
+            chat.appendChild(wrapper);
+            chat.scrollTop = chat.scrollHeight;
+            const content = wrapper.querySelector('.flex-1').lastElementChild;
+            if (content) { content.style.maxWidth = DIALOG_MAX_WIDTH + "px"; } // 对话气泡最大宽度由常量控制（便于快速修改）
+            return content;
+        }
+
+        function streamText(el, text, speed, done) {
+            let i = 0;
+            const tick = () => {
+                el.textContent = text.slice(0, i++);
+                if (i <= text.length) {
+                    setDemoTimeout(tick, speed); // 每字符间隔由 STREAM_SPEED 控制（越小越快）
+                } else {
+                    done && done();
+                }
+            };
+            tick();
+        }
+
+        // 支持 align 参数以控制左右对齐，默认左对齐
+        function addMsgStreaming(role, icon, text, speed, done, align = 'left') {
+            const content = addMsgContainer(role, icon, align);
+            if (!content) return;
+            // 用户消息不流式，直接一次性显示；Agent 保持流式
+            if (role === 'User') {
+                // 保持气泡靠右，但将文字改为左对齐
+                content.classList.remove('text-right');
+                content.classList.add('text-left');
+                content.textContent = text;
+                if (done) {
+                    setDemoTimeout(() => done(), 1000); // 对话之间的固定延迟（毫秒），可根据需要调整播放节奏
+                }
+                return;
+            }
+            streamText(content, text, speed || STREAM_SPEED, () => {
+                // 对话框之间加入 1 秒间隔再触发下一步（可调），不影响文本与功能。
+                if (done) {
+                    setDemoTimeout(() => done(), 1000);
+                }
+            });
+        }
+
+        function typeWriter(inputEl, text, speed, done) {
+            let i = 0;
+            const tick = () => {
+                inputEl.value = text.slice(0, i++);
+                if (i <= text.length) {
+                    setDemoTimeout(tick, speed);
+                } else {
+                    // 输入完毕后延迟 1 秒再触发后续流程（Questioning Agent）
+                    if (done) {
+                        setDemoTimeout(() => { done(); }, 1000);
+                    }
+                }
+            };
+            tick();
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>\"']/g, function(m) {
+                return ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[m]);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+    %\documentclass[11pt, a4paper, logo]{googledeepmind}
+\documentclass[11pt,a4paper,logo]{googledeepmind}
+
+\setleftlogo[110pt]{imgs/logo_left.png}  
+\setrightlogo[160pt]{imgs/logo_right.png}
+
+% \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tgcursor}
+% \usepackage[authoryear, sort&compress, round]{natbib}
+% \bibliographystyle{abbrvnat}
+\usepackage{pifont}
+\usepackage[
+    natbib=true,
+    backend=biber,
+    style=numeric, % Changed from 'alphabetic' to 'numeric' as per common technical report styles
+    sorting=none % To keep references in order of appearance or as defined in .bib
+]{biblatex}
+\addbibresource{main.bib} % You will need to create a main.bib file
+\AtEveryBibitem{\clearfield{month}}
+\AtEveryBibitem{\clearfield{day}}
+\usepackage{csquotes}
+% \usepackage{blindtext} % Removed as we are filling content
+
+\newcommand{\ProjectName}{SGI}
+
+\title{A Definition of Scientific General Intelligence}
+
+% 如果需要标注通讯，请实验下面的代码
+% \correspondingauthor{
+% $\spadesuit$: Co-first Author
+% $\diamondsuit$: Student Project Lead
+% $\clubsuit$: Corresponding Author. \\ 
+% Please send correspondence regarding this report to contact@intfold.com
+% }
+
+% 作者示例
+% \author[1,2 $\diamondsuit \spadesuit$]{Yizhou Wang}
+% \affil[7]{Shanghai Jiao Tong University}
+
+% 图标
+\newcommand{\homepage}{\raisebox{-1.5pt}{\includegraphics[height=1em]{imgs/page-logo.pdf}}}
+\newcommand{\github}{\raisebox{-1.5pt}{\includegraphics[height=1em]{imgs/github-logo.pdf}}}
+\newcommand{\huggingface}{\raisebox{-1.5pt}{\includegraphics[height=1em]{imgs/hf-logo.pdf}}}
+\newcommand{\team}{\raisebox{-1.5pt}{\includegraphics[height=1em]{imgs/team-logo.png}}}
+
+\author{SciPrismaX Team, Shanghai Artificial Intelligence Laboratory}
+% \affil{Shanghai Artificial Intelligence Laboratory}
+
+% General packages.
+\usepackage{pdflscape}
+
+\usepackage{textcomp}
+\usepackage{rotating}
+
+\usepackage{setspace}
+\usepackage{microtype} 
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{caption}
+
+\newcommand{\titledcaption}[2]{\caption[{#1}]{\textbf{#1}\\#2}}
+
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{xcolor}
+
+\newcommand{\mc}[2]{\makecell[t]{#1 \\ \scriptsize{(#2)}}}
+\newcommand{\mcb}[2]{\makecell[t]{{\bfseries #1} \\ \scriptsize{(#2)}}}
+\newcommand{\nan}{\makecell{--}}
+\usepackage{array}
+\usepackage{threeparttable}
+\usepackage{multirow}
+
+% Math and units.
+\usepackage{amsmath}
+\usepackage{siunitx}
+
+% Formatting.
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{seqsplit}
+\usepackage{framed}
+
+\usepackage{tikz}
+
+% 支持在 figure 环境中写 table 标题（即 \captionof 命令）
+\usepackage{caption} 
+% 支持 valign=c 参数，实现图片垂直居中对齐（必须加 export 选项）
+\usepackage[export]{adjustbox}
+
+% Figure placement.
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.7}
+\usepackage{ragged2e}
+\usepackage[most]{tcolorbox}
+
+\usepackage{makecell}
+\usepackage{tabularray}
+
+\usepackage{longtable}
+% \usepackage{pythonhighlight}
+\usepackage{listings}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\fontsize{7}{8}\selectfont, %第一个参数 10 是字体大小（pt）第二个参数 12 是行距（baselineskip），通常比字体大小稍大，防止行间距太紧
+    keywordstyle=\color{blue!50!black},     % 稍深的蓝色
+    stringstyle=\color{green!50!black},     % 柔和的暗绿色
+    commentstyle=\color{gray!60!green}\itshape, % 带点绿色的灰色斜体
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    frame=single,
+    rulecolor=\color{gray!40},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+}
+% ---- colors (gentle, printer-friendly) ----
+\definecolor{CaseGreen}{HTML}{2E7D32} % deep green
+\definecolor{CaseOrange}{HTML}{F57C00} % orange bar
+\definecolor{CaseGray}{HTML}{F6F7F8}   % light gray bg
+\definecolor{CaseInk}{HTML}{212121}    % dark text
+\definecolor{CaseWhite}{HTML}{F5F5DC}
+\definecolor{DeepBlue}{HTML}{003366} % 深蓝
+\definecolor{LightBlue}{HTML}{99CCFF} % 浅蓝
+\definecolor{DeepPurple}{HTML}{673AB7} % 深紫色
+\definecolor{MiddlePurple}{HTML}{9C7FD0}
+\definecolor{LightPurple}{HTML}{D1C4E9} % 浅紫色
+\definecolor{HotPink}{HTML}{FF69B4} % 鲜粉色
+\definecolor{SoftPink}{HTML}{F8BBD0} % 浅粉色
+\definecolor{Crimson}{HTML}{DC143C} % 深红偏紫
+\definecolor{Teal}{HTML}{008080} % 水鸭青
+\definecolor{Cyan}{HTML}{00BCD4} % 青色
+\definecolor{SoftGray}{HTML}{EEEEEE}       % 柔和浅灰
+\definecolor{LighterGray}{HTML}{FAFAFA} % 超浅灰
+
+% ---- orange step header ----
+\newcommand{\stepheader}[1]{%
+  \begin{tcolorbox}[enhanced, colback=CaseOrange!15, colframe=CaseOrange,
+    left=1mm,right=1mm,top=0.6mm,bottom=0.6mm,boxrule=0.5pt]
+    \bfseries #1
+  \end{tcolorbox}
+}
+
+% ---- stage content box ----
+\newtcolorbox{stagebox}[1]{
+  breakable, enhanced,
+  colback=CaseGray, colframe=DeepBlue, coltitle=CaseWhite,
+  title=\bfseries #1, fonttitle=\bfseries,
+  left=1.2mm,right=1.2mm,top=1.2mm,bottom=1.2mm, boxrule=0.6pt
+}
+
+% ---- monospace verbatim box (no shell-escape needed) ----
+\newtcblisting{verbatimbox}{
+  listing only, breakable, enhanced,
+  colback=white, colframe=LightBlue, boxrule=0.5pt,
+  left=1.2mm,right=1.2mm,top=1.2mm,bottom=1.2mm
+}
+
+
+\newcommand{\gold}{\raisebox{-0.5pt}{\includegraphics[height=5pt]{imgs/icons/no_1.pdf}}}
+\newcommand{\silver}{\raisebox{-0.5pt}{\includegraphics[height=5pt]{imgs/icons/no_2.pdf}}}
+\newcommand{\copper}{\raisebox{-0.5pt}{\includegraphics[height=5pt]{imgs/icons/no_3.pdf}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\usepackage[symbol]{footmisc}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}} 
+\newcommand{\maybe}{\textcolor{orange}{\textbf{?}}}
+\newcommand{\bad}[1]{\textcolor{red!70!black}{#1}}
+\newcommand{\good}[1]{\textcolor{teal!70!black}{#1}}
+\newcommand{\miss}[1]{\textcolor{red!70!black}{\emph{[missing: #1]}}}
+
+\newcommand{\Match}[1]{\textcolor{blue!70!black}{\textbf{#1}}}  
+\newcommand{\PMatch}[1]{\textcolor{orange!85!black}{#1}} 
+\newcommand{\BestPerf}[1]{\textbf{#1}}
+\newcommand{\SecBestPerf}[1]{\underline{#1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex} % Add some space between paragraphs
+
+% References.
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue, % Changed for better visibility of links
+    citecolor=blue,  % Changed for better visibility of citations
+    filecolor=black,
+    urlcolor=blue    % Changed for better visibility of URLs
+}
+
+% Table of contents.
+\usepackage{tocloft}
+% Remove dots from the table of contents.
+\renewcommand{\cftdotsep}{\cftnodots}
+% This will preserve clickable links in the TOC
+\usepackage{etoolbox}
+\usepackage{arydshln}
+\makeatletter
+\patchcmd{\@tocline}
+    {\hfil}
+    {\leaders\hbox{\hfil}\hfil}
+    {}{}
+\makeatother
+
+\input{sections/0-abstract}
+
+\begin{document}
+
+\sloppy % Added to relax line-breaking rules globally
+\maketitle
+
+
+% \begin{refsection} % Main paper reference section.
+% \section*{Highlights}
+
+\begin{center}
+    \centering
+    \captionsetup{type=figure}
+    \includegraphics[width=0.95\linewidth]{imgs/teaser.pdf}
+    \captionof{figure}{\textbf{Scientific General Intelligence (SGI)} We define SGI as an AI that can autonomously navigate the complete, iterative cycle of scientific inquiry with the versatility and proficiency of a human scientist. The teaser illustrates the Practical Inquiry Model’s four quadrants—Deliberation (synthesis and critical evaluation of knowledge), Conception (idea generation), Action (experimental execution), and Perception (interpretation)—and how SGI-Bench operationalizes them through four task categories and an agent-based evaluation paradigm, together providing a principle-grounded, measurable framework for assessing scientific intelligence.}
+    \label{fig:teaser}
+\end{center}%
+
+\clearpage
+
+\tableofcontents
+\enlargethispage{1cm} 
+\thispagestyle{fancy} % 原本的empty
+
+\clearpage
+
+\input{sections/1-introduction}
+\input{sections/2-benchmark}
+\input{sections/3-framework}
+\input{sections/4-evaluation}
+\input{sections/5-discussion}
+\input{sections/6-related_work}
+\input{sections/7-conclusion}
+
+
+% \begingroup
+% \sloppy 
+% \printbibliography[heading=bibintoc]
+% \endgroup
+% \end{refsection} % Main paper reference section.
+
+% \clearpage
+
+
+\begingroup
+\sloppy
+\clearpage
+\printbibliography[heading=bibintoc]
+\endgroup
+
+\clearpage
+\input{sections/X-appendix}
+
+\end{document}

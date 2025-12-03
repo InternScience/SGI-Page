@@ -1,0 +1,138 @@
+\section{SGIEvalAgent: Agentic Evaluation Framework}
+
+Given the inherent complexity of scientific discovery, evaluating the performance of LLMs and agents in this domain presents formidable challenges. 
+Rather than merely employing LLMs as evaluators, we develope a comprehensive, agent-based evaluation framework augmented with diverse capabilities (\textit{e.g.}, web search, Python interpreter, file reader, PDF parser, metric-specific Python functions~\cite{SmolAgents_2025}) to ensure rigorous, accurate, and scalable evaluations. 
+As illustrated in Figure~\ref{fig:evaluation-framework}, this framework is structured into four interconnected stages: Question Selection, Metric Customization, Predict \& Eval, and Report Generation, each orchestrated by specialized agents to address distinct facets of the evaluation workflow.
+
+\begin{figure}[t]
+% \vspace{-0.5em}
+\centerline
+{\includegraphics[width=16cm]{paper/imgs/evaluation-framework.png}}
+\caption{\textbf{Evaluation Framework.}}
+\label{fig:evaluation-framework}
+% \vspace{-2em}
+\end{figure}
+
+\subsection{Question Selection}
+
+The Question Selection stage is managed by a dedicated \emph{questioning agent}, which interprets user queries to retrieve relevant questions from the SGI-Bench question bank. 
+The agent filters questions according to multiple criteria, including disciplinary domain, task category, and evaluation intent specified in the input query. 
+In scenarios where no user query is provided, the agent defaults to systematically selecting all questions from the SGI-Bench, thereby ensuring comprehensive coverage across all scientific tasks. 
+This stage effectively defines the evaluation scope by specifying the precise set of problems that subsequent stages will assess.
+
+
+\begin{tcolorbox}[
+    breakable,
+    title=Question Agent Definition,
+    colback=LighterGray,
+    colframe=DeepPurple,
+    colbacktitle=DeepPurple,
+    coltitle=White
+]
+\textbf{\emph{\textcolor{DeepPurple}{Agent Input}}}
+\begin{itemize}
+    \item \texttt{\textbf{User Query (Q)}}: Any content input by users for obtaining relevant information, which can be in various forms such as text, keywords, or questions.
+    \item \texttt{\textbf{SGI-Bench Data (D)}}: All constructed datasets in SGI-Bench, each of which is associated with a specific discipline and corresponding research area.
+    \item \texttt{\textbf{K-value (K)}}: A positive integer indicating the number of most relevant items to select from the SGI-Bench Data based on the User Query.
+\end{itemize}
+
+\textbf{\emph{\textcolor{DeepPurple}{Agent Output}}}
+\begin{itemize}
+    \item \texttt{\textbf{Selected Indices (SI)}}: The selected indices for locating and retrieving the target data.
+\end{itemize}
+
+\end{tcolorbox}
+
+\subsection{Metric Customization}
+In the metric customization stage, a metric customization agent first dynamically generates novel evaluation metrics based on user queries and selected questions.
+The agent parses the evaluation intent from user input to formalize customized metric instructions with advanced tools like web search and PDF parser, enabling flexible prioritization of metrics or integration of novel evaluation dimensions.
+Then, the customized metrics will be aggregated with predefined scientist-aligned metrics given different question types, as described in Section~\ref{sec:Metrics}, to form the final metrics for evaluation.
+By synergizing pre-defined and user-customized metrics, this stage ensures the framework aligns with both standardized benchmarks and domain-specific demands.
+
+
+\begin{tcolorbox}[
+    breakable,
+    title=Customization Agent Definition,
+    colback=LighterGray,
+    colframe=DeepPurple,
+    colbacktitle=DeepPurple,
+    coltitle=White
+]
+\textbf{\emph{\textcolor{DeepPurple}{Agent Input}}}
+\begin{itemize}
+    \item \texttt{\textbf{User Query (UQ)}}: Any content input by users for obtaining relevant information, which can be in various forms such as text, keywords, or questions.
+    \item \texttt{\textbf{SGI-Bench Data (D)}}: All constructed datasets in SGI-Bench, each of which is associated with a specific discipline and corresponding research area.
+    \item \texttt{\textbf{Selected Indices (SI)}}: The selected indices for locating and retrieving the target data.
+    \item \texttt{\textbf{Tool Pool(T)}}: A set of pre-configured tools for agents to call, including web search, PDF parser, Python Interpreter, etc.
+    \item \texttt{\textbf{Metric Pool(M)}}: A set of pre-defined task-specific metrics presented in Section~\ref{sec:Metrics}. 
+\end{itemize}
+
+\textbf{\emph{\textcolor{DeepPurple}{Agent Output}}}
+\begin{itemize}
+    \item \texttt{\textbf{Metrics for Evaluation (ME)}}: Generated novel metrics based on the user query.
+\end{itemize}
+
+\end{tcolorbox}
+
+\subsection{Inference and Evaluation}
+The predict \& eval stage leverages a tool pool that includes utilities like web search, PDF parser, and Python interpreter to first execute inference for target LLMs or agents on the questions selected in the first stage. 
+Subsequently, a dedicated Science Eval Agent (SGI-Bench Agent) applies the metrics finalized in the second stage to score the inference results. 
+For each score, the agent generates a rationale grounded in reference answers, question context, and supplementary information retrieved via tools if necessary, thereby ensuring transparency and reproducibility. 
+By integrating tool-augmented inference with systematic, metric-driven scoring, this stage effectively addresses the multi-dimensional and complex nature of scientific reasoning assessment.
+
+
+
+
+\begin{tcolorbox}[
+    breakable,
+    title=Evaluation Agent Definition,
+    colback=LighterGray,
+    colframe=DeepPurple,
+    colbacktitle=DeepPurple,
+    coltitle=White
+]
+\textbf{\emph{\textcolor{DeepPurple}{Agent Input}}}
+\begin{itemize}
+    \item \texttt{\textbf{SGI-Bench Data (D)}}: All constructed datasets in SGI-Bench, each of which is associated with a specific discipline and corresponding research area.
+    \item \texttt{\textbf{Selected Indices (SI)}}: The selected indices for locating and retrieving the target data.
+    \item \texttt{\textbf{Responses (R)}}: Generated responses by the evaluation target in the Testbed.
+    \item \texttt{\textbf{Tool Pool(T)}}: A set of pre-configured tools for agents to call, including web search, PDF parser, Python Interpreter, etc.
+    \item \texttt{\textbf{Metrics for Evaluation (ME)}}: Generated novel metrics based on the user query.
+\end{itemize}
+
+\textbf{\emph{\textcolor{DeepPurple}{Agent Output}}}
+\begin{itemize}
+    \item \texttt{\textbf{Score (S)}}: A single integer score from 0–10, where 10 means the response is fully correct compared to the answer. Higher scores indicate the Prediction is better, and lower scores indicate it is worse.  
+    \item \texttt{\textbf{Rationale (RN)}}: A brief explanation of why the response is correct or incorrect with respect to accuracy, completeness, clarity, and supporting evidence.
+\end{itemize}
+
+\end{tcolorbox}
+
+\subsection{Report Generation}
+
+The report generation stage is orchestrated by a dedicated reporting agent, which aggregates the user evaluation intents, finalized metric specifications, and the results produced during the Predict \& Eval stage. 
+The agent then compiles a comprehensive report that both visualizes and quantifies the performance of different LLMs and agents across the selected questions and metrics. 
+Beyond summarizing raw results, the report contextualizes the findings within the broader landscape of scientific discovery capabilities, thereby enabling users to extract actionable insights and make informed decisions efficiently.
+
+
+\begin{tcolorbox}[
+    breakable,
+    title=Reporting Agent Definition,
+    colback=LighterGray,
+    colframe=DeepPurple,
+    colbacktitle=DeepPurple,
+    coltitle=White
+]
+\textbf{\emph{\textcolor{DeepPurple}{Agent Input}}}
+\begin{itemize}
+    \item \texttt{\textbf{Score List(SL)}}: A list of integers score from 0–10, where 10 means the response is fully correct compared to the answer. Higher scores indicate the Prediction is better, and lower scores indicate it is worse.  
+    \item \texttt{\textbf{Rationale List(RNL)}}: A list of explanations of why the response is correct or incorrect with respect to accuracy, completeness, clarity, and supporting evidence.
+    \item \texttt{\textbf{User-customized Metric (UM)}}: Generated novel metrics based on the user query. 
+\end{itemize}
+
+\textbf{\emph{\textcolor{DeepPurple}{Agent Output}}}
+\begin{itemize}
+    \item \texttt{\textbf{Report (R)}}: A comprehensive final evaluation report that demonstrates the scientific discovery capabilities of different LLMs and agents.
+\end{itemize}
+
+\end{tcolorbox}

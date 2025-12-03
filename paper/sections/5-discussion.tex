@@ -1,0 +1,244 @@
+\section{Analysis}
+
+
+\subsection{Test Time Reinforcement Learning}
+
+Large Language Models (LLMs) have demonstrated remarkable capabilities in reasoning and problem-solving, primarily driven by supervised fine-tuning and reinforcement learning on extensive labeled datasets. However, applying these models to the frontier of scientific discovery, particularly in the task of scientific idea generation, presents a fundamental challenge: the inherent absence of ground truth. Unlike closed-domain tasks such as mathematical reasoning or code generation, where solutions can be verified against a correct answer, the generation of novel research ideas is an open-ended problem with no pre-existing ``gold standard'' labels. This limitation renders traditional offline training pipelines insufficient for adapting to dynamic and unexplored scientific territories. 
+
+Consequently, the critical research question becomes: \textit{How can we enhance a model's capability during the inference phase in the absence of ground-truth supervision?} To address this, we adopt the paradigm of \textbf{Test-Time Reinforcement Learning (TTRL)}~\cite{zuo2025ttrl}. This framework enables models to self-evolve on unlabeled test data by optimizing policies against rule-based rewards derived from the model's own outputs or environmental feedback. Distinct from the original implementation~\cite{zuo2025ttrl}, which primarily leveraged consensus-based consistency as a reward mechanism for logical reasoning tasks, we establish \textbf{novelty} as our core optimization objective in the current context. Consequently, we introduce a TTRL framework where the reward signal is constructed based on the dissimilarity between generated ideas and retrieved related works, guiding the model to actively explore the solution space and maximize innovation at test time.
+
+\subsubsection{Methodology}
+
+To address the absence of ground truth in scientific idea generation, we propose a generalizable reward mechanism based on \textbf{online retrieval}. Instead of relying on static labels, we utilize real-time search to fetch existing related works, serving as a dynamic baseline for comparison. This approach enables us to quantify novelty as the semantic dissimilarity between the model's output and the retrieved context, effectively converting an open-ended exploration problem into a measurable optimization task. The overall training framework is illustrated in Figure \ref{fig:train_process}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{paper/imgs/grpo_train_process.png}
+    \caption{\textbf{TTRL Training Framework}: The model generates candidate ideas evaluated against online retrieved related works to calculate novelty rewards, guiding GRPO updates.}
+    \label{fig:train_process}
+\end{figure}
+
+We employ Group Relative Policy Optimization (GRPO) as our training backbone. For a given query $Q$, the policy model $\pi_\theta$ generates a group of $k$ outputs $\{o_1, \dots, o_k\}$. The optimization is guided by a composite reward function, defined as the unweighted sum of a format constraint and a novelty metric (labeled as \textbf{Idea Dissimilarity} in Figure \ref{fig:train_process}):
+\begin{equation}
+    R(o) = R_{\text{format}}(o) + R_{\text{novelty}}(o, \mathcal{W})
+\end{equation}
+where $\mathcal{W} = \{w_1, \dots, w_n\}$ denotes the set of related works obtained via online search.
+
+\paragraph{Format Reward ($R_{\text{format}}$).} 
+To guarantee interpretable reasoning, we enforce a strict XML structure. The model must encapsulate its chain of thought within \texttt{<think>...</think>} and the final proposal within \texttt{<answer>...</answer>}. The format reward is binary:
+\begin{equation}
+    R_{\text{format}}(o) = \mathbb{I}\left(o \text{ follows the specified XML structure}\right)
+\end{equation}
+
+\paragraph{Novelty Reward ($R_{\text{novelty}}$).} 
+We quantify novelty by measuring the vector space dissimilarity between the generated idea and the retrieved literature. Let $\mathbf{e}_{\text{idea}}$ be the embedding of the generated answer, and $\{\mathbf{e}_{w_j}\}_{j=1}^n$ be the embeddings of $n$ retrieved papers (denoted as $w_1, \dots, w_n$ in the figure). We compute the average cosine similarity $S_{\text{avg}}$:
+\begin{equation}
+    S_{\text{avg}} = \frac{1}{n} \sum_{j=1}^n \frac{\mathbf{e}_{\text{idea}} \cdot \mathbf{e}_{w_j}}{\|\mathbf{e}_{\text{idea}}\| \|\mathbf{e}_{w_j}\|}
+\end{equation}
+An innovation score $S_{\text{inn}} \in [0, 10]$ is then derived to reward divergence:
+\begin{equation}
+    S_{\text{inn}} = \text{clip}\left( (1 - S_{\text{avg}}) \times 10, \ 0, \ 10 \right)
+\end{equation}
+Using a gating threshold $\tau=5$, the final novelty reward is defined as:
+\begin{equation}
+    R_{\text{novelty}}(o, \mathcal{W}) = \mathbb{I}(S_{\text{inn}} > \tau)
+\end{equation}
+This mechanism incentivizes the model to produce ideas that are semantically distinct from existing work.
+
+\subsubsection{Experimental Setup}
+
+We employ Qwen3-8B as the base model, trained using the GRPO algorithm within the ms-swift~\cite{zhao2025swiftascalablelightweightinfrastructure} framework. To facilitate diverse exploration, we utilize a high sampling temperature. Key hyperparameters are detailed in Table \ref{tab:hyperparameters}.
+
+% --- Mixed Row: Table (Hyperparameters) + Figure (Reward Curves) ---
+\begin{figure}[htbp]
+    \centering
+    % Left Container: Table
+    % Changed alignment to [c] for vertical centering
+    \begin{minipage}[c]{0.40\textwidth} 
+        \centering
+        \captionof{table}{\textbf{TTRL Hyperparameters}: Key training configuration for GRPO-based test-time reinforcement learning.}
+        \label{tab:hyperparameters}
+        % Adjusted resizebox to 0.9\linewidth to prevent text from being too large
+        \resizebox{0.9\linewidth}{!}{
+            \begin{tabular}{lc}
+                \toprule
+                \textbf{Hyperparameter} & \textbf{Value} \\
+                \midrule
+                Base Model & Qwen3-8B \\
+                RL Algorithm & GRPO \\
+                Precision & bfloat16 \\
+                Learning Rate & $5 \times 10^{-7}$ \\
+                Max Length & 2048 \\
+                Generations ($G$) & 8 \\
+                Temperature & 1.0 \\
+                Batch Size & 4 \\
+                Related Works ($n$) & 4 \\
+                Weights & 1:1 \\
+                \bottomrule
+            \end{tabular}
+        }
+    \end{minipage}
+    \hfill
+    % Right Container: Image
+    % Changed alignment to [c] for vertical centering
+    \begin{minipage}[c]{0.55\textwidth} 
+        \centering
+        % Added valign=c to align image center with text center (requires adjustbox package)
+        \includegraphics[width=0.95\linewidth, valign=c]{paper/imgs/grpo_reward_curves.png}
+        \caption{\textbf{TTRL Training Dynamics}: Format reward saturates quickly, followed by steady growth in idea novelty.}
+        \label{fig:reward_curves}
+    \end{minipage}
+\end{figure}
+% -------------------------------------------------------------------
+
+\subsubsection{Experimental Results}
+
+The training dynamics of our TTRL framework are illustrated in Figure \ref{fig:reward_curves}. The curves demonstrate a clear two-phase optimization process. Initially, the \textbf{Format Reward} (orange line) rises rapidly and saturates near 1.0 within the first few steps, indicating that the model quickly adapts to the rigid XML structural constraints (\texttt{<think>} and \texttt{<answer>} tags). Once the format is stabilized, the \textbf{Idea Reward} also starts to rise (green line). Despite the inherent difficulty of the task, the Idea Reward exhibits a consistent upward trend throughout the training steps, driving the total reward (blue line) to converge at a higher value.
+
+Quantitatively, this self-evolution process yields a significant improvement in the quality of generated ideas. The average novelty score of the model's outputs increased from a baseline of \textbf{49.36} to \textbf{62.06}. It is important to emphasize that this performance gain was achieved \textit{entirely without ground-truth labels}. The model improved solely by leveraging the online retrieval feedback loop, validating the hypothesis that LLMs can self-improve on open-ended scientific discovery tasks through test-time reinforcement learning.
+
+\subsubsection{Qualitative Analysis: Case Study}
+
+To visually demonstrate the impact of TTRL on scientific idea generation, we present a comparative case study in Figure \ref{fig:case_study}. The task requires the model to propose a novel framework for RNA 3D structure prediction.
+
+% --- Figure 3: Case Study (Standalone) ---
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{paper/imgs/grpo_case_study.png}
+    \caption{\textbf{TTRL Case Study}: Comparison of generated research ideas before and after TTRL, highlighting structural innovation (dual-branch transformer, differentiable physics engine) versus generic pre-training assembly.}
+    \label{fig:case_study}
+\end{figure}
+% -----------------------------------------
+
+Comparing the responses before and after training reveals a noticeable improvement in both specificity and novelty. 
+The \textbf{Pre-Training Response} suggests a standard combination of existing components, essentially assembling "contact map prediction" with "Rosetta energy functions." While logical, it represents a conventional approach without distinct architectural details.
+
+In contrast, the \textbf{Post-Training Response} introduces more structurally specific and technically distinct concepts. It explicitly proposes a \textbf{"dual-branch transformer"} and replaces static energy functions with a \textbf{"differentiable physics engine."} Additionally, it incorporates a \textbf{"confidence-aware uncertainty module"} to address the reliability challenge. This shift indicates that the model has moved beyond generic component assembly toward generating more detailed and differentiated technical proposals.
+
+\paragraph{Summary.}
+In conclusion, our experiments demonstrate that Test-Time Reinforcement Learning (TTRL), driven by retrieval-based novelty rewards, effectively enhances model capabilities in the absence of ground-truth supervision. The observed improvements in both quantitative novelty metrics and qualitative technical specificity indicate that the model can successfully self-evolve beyond conventional patterns. These findings suggest that TTRL is a promising paradigm for adapting Large Language Models to the open-ended and unexplored frontiers of real-world scientific discovery.
+
+\subsection{Agent Tool Integrated Reasoning}
+
+\subsubsection{Agentic Workflow Analysis}
+Tool-Integrated Reasoning (TIR) in real tasks unfolds as a dynamic, opportunistic process rather than a fixed linear chain\cite{paranjape2023artautomaticmultistepreasoning}. As shown in \autoref{fig:agent_tool_compare} (left), the model-to-tool flow concentrates heavily on retrieval actions: \texttt{web\_search} is the most frequently invoked tool with 539 calls (33.98\% of all), followed by \texttt{visit\_webpage} (385, 24.27\%), \texttt{final\_answer} (358, 22.57\%), python\_interpreter (200, 12.61\%), and \texttt{wikipedia\_search} (104, 6.56\%). This distribution indicates that an external “retrieve-then-browse” loop remains the dominant path for contemporary agentic systems, reflecting persistent limits in time-sensitive and domain-specific knowledge available to base LLMs. Importantly, models differ in how efficiently they traverse this loop: for example, GPT-4.1 issues large volumes of \texttt{web\_search} (168) and \texttt{visit\_webpage} (110) that frequently land in slow tiers, whereas Qwen3-Max completes comparable coverage with far fewer retrieval and browsing steps (61 and 59, respectively). Practically, this pattern implies that reducing redundant retrieval iterations—via better query formulation and higher-quality extraction on the first pass—has immediate leverage on end-to-end latency, often exceeding gains from marginal improvements to raw model inference.
+
+\subsubsection{Tool-Specific Efficiency Benchmarks}
+Latency variation is predominantly tool-dependent, as visualized in \autoref{fig:agent_tool_compare} (right). The primary bottleneck is \texttt{visit\_webpage}, whose cross-model latency spans from 5.37s (Llama-4-Scout) to 114.29s (GPT-4.1), a 21.28× spread. This reflects the intrinsic cost of browser-level execution—network I/O, DOM parsing, and event replay—rather than LLM reasoning alone. In contrast, more atomic operations such as \texttt{wikipedia\_search} still exhibit a substantial 7.59× spread (3.69–28.03s), underscoring that I/O pathways and parsing routines meaningfully shape end-to-end time even for ostensibly simple tools. These observations suggest a design priority: engineering optimizations in the retrieval-and-rendering pipeline (e.g., smarter caching, incremental rendering, selective content extraction) will reduce both long-tail latencies and overall wall-clock time more reliably than tuning model-only parameters.
+
+\subsubsection{Model-Dependent Reasoning Cost}
+The \texttt{python\_interpreter} tool exhibits a 9.65× cross-model range (5.48–52.94s), indicating that measurements capture the full “reason–execute–debug–repair” loop rather than a single code run. The slowest average arises for DeepSeek-R1 (52.94s), consistent with more frequent multi-step error analysis and correction; the fastest is GPT-4o (5.48s), reflecting a low-latency, near single-shot execution path. This divergence reveals a strategic trade-off: systems optimized for first-attempt correctness minimize tool time but may forgo deeper self-correction, whereas systems favoring iterative refinement accrue longer tool-side latency while potentially achieving more robust final solutions. In practice, aligning tool routing, retry policy, and verification depth with a model’s characteristic behavior can reduce wasted cycles and sharpen the latency–quality frontier.
+
+\begin{figure}[ht]
+% \vspace{-0.5em}
+\centerline
+{\includegraphics[width=16cm]{paper/imgs/multi-model-compare-1.png}}
+\caption{\textbf{Agent Tool Calls}: Frequency (left) and efficiency (right) across leading models.}
+\label{fig:agent_tool_compare}
+% \vspace{-2em}
+\end{figure}
+
+
+
+
+\subsection{SGIEvalAgent}
+
+\begin{figure}[ht]
+% \vspace{-0.5em}
+\centerline
+{\includegraphics[width=16cm]{paper/imgs/idea_custom_metric_report.png}}
+\caption{\textbf{SGIEvalAgent Case}: Model Users describe their evaluation needs, SGIEvalAgent customizes the evaluation plan and metrics based on these needs, and finally provides an evaluation report..}
+\label{fig: idea_custom_metric}
+% \vspace{-2em}
+\end{figure}
+
+
+\subsubsection{User-customized Metric}
+SGIEvalAgent interprets the user’s evaluation intent and turns it into a rubric that can be applied consistently across the selected idea-generation questions. In the case shown in Figure~\ref{fig: idea_custom_metric}, the user asks to compare models on “rigor” in cross-disciplinary idea generation. The system formalizes Rigor (scientific strictness) for idea proposals so that it reflects how scientists judge whether a plan is internally coherent, well grounded, and practically verifiable.
+
+The rubric expresses six aspects in prose rather than checklists. First, it checks logical self-consistency and completeness of the pipeline from problem to hypothesis, method, metrics, and expected results. Second, it requires theory and literature grounding that either correctly inherits prior work or responsibly challenges it with evidence. Third, it demands precise and verifiable problem definitions that state goals, constraints, evaluation metrics, and success conditions. Fourth, it looks for deep fit with the research background and correct, discipline-aligned terminology. Fifth, it evaluates methodological soundness and reproducibility through executable steps, a clear I/O loop, and explicit rationale for key design choices. Sixth, it considers risk awareness and scientific criticism by articulating assumptions, potential failure modes, bias sources, and avoiding over-confident conclusions. Major deductions apply when the reasoning chain is missing, key assumptions are unstated, terminology is misused, metrics are vague or non-verifiable, or inheritance from background knowledge is misaligned.
+
+Scores are produced on a 0–10 scale for each aspect and aggregated with default equal weights into a single rigor score; the result is linearly mapped to a 0–100 axis for visualization without changing rank order. The evaluation agent generates textual rationales that cite reference answers and problem context so that decisions are transparent and reproducible. Customized metrics are reported alongside SGI-Bench’s predefined task metrics rather than replacing them, preserving standardized comparability while highlighting the user’s domain-specific focus.
+
+
+
+\subsubsection{Automated Evaluation Report}
+The reporting agent summarizes the customized metric and the evaluation outputs into a concise narrative with figures. In Figure~\ref{fig: idea_custom_metric}, the report contrasts open-source and closed-source systems on the user-defined rigor metric for idea generation and highlights what the scores mean in practice.
+
+The core takeaway is straightforward: closed-source models generally exhibit higher rigor under this rubric, intra-family iterations capture measurable gains, and leading open-source models show notable progress that narrows the gap. Higher rigor reflects more structured, well-grounded, and verifiable research plans rather than merely fluent narratives. The report therefore gives users a clear, scientist-aligned comparison they can directly use for model selection and iteration in research workflows.
+
+
+
+
+
+\section{Challenges and Future Directions}
+Grounded in our operational definition of SGI and instantiated through SGI-Bench, the evaluation results reveal a consistent message: contemporary LLMs and agentic systems exhibit \emph{localized scientific cognition and segmented scientific reasoning}
+They may solve isolated sub-problems, but fail to robustly close the iterative loop spanning \textit{Deliberation, Conception, Action, and Perception}. Below we summarize the main limitations across tasks and disciplines, connect them with our TTRL and tool-integrated reasoning analyses, and outline concrete future directions.
+% \emph{fragmented scientific cognition}. 
+
+\subsection{Fragmentation Across the Four Quadrants of SGI}
+
+\paragraph{Deliberation: Scientific Deep Research remains brittle end-to-end.}
+Scientific Deep Research operationalizes the literature-review/meta-analysis stage and is evaluated by Exact Match (EM) and Step-Level Accuracy (SLA). Across both standalone LLMs and tool-augmented agents, EM is consistently low: most systems achieve only $\sim$10\% accuracy, and even the best models rarely exceed 20\% EM (Figure~\ref{fig: llms deep research}, Figure~\ref{fig: agents deep research}). This indicates that current models still fail to produce \emph{verifiable final scientific claims} under multi-source evidence integration.
+
+A notable gap exists between SLA and EM. SLA is substantially higher for nearly all systems, with several agentic systems reaching $\approx$50\% SLA (Figure~\ref{fig: agents deep research}), while EM remains low. This disparity shows that models often produce \emph{locally correct steps} but cannot maintain global coherence across long reasoning chains. The failure mode is therefore not mere knowledge absence, but \emph{reasoning trajectory collapse} under long-horizon scientific inference.
+
+At a finer granularity, Deep Research tasks involving \textbf{Data} and \textbf{Properties} are the weakest: performance on these categories is substantially below that of \textbf{Micro-} and \textbf{Macro-experiment} questions, with \emph{all four categories rarely exceeding 30\%} accuracy (Figure~\ref{fig: deep research on different task}). This aligns with the task design: data/property questions require retrieving dispersed numerical details across heterogeneous papers, while experiment-oriented questions provide more structured evidence. The results thus expose a core SGI bottleneck: \emph{meta-analytic retrieval + numerical aggregation over scattered literature}.
+
+\paragraph{Conception: Ideas lack implementability.}
+Idea Generation in SGI-Bench is assessed using \textbf{Effectiveness}, \textbf{Detailedness}, and \textbf{Feasibility} (Table~\ref{tab:idea_gen_res}). \textbf{Feasibility is low across models}: many systems score in the 14–20 range, and the best result reaches 22.90 (\texttt{o3}), indicating that feasibility consistently lags behind novelty and detailedness. \textbf{Detailedness remains insufficient for several models}, with implementation steps frequently missing concrete parameters, resource assumptions, or step ordering; \textbf{Effectiveness is moderate for most systems}, with the highest result of 40.92 (GPT-5) and open-source models clustering around 24.95–28.50 (e.g., DeepSeek-V3.2, Llama-4-Scout).
+
+Recurring issues include: (i) underspecified implementation steps—absent data acquisition or preprocessing plans, missing hyperparameters or compute assumptions, vague module choices (e.g., solver type, training objective, evaluation protocol), and unclear interfaces, ordering, or data flow; and (ii) infeasible procedures—reliance on unavailable instruments or data, uncoordinated pipelines that cannot be executed, and designs lacking reproducibility.
+
+In SGI terms, current systems exhibit \emph{fluent linguistic ideation without sufficient methodological execution grounding}: they articulate concepts clearly but struggle to translate them into \emph{concrete, parameterized, and testable} workflows. The \textbf{feasibility gap} observed in Table~\ref{tab:idea_gen_res} is therefore a persistent bottleneck in realization, including within the Conception quadrant, where ideation quality does not reliably imply executable planning competence.
+
+
+
+\paragraph{Action: Experimental execution is limited by numerical and procedural rigor.}
+For \textbf{Dry Experiments}, accuracy is measured by PassAll@k. Even under the most lenient setting, the best PassAll@1 is only \textbf{42.07\%} (Claude-Sonnet-4.5), and under the strictest criterion, the best PassAll@5 rises to merely \textbf{36.64\%} (Gemini-3-Pro) (Table~\ref{tab:code metrics}). The spread between PassAll@1 and PassAll@5 (e.g., 42.07$\to$35.79 for Claude-Sonnet-4.5, 41.98$\to$36.64 for Gemini-3-Pro) indicates that models often nail partial logic but fail full scientific correctness.
+
+Importantly, code executability is not the bottleneck: most frontier models achieve \textbf{SER $>$ 90\%} (e.g., GPT-5.1 96.53, Gemini-3-Pro 98.85), while accuracy remains low. This gap confirms a central limitation: \emph{syntactic fluency $\neq$ scientific computational reasoning}. The per-function analysis further shows numerical-calculation and simulation functions as the major failure mode (Figure~\ref{fig: dry_task_metric}), consistent with the case study (Figure~\ref{fig: code_case2}) where naive integration choices lead to cascading scientific errors.
+
+For \textbf{Wet Experiments}, although Parameter Accuracy improves slightly under permutation-equivalence evaluation, \textbf{Sequence Similarity remains uniformly low} across both open and closed models (Figure~\ref{fig: wet_metrics}). Models frequently insert redundant steps, omit critical actions, or misorder multi-branch protocols. The complex oncology workflow case (Figure~\ref{fig: wet_case2}) illustrates that models cannot reliably manage temporal design, branching logic, or multi-sample coordination. Thus, wet-lab action planning remains a profound gap toward embodied SGI.
+
+\paragraph{Perception: Multimodal reasoning is improving, but comparison is a hard frontier.}
+In Scientific Experimental Reasoning, closed-source models consistently outperform open-source ones (Figure~\ref{fig: mm_results}). Across nearly all models, \textbf{Reasoning Validity (RV) exceeds Multi-choice Accuracy (MCA)}, showing that models can often produce partially coherent narratives even when selecting the wrong option. This echoes the SLA--EM gap in Deep Research and suggests a general pattern: models are better at producing plausible \emph{local reasoning} than globally correct scientific decisions.
+
+Reasoning-type breakdown reveals that models perform relatively well on \textbf{Signal Perception} and \textbf{Causal Reasoning}, but \textbf{Comparative Reasoning is persistently weakest} (Figure~\ref{fig: mm_tasks_subjects}). Scientific comparison requires subtle cross-sample discrimination and quantitative contrast---a cognitive operation central to scientist judgment but not yet robustly captured by current MLLMs. Discipline-wise, astronomy and chemistry are easier, while materials science, life science, and Earth science remain hardest (Figure~\ref{fig: mm_tasks_subjects}), reflecting the mismatch between real scientific visual heterogeneity and training priors.
+
+
+\subsection{Implications from Test-Time RL and Tool-Integrated Reasoning}
+\paragraph{SGI as a dynamic, learnable capacity.}
+Our TTRL experiments demonstrate that open-ended scientific ideation can improve \emph{without labeled supervision}. With retrieval-based novelty rewards, Qwen3-8B increases its novelty score from \textbf{49.36} to \textbf{62.06} (Figure~\ref{fig:reward_curves}) and qualitatively progresses from generic component assembly to structured innovation (Figure~\ref{fig:case_study}). These results suggest that SGI should be interpreted not merely as a static benchmark score, but as a \emph{capability that can evolve through test-time learning}. Nevertheless, optimizing for novelty in isolation risks ungrounded or implausible ideas; combining novelty with rigor- or feasibility-based rewards is a crucial next step for reliable scientific ideation.
+
+\paragraph{The retrieval pipeline is the true bottleneck for agentic SGI.}
+Tool-Integrated Reasoning (TIR) analysis reveals that agent workflows are heavily dominated by retrieval operations: \texttt{web\_search} accounts for \textbf{539 calls (33.98\%)}, and \texttt{visit\_webpage} for \textbf{385 calls (24.27\%)} (Figure~\ref{fig:agent_tool_compare}). Latency is primarily tool-driven rather than model-driven; \texttt{visit\_webpage} exhibits a \textbf{5.37s--114.29s} range across models (a \textbf{21.28$\times$} spread). This indicates that many gains in SGI performance may stem from \emph{smarter tool routing, reduction of redundant retrievals, and higher-quality first-pass extraction}, rather than simply scaling base LLMs. Analysis of the Python tool further highlights a trade-off between first-shot correctness and iterative self-repair, with a \textbf{9.65$\times$} cross-model latency range, underscoring the need for \emph{model-aware verification and retry policies} in practical agentic workflows.
+
+
+\subsection{Future Directions Toward Scientific General Intelligence}
+
+Our findings point to several high-leverage research directions:
+
+\paragraph{(1) Meta-analytic reasoning with numerical robustness.}
+Deep Research failures on Data/Properties and low EM despite high SLA call for methods that explicitly train \emph{evidence aggregation and numerical synthesis}. Promising routes include retrieval-conditioned quantitative reasoning, uncertainty-calibrated aggregation over multiple sources, and verification-aware step planning that penalizes reasoning-chain drift.
+
+\paragraph{(2) Planning-aware conception and structured supervision.}
+To address uniformly low feasibility and sparse implementation detail in Idea Generation, adopt planning-aware constraints with structured supervision: require parameter-complete, dependency-consistent steps, prioritize feasibility-focused rewards (availability checks, resource/cost estimates, reproducibility), and use lightweight tool checks during decoding to block or repair incomplete plans. This shifts fluent proposals into executable, testable designs under realistic scientific constraints.
+
+\paragraph{(3) Scientific code training beyond syntax.}
+Dry experiments show high SER but low PassAll@5 (Table~\ref{tab:code metrics}), especially on numerical and simulation functions (Figure~\ref{fig: dry_task_metric}). Future work should emphasize numerical analysis priors, stability-aware loss, and algorithmic-choice training (e.g., recognizing when adaptive integration or stiffness solvers are required). Hybrid symbolic--numeric tool use (formal solvers + LLM reasoning) is another promising path.
+
+\paragraph{(4) Branch- and time-aware wet-lab protocol reasoning.}
+Uniformly low Sequence Similarity and qualitative failures on complex branching protocols (Figure~\ref{fig: wet_case2}) suggest a need for training signals that encode \emph{temporal sampling logic, branching decision rules, and multi-sample tracking}. Action-pool grounding can be extended with stateful simulators or lab-graph verifiers, enabling models to learn procedural validity under physical constraints.
+
+\paragraph{(5) Comparative multimodal scientific reasoning.}
+Comparative reasoning is the hardest paradigm (Figure~\ref{fig: mm_tasks_subjects}). Progress likely requires finer-grained visual grounding (e.g., numeric extraction from charts), cross-image alignment modules, and contrastive multimodal training that rewards precise discrimination rather than narrative plausibility. Discipline-specific multimodal curricula may reduce domain gaps in materials/Earth/life sciences.
+
+\paragraph{(6) Test-time learning with multi-objective scientific rewards.}
+TTRL improves novelty without labels, but novelty alone is insufficient for SGI. Future TTRL systems should optimize a \emph{portfolio} of scientist-aligned rewards (novelty, rigor, feasibility, safety, and experimental cost), and incorporate retrieval trustworthiness and contradiction penalties to prevent spurious innovation.
+
+\paragraph{(7) Efficient and reliable tool ecosystems for SGI agents.}
+Given retrieval dominance and tool latency (Figure~\ref{fig:agent_tool_compare}), engineering advances are essential: retrieval caching, selective browsing, structured extraction, and tool-aware planning policies can substantially improve SGI agents’ end-to-end quality--latency frontier. 
+
+\paragraph{Summary.}
+SGI-Bench reveals that modern LLMs exhibit partial competencies in each SGI quadrant but lack integrated, numerically robust, and methodologically disciplined scientific cognition. Bridging this gap requires progress on long-horizon meta-analysis, executable planning, numerically faithful experimentation, branch-aware wet-lab reasoning, comparative multimodal inference, and dynamic test-time self-improvement---all supported by efficient and trustworthy tool ecosystems. These directions collectively chart a concrete path from fragmented scientific skills toward genuine Scientific General Intelligence.

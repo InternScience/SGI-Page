@@ -1,0 +1,539 @@
+% [0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]% [0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]
+\begin{tcolorbox}[
+    breakable,
+    title=Example of Dry Experiment in Astronomy,
+    colback=LighterGray,
+    colframe=DeepPurple,
+    colbacktitle=DeepPurple,
+    coltitle=White,
+]
+\textbf{\emph{\textcolor{DeepPurple}{Background}}}
+
+
+The Zwicky Transient Facility (ZTF) is an advanced optical time-domain sky survey utilizing the Palomar 48-inch Schmidt telescope equipped with a custom wide-field CCD camera. This camera covers a 47.7 square degree field of view with 16 large-format CCDs, enabling a survey speed over an order of magnitude faster than its predecessor. The system achieves a median image quality of approximately 2.0 arcseconds full-width at half-maximum (FWHM) across g, r, and i bands, with typical 5-sigma limiting magnitudes near 20.8 (g), 20.6 (r), and 19.9 (i) in 30-second exposures, improving under dark-sky conditions.
+
+The optical design addresses the Schmidt telescopes curved focal surface through a combination of a modified Schmidt corrector, a meniscus dewar window, faceted cold plate mounting, and individual field flattener lenses above each CCD. The cameras cryostat and readout electronics are optimized for minimal beam obstruction and rapid 8.2-second readout with low noise (~10 electrons median). A robotic observing system and scheduler maximize volumetric survey speed by selecting fields on a fixed grid with minimal dithering, enabling efficient coverage of the Northern sky and Galactic plane.
+
+ZTFs data system performs near-real-time image processing, including bias subtraction, flat-fielding, astrometric and photometric calibration, and image differencing using the ZOGY algorithm to detect transient and variable sources. Alerts containing rich contextual information and machine-learning-based Real-Bogus scores are distributed via a scalable streaming system to community brokers. The system also supports solar system science by detecting both point-like and streaked moving objects, linking detections into orbits, and reporting to the Minor Planet Center.
+
+Early scientific results demonstrate ZTFs capability to discover and classify supernovae, including young Type II events, and to conduct rapid follow-up of multi-messenger triggers such as neutrinos and gamma-ray bursts. The facility also enables studies of variable stars, exemplified by light curves of Be stars and RR Lyrae, and solar system objects, including near-Earth asteroids, asteroid rotation periods, comet activity, and Centaur outbursts.
+
+ZTFs public surveys include a three-day cadence Northern Sky Survey and a nightly Galactic Plane Survey, with observations typically taken twice per night in g and r bands. The surveys moderate depth and high cadence complement future facilities by providing early discovery and characterization of bright transients accessible to moderate-aperture telescopes. ZTF serves as a pathfinder for next-generation surveys, offering a prototype alert stream and extensive time-domain data products to the astronomical community.
+
+\textbf{\emph{\textcolor{DeepPurple}{Data Code}}}
+
+\begin{lstlisting}
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Paper: The Zwicky Transient Facility: System Overview, Performance, and First Results
+Authors: Eric C. Bellm, Shrinivas R. Kulkarni, Matthew J. Graham, et al.
+Year: 2019
+
+This script generates synthetic asteroid light curve data based on the descriptions
+in Section 6.4.2 of the paper.
+
+Python Version: 3.10.12
+"""
+
+import sys
+assert sys.version_info >= (3, 10), "This code requires Python 3.10 or higher"
+
+# Dependencies
+# pip install numpy==1.24.3 pandas==2.0.3
+
+import numpy as np
+import pandas as pd
+from pathlib import Path
+from typing import Tuple
+
+# Global constants
+DATA_DIR = Path("data")
+DEFAULT_FILE_PATH = DATA_DIR / "asteroid_light_curve.csv"
+RANDOM_SEED = 42 # Ensure reproducible results
+
+def generate_asteroid_light_curve(
+    file_path: str,
+    n_points: int = 150,
+    period_hr: float = 2.25,
+    amplitude: float = 0.2,
+    mag_range: Tuple[float, float] = (17.8, 18.2),
+    noise_level: float = 0.03
+) -> None:
+    """
+    Generates a synthetic asteroid light curve and saves it to a CSV file.
+    The light curve is modeled as a simple cosine function with added Gaussian noise.
+    This mimics the data for an asteroid like (11014) Svatopluk in Figure 10(a).
+
+    Tag: [Data download]
+
+    Args:
+        file_path (str): The path to save the output CSV file.
+        n_points (int): The number of data points to generate.
+        period_hr (float): The rotation period of the asteroid in hours.
+        amplitude (float): The amplitude of the light curve variation in magnitudes.
+        mag_range (Tuple[float, float]): The approximate magnitude range of the asteroid.
+        noise_level (float): The standard deviation of the Gaussian noise to add to the magnitudes.
+
+    Returns:
+        None
+
+    Examples:
+        >>> Path("data").mkdir(exist_ok=True)
+        >>> file_path = "data/test_light_curve.csv"
+        >>> generate_asteroid_light_curve(file_path, n_points=50)
+        >>> import pandas as pd
+        >>> df = pd.read_csv(file_path)
+        >>> print(df.shape)
+        (50, 3)
+    """
+    # Set random seed to ensure reproducibility
+    np.random.seed(0+RANDOM_SEED)
+
+    # Generate unevenly sampled time points to simulate real observations
+    # Observation time span is about 4 hours
+    observation_span_hr = period_hr * 1.8
+    times = np.sort(np.random.rand(n_points) * observation_span_hr)
+
+    # Calculate the baseline magnitude of the light curve
+    base_magnitude = np.mean(mag_range)
+
+    # Use cosine function to simulate asteroid brightness variation
+    # Multiply by 2 because a full rotation period usually contains two peaks and two troughs
+    magnitudes_true = base_magnitude - amplitude * np.cos(2 * np.pi * times / period_hr * 2)
+
+    # Add Gaussian noise to the observed data
+    noise = np.random.normal(0, noise_level, n_points)
+    magnitudes_obs = magnitudes_true + noise
+
+    # Generate error for each data point, related to noise level
+    errors = np.random.normal(noise_level, noise_level / 4, n_points)
+    errors = np.maximum(errors, noise_level / 2) # Ensure errors are not too small
+
+    # Create a DataFrame to store the data
+    df = pd.DataFrame({
+        'time_hr': times,
+        'magnitude': magnitudes_obs,
+        'error': errors
+    })
+
+    # Save to CSV file
+    df.to_csv(file_path, index=False)
+    print(f"Successfully generated synthetic light curve data and saved to: {file_path}")
+
+
+if __name__ == "__main__":
+    # Ensure data directory exists
+    DATA_DIR.mkdir(exist_ok=True)
+
+    # Generate simulated data
+    generate_asteroid_light_curve(
+        file_path=str(DEFAULT_FILE_PATH),
+        n_points=150,
+        period_hr=2.25, # Asteroid period corresponding to Figure 10(a)
+        amplitude=0.15, # Amplitude
+        mag_range=(17.8, 18.1), # Magnitude range
+        noise_level=0.02 # Noise level
+    )
+\end{lstlisting}
+
+\textbf{\emph{\textcolor{DeepPurple}{Main Code with Incomplete Functions}}}
+
+\begin{lstlisting}
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Paper: The Zwicky Transient Facility: System Overview, Performance, and First Results
+Authors: Eric C. Bellm, Shrinivas R. Kulkarni, Matthew J. Graham, et al.
+Year: 2019
+
+This script implements the asteroid light curve analysis from Section 6.4.2.
+It determines the rotation period of an asteroid from its light curve using
+a Lomb-Scargle periodogram and Fourier series fitting.
+
+Python Version: 3.10.12
+"""
+
+import sys
+
+assert sys.version_info >= (3, 10), "This code requires Python 3.10 or higher"
+
+# Dependencies
+# pip install numpy==1.24.3 pandas==2.0.3 scipy==1.10.1
+
+import numpy as np
+import pandas as pd
+from scipy.signal import lombscargle
+from typing import Tuple
+from pathlib import Path
+
+# Global constants
+DATA_FILE_PATH = "data/asteroid_light_curve.csv"
+# Order of Fourier series, the paper mentions second-order Fourier series
+FOURIER_N_TERMS = 2
+# Numerical stability constant
+EPSILON = 1e-9
+
+
+def load_light_curve_data(file_path: str) -> pd.DataFrame:
+    """
+    Loads asteroid light curve data from a CSV file.
+
+    Tag: [Data loading]
+
+    Args:
+        file_path (str): The path to the CSV file.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the light curve data with
+                      columns 'time_hr', 'magnitude', and 'error'.
+
+    Examples:
+        >>> Path("data").mkdir(exist_ok=True)
+        >>> data = {'time_hr': [0, 1], 'magnitude': [18.0, 18.1], 'error': [0.01, 0.01]}
+        >>> df = pd.DataFrame(data)
+        >>> df.to_csv("data/dummy.csv", index=False)
+        >>> loaded_df = load_light_curve_data("data/dummy.csv")
+        >>> print(loaded_df.shape)
+        (2, 3)
+    """
+    try:
+        return pd.read_csv(file_path)
+    except FileNotFoundError:
+        print(f"Error: Data file not found at '{file_path}'")
+        print("Please run 'data.py' first to generate the data file.")
+        sys.exit(1)
+
+
+def calculate_lomb_scargle_periodogram(
+        times: np.ndarray,
+        magnitudes: np.ndarray,
+        min_period: float = 0.5,
+        max_period: float = 5.0,
+        num_periods: int = 10000
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Calculates the Lomb-Scargle periodogram for unevenly sampled data.
+
+    Tag: [Numerical calculation]
+
+    Args:
+        times (np.ndarray): Array of time points.
+        magnitudes (np.ndarray): Array of magnitude measurements.
+        min_period (float): The minimum period to test.
+        max_period (float): The maximum period to test.
+        num_periods (int): The number of period points to evaluate.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: A tuple containing the periods tested
+                                       and the corresponding periodogram power.
+
+    Examples:
+        >>> times = np.linspace(0, 4, 50)
+        >>> magnitudes = 18 + 0.1 * np.sin(2 * np.pi * times / 2.0)
+        >>> periods, power = calculate_lomb_scargle_periodogram(times, magnitudes)
+        >>> print(periods.shape, power.shape)
+        (10000,) (10000,)
+    """
+    pass # [Please complete the code]
+
+
+def find_best_period_from_periodogram(
+        periods: np.ndarray,
+        power: np.ndarray
+) -> float:
+    """
+    Finds the period corresponding to the highest power in the periodogram.
+
+    Tag: [Numerical calculation]
+
+    Args:
+        periods (np.ndarray): Array of periods.
+        power (np.ndarray): Array of periodogram powers.
+
+    Returns:
+        float: The period with the highest power.
+
+    Examples:
+        >>> periods = np.array([1.0, 2.0, 3.0])
+        >>> power = np.array([0.1, 0.8, 0.2])
+        >>> best_period = find_best_period_from_periodogram(periods, power)
+        >>> print(best_period)
+        2.0
+    """
+    pass # [Please complete the code]
+
+
+def build_fourier_design_matrix(
+        times: np.ndarray,
+        period: float,
+        n_terms: int
+) -> np.ndarray:
+    """
+    Builds the design matrix for a Fourier series linear least-squares fit.
+
+    Tag: [Predictive modeling]
+
+    Args:
+        times (np.ndarray): Array of time points.
+        period (float): The fundamental period of the Fourier series.
+        n_terms (int): The number of Fourier terms (harmonics) to include.
+
+    Returns:
+        np.ndarray: The design matrix for the fit.
+
+    Examples:
+        >>> times = np.array([0, 1, 2])
+        >>> period = 4.0
+        >>> n_terms = 1
+        >>> matrix = build_fourier_design_matrix(times, period, n_terms)
+        >>> print(matrix.shape)
+        (3, 3)
+    """
+    # Fundamental frequency
+    omega = 2 * np.pi / (period + EPSILON)
+    # Initialize a column vector for the constant term
+    design_matrix = [np.ones_like(times)]
+    # Loop to add sin and cos terms for each order
+    for i in range(1, n_terms + 1):
+        design_matrix.append(np.sin(i * omega * times))
+        design_matrix.append(np.cos(i * omega * times))
+    return np.vstack(design_matrix).T
+
+
+def fit_fourier_model(
+        design_matrix: np.ndarray,
+        magnitudes: np.ndarray,
+        errors: np.ndarray
+) -> np.ndarray:
+    """
+    Fits a Fourier model using weighted linear least squares.
+
+    Tag: [Predictive modeling]
+
+    Args:
+        design_matrix (np.ndarray): The design matrix from build_fourier_design_matrix.
+        magnitudes (np.ndarray): Array of magnitude measurements.
+        errors (np.ndarray): Array of measurement errors for weighting.
+
+    Returns:
+        np.ndarray: The array of fitted Fourier coefficients.
+
+    Examples:
+        >>> times = np.linspace(0, 4, 10)
+        >>> period = 2.0
+        >>> magnitudes = np.sin(2 * np.pi * times / period)
+        >>> errors = np.full_like(magnitudes, 0.1)
+        >>> matrix = build_fourier_design_matrix(times, period, 1)
+        >>> coeffs = fit_fourier_model(matrix, magnitudes, errors)
+        >>> print(len(coeffs))
+        3
+    """
+    # Use errors for weighting
+    weights = 1.0 / (errors + EPSILON)
+    weighted_matrix = design_matrix * weights[:, np.newaxis]
+    weighted_magnitudes = magnitudes * weights
+
+    # Solve using least squares
+    coeffs, _, _, _ = np.linalg.lstsq(weighted_matrix, weighted_magnitudes, rcond=None)
+    return coeffs
+
+
+def evaluate_fourier_model(
+        design_matrix: np.ndarray,
+        coeffs: np.ndarray
+) -> np.ndarray:
+    """
+    Evaluates the Fourier model at given time points.
+
+    Tag: [Numerical calculation]
+
+    Args:
+        design_matrix (np.ndarray): The design matrix.
+        coeffs (np.ndarray): The fitted Fourier coefficients.
+
+    Returns:
+        np.ndarray: The predicted magnitudes from the model.
+
+    Examples:
+        >>> times = np.array([0, 1, 2])
+        >>> period = 4.0
+        >>> n_terms = 1
+        >>> matrix = build_fourier_design_matrix(times, period, n_terms)
+        >>> coeffs = np.array([18.0, 0.1, 0.0])
+        >>> model_mags = evaluate_fourier_model(matrix, coeffs)
+        >>> print(model_mags.shape)
+        (3,)
+    """
+    return np.dot(design_matrix, coeffs)
+
+
+def calculate_reduced_chi_squared(
+        observed: np.ndarray,
+        expected: np.ndarray,
+        errors: np.ndarray,
+        num_fit_params: int
+) -> float:
+    """
+    Calculates the reduced chi-squared statistic for a fit.
+
+    Tag: [Metric calculation]
+
+    Args:
+        observed (np.ndarray): The observed data values.
+        expected (np.ndarray): The model's expected values.
+        errors (np.ndarray): The errors on the observed values.
+        num_fit_params (int): The number of free parameters in the model.
+
+    Returns:
+        float: The reduced chi-squared value.
+
+    Examples:
+        >>> obs = np.array([1, 2, 3])
+        >>> exp = np.array([1.1, 2.2, 2.9])
+        >>> err = np.array([0.2, 0.2, 0.2])
+        >>> r_chi2 = calculate_reduced_chi_squared(obs, exp, err, 1)
+        >>> print(f"{r_chi2:.2f}")
+        1.25
+    """
+    # Calculate chi-squared value
+    chi_squared = np.sum(((observed - expected) / (errors + EPSILON)) ** 2)
+    # Calculate degrees of freedom
+    degrees_of_freedom = len(observed) - num_fit_params
+    # Avoid division by zero
+    if degrees_of_freedom <= 0:
+        return np.inf
+    return chi_squared / degrees_of_freedom
+
+
+if __name__ == "__main__":
+    print("--- ZTF Asteroid Light Curve Analysis ---")
+
+    # 1. Load data
+    print(f"\n[1/4] Loading light curve data from '{DATA_FILE_PATH}'...")
+    light_curve_df = load_light_curve_data(DATA_FILE_PATH)
+    times = light_curve_df['time_hr'].values
+    magnitudes = light_curve_df['magnitude'].values
+    errors = light_curve_df['error'].values
+    print(f"Successfully loaded {len(times)} data points.")
+
+    # 2. Calculate Lomb-Scargle periodogram
+    print("\n[2/4] Calculating periodogram using Lomb-Scargle method...")
+    # Set a reasonable period search range
+    min_p = 0.5  # hours
+    max_p = (times.max() - times.min())  # observation span as max period
+    periods, power = calculate_lomb_scargle_periodogram(times, magnitudes, min_period=min_p, max_period=max_p)
+    best_period = find_best_period_from_periodogram(periods, power)
+    print(f"Periodogram analysis complete. Most likely light curve period is: {best_period:.4f} hours.")
+
+    # 3. Fit Fourier series model
+    print(f"\n[3/4] Fitting {FOURIER_N_TERMS}-order Fourier series using found period {best_period:.4f} hours...")
+    design_matrix = build_fourier_design_matrix(times, best_period, FOURIER_N_TERMS)
+    fourier_coeffs = fit_fourier_model(design_matrix, magnitudes, errors)
+    model_magnitudes = evaluate_fourier_model(design_matrix, fourier_coeffs)
+    print("Fourier model fitting complete.")
+    print(f"Fitted coefficients: {np.round(fourier_coeffs, 4)}")
+
+    # 4. Evaluate goodness of fit
+    print("\n[4/4] Evaluating model goodness of fit...")
+    num_params = 1 + 2 * FOURIER_N_TERMS  # 1 constant term + n*2 sin/cos terms
+    r_chi2 = calculate_reduced_chi_squared(magnitudes, model_magnitudes, errors, num_params)
+    print(f"Reduced chi-squared of the model: {r_chi2:.4f}")
+    if 0.5 < r_chi2 < 2.0:
+        print("This is a reasonable fit.")
+    else:
+        print("Warning: The fit may be poor or error estimates inaccurate.")
+
+    # Final output
+    # The core goal in the paper for finding asteroid rotation period is to obtain the period value
+    print("\n--- Analysis Complete ---")
+    print("[Final Output]")
+    # Since the asteroid rotation causes two peaks in the light curve per rotation,
+    # the physical rotation period is twice the light curve period found by Lomb-Scargle
+    # This is a common convention in astronomy
+    rotation_period = best_period * 2.0
+    print(f"{rotation_period:.4f}")
+\end{lstlisting}
+
+\textbf{\emph{\textcolor{DeepPurple}{Answer}}}
+
+\begin{lstlisting}
+def calculate_lomb_scargle_periodogram(
+        times: np.ndarray,
+        magnitudes: np.ndarray,
+        min_period: float = 0.5,
+        max_period: float = 5.0,
+        num_periods: int = 10000
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Calculates the Lomb-Scargle periodogram for unevenly sampled data.
+
+    Tag: [Numerical calculation]
+
+    Args:
+        times (np.ndarray): Array of time points.
+        magnitudes (np.ndarray): Array of magnitude measurements.
+        min_period (float): The minimum period to test.
+        max_period (float): The maximum period to test.
+        num_periods (int): The number of period points to evaluate.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: A tuple containing the periods tested
+                                       and the corresponding periodogram power.
+
+    Examples:
+        >>> times = np.linspace(0, 4, 50)
+        >>> magnitudes = 18 + 0.1 * np.sin(2 * np.pi * times / 2.0)
+        >>> periods, power = calculate_lomb_scargle_periodogram(times, magnitudes)
+        >>> print(periods.shape, power.shape)
+        (10000,) (10000,)
+    """
+    # 1. Define and generate the search range for ordinary frequencies (f = 1/P)
+    safe_min_period = max(min_period, EPSILON)
+    min_freq = 1.0 / max_period
+    max_freq = 1.0 / safe_min_period
+    ordinary_frequencies = np.linspace(min_freq, max_freq, num_periods)
+
+    # 2. [Key modification] Convert ordinary frequencies to angular frequencies (omega = 2*pi*f)
+    # scipy.signal.lombscargle requires angular frequencies as input
+    angular_frequencies = 2 * np.pi * ordinary_frequencies
+
+    # 3. Center magnitude data to remove DC component
+    magnitudes_centered = magnitudes - np.mean(magnitudes)
+
+    # 4. Calculate periodogram power using angular frequencies
+    power = lombscargle(times, magnitudes_centered, angular_frequencies, normalize=True)
+
+    # 5. Return periods (P = 1/f) corresponding to ordinary frequencies and power
+    periods = 1.0 / (ordinary_frequencies + EPSILON)
+    return periods, power
+
+def find_best_period_from_periodogram(
+        periods: np.ndarray,
+        power: np.ndarray
+) -> float:
+    """
+    Finds the period corresponding to the highest power in the periodogram.
+
+    Tag: [Numerical calculation]
+
+    Args:
+        periods (np.ndarray): Array of periods.
+        power (np.ndarray): Array of periodogram powers.
+
+    Returns:
+        float: The period with the highest power.
+
+    Examples:
+        >>> periods = np.array([1.0, 2.0, 3.0])
+        >>> power = np.array([0.1, 0.8, 0.2])
+        >>> best_period = find_best_period_from_periodogram(periods, power)
+        >>> print(best_period)
+        2.0
+    """
+    best_period_index = np.argmax(power)
+    return periods[best_period_index]
+\end{lstlisting}
+
+\end{tcolorbox}
+%-----------------------------------------------------------%-----------------------------------------------------------

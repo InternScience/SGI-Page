@@ -1,0 +1,514 @@
+% [1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1]% [1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1][1]
+\begin{tcolorbox}[
+    breakable,
+    title=Example of Dry Experiment in Earth,
+    colback=LighterGray,
+    colframe=DeepPurple,
+    colbacktitle=DeepPurple,
+    coltitle=White,
+]
+\textbf{\emph{\textcolor{DeepPurple}{Background}}}
+
+
+Surface ozone is a secondary air pollutant formed by photochemical reactions involving carbon monoxide (CO), volatile organic compounds (VOCs), nitrogen oxides (NOx = NO + NO2), and sunlight. It poses significant risks to human health, including respiratory and cardiovascular effects, and damages vegetation by reducing crop yields and ecosystem productivity. While stringent emission controls since the 1990s have reduced ozone pollution in many Western regions, rapid industrialization and urbanization in East Asia, particularly China, have led to increasing ozone precursor emissions and elevated surface ozone levels.
+
+Recent nationwide monitoring in China, initiated around 2013, reveals that although median ozone concentrations during the warm season (AprilSeptember) are comparable to those in industrialized regions such as Japan, South Korea, Europe, and the United States, the frequency and magnitude of high-ozone events are substantially greater in China. Key metrics include the fourth highest daily maximum 8-hour average ozone (4MDA8), the number of days exceeding 70 ppb (NDGT70), and cumulative exposure indices like SOMO35 (sum of ozone means over 35 ppb). Chinas warm-season 4MDA8 averages around 86 ppb, exceeding other regions by 630\%, while NDGT70 values are 93575\% higher, indicating more frequent episodes of elevated ozone. Vegetation exposure metrics such as AOT40 and W126, which correlate with ozone-induced plant damage, are also significantly elevated in China, suggesting greater risks to agricultural productivity and ecosystem health.
+
+Spatially, ozone pollution hotspots in China are concentrated in densely populated and industrialized regions including the North China Plain, Yangtze River Delta, and Pearl River Delta, with some western areas affected due to topography and local emissions. Seasonal patterns show ozone peaks in late spring and early summer, influenced by regional meteorology such as the Asian summer monsoon, which modulates photochemical activity and pollutant transport.
+
+Temporal analysis from 2013 to 2017 indicates a rising trend in ozone levels across Chinese cities, with annual increases in exposure metrics ranging from approximately 3.7\% to over 15\% per year. This contrasts with stable or declining ozone trends in Europe and the United States over recent decades. The increase in ozone occurs despite reductions in primary pollutants like SO2, NO2, CO, and fine particulate matter (PM2.5), reflecting complex photochemical interactions. In particular, reductions in NOx or PM2.5 can paradoxically enhance ozone formation in VOC-sensitive regimes prevalent in eastern China. Rising VOC emissions and meteorological factors such as hotter, drier summers also contribute to elevated ozone.
+
+These findings highlight China as a current global hotspot for surface ozone pollution, with greater human and vegetation exposure than other industrialized regions with extensive monitoring. The severity and increasing trend of ozone pollution pose challenges for air quality management, indicating a need for targeted control strategies focusing on VOC emissions and comprehensive understanding of chemical and meteorological influences on ozone formation.
+
+\textbf{\emph{\textcolor{DeepPurple}{Data Code}}}
+
+\begin{lstlisting}
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Paper: Severe Surface Ozone Pollution in China: A Global Perspective
+Authors: Xiao Lu, Jiayun Hong, Lin Zhang, et al.
+Year: 2018
+
+Data generation script for simulating hourly surface ozone data.
+Python Version: 3.10.12
+"""
+
+import sys
+
+assert sys.version_info >= (3, 10), "This code requires Python 3.10 or higher"
+
+# Dependencies
+# pip install numpy==1.24.3 pandas==2.0.3
+
+import numpy as np
+import pandas as pd
+from pathlib import Path
+import os
+
+
+def generate_hourly_ozone_data(
+        n_sites: int,
+        start_date: str,
+        end_date: str,
+        region_params: dict
+) -> pd.DataFrame:
+    """
+    Generate synthetic hourly ozone data for multiple sites.
+    Tag: [Simulation]
+
+    Args:
+        n_sites (int): The number of monitoring sites to simulate.
+        start_date (str): The start date for the data series (e.g., '2013-01-01').
+        end_date (str): The end date for the data series (e.g., '2017-12-31').
+        region_params (dict): A dictionary containing parameters for the region.
+            Keys should include 'base_mean', 'seasonal_amp', 'daily_amp',
+            'noise_level', 'event_prob', 'event_strength'.
+
+    Returns:
+        pd.DataFrame: A DataFrame with columns ['site_id', 'timestamp', 'ozone_ppb'].
+
+    Examples:
+        >>> params = {
+        ...     'base_mean': 40, 'seasonal_amp': 15, 'daily_amp': 20,
+        ...     'noise_level': 5, 'event_prob': 0.02, 'event_strength': 40
+        ... }
+        >>> df = generate_hourly_ozone_data(2, '2017-01-01', '2017-01-31', params)
+        >>> print(df.shape)
+        (1488, 3)
+    """
+    np.random.seed(0+42)
+    timestamps = pd.to_datetime(np.arange(
+        np.datetime64(start_date),
+        np.datetime64(end_date) + np.timedelta64(1, 'D'),
+        np.timedelta64(1, 'h')
+    ))
+    n_hours = len(timestamps)
+
+    # Prepare time feature vectors
+    day_of_year = timestamps.dayofyear
+    hour_of_day = timestamps.hour
+
+    all_sites_data = []
+    for site_id in range(n_sites):
+        # Base signal = seasonal cycle + daily cycle
+        seasonal_cycle = region_params['seasonal_amp'] * np.sin(2 * np.pi * (day_of_year - 90) / 365.25)
+        daily_cycle = region_params['daily_amp'] * np.sin(2 * np.pi * (hour_of_day - 8) / 24)
+
+        base_signal = region_params['base_mean'] + seasonal_cycle + daily_cycle
+
+        # Add random noise
+        noise = np.random.randn(n_hours) * region_params['noise_level']
+
+        # Simulate high pollution events
+        events = np.zeros(n_hours)
+        for i in range(n_hours):
+            if np.random.rand() < region_params['event_prob']:
+                # Pollution event lasts 24-72 hours
+                duration = np.random.randint(24, 73)
+                event_end = min(i + duration, n_hours)
+                event_shape = np.sin(np.linspace(0, np.pi, event_end - i))
+                events[i:event_end] += region_params['event_strength'] * event_shape
+
+        # Compose final signal
+        ozone_concentration = base_signal + noise + events
+        # Ensure concentration values are non-negative
+        ozone_concentration = np.maximum(ozone_concentration, 0)
+
+        site_df = pd.DataFrame({
+            'site_id': f'site_{site_id}',
+            'timestamp': timestamps,
+            'ozone_ppb': ozone_concentration
+        })
+        all_sites_data.append(site_df)
+
+    return pd.concat(all_sites_data, ignore_index=True)
+
+
+def save_data_to_csv(df: pd.DataFrame, file_path: str):
+    """
+    Save a DataFrame to a CSV file.
+    Tag: [Data saving]
+
+    Args:
+        df (pd.DataFrame): The DataFrame to save.
+        file_path (str): The path to the output CSV file.
+
+    Returns:
+        None
+
+    Examples:
+        >>> data = pd.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+        >>> save_data_to_csv(data, 'data/test.csv')
+    """
+    # Ensure directory exists
+    output_dir = os.path.dirname(file_path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    df.to_csv(file_path, index=False)
+    print(f"Data has been saved to: {file_path}")
+
+
+if __name__ == "__main__":
+    # Set different parameters for China and JKEU regions according to the paper description
+    # China region parameters: higher base value, stronger seasonal and daily variations, more frequent and stronger high pollution events
+    china_params = {
+        'base_mean': 45,
+        'seasonal_amp': 20,
+        'daily_amp': 25,
+        'noise_level': 8,
+        'event_prob': 0.015,  # Higher event occurrence probability
+        'event_strength': 50  # Stronger event intensity
+    }
+
+    # JKEU region parameters: relatively moderate pollution levels
+    jkeu_params = {
+        'base_mean': 35,
+        'seasonal_amp': 15,
+        'daily_amp': 20,
+        'noise_level': 5,
+        'event_prob': 0.005,  # Lower event occurrence probability
+        'event_strength': 30  # Weaker event intensity
+    }
+
+    # To reduce runtime, we only simulate one year of data
+    START_DATE = '2017-01-01'
+    END_DATE = '2017-12-31'
+    NUM_SITES = 10  # Simulate 10 sites
+
+    print("Generating simulated ozone data for China region...")
+    china_ozone_data = generate_hourly_ozone_data(NUM_SITES, START_DATE, END_DATE, china_params)
+
+    print("Generating simulated ozone data for JKEU region...")
+    jkeu_ozone_data = generate_hourly_ozone_data(NUM_SITES, START_DATE, END_DATE, jkeu_params)
+
+    # Create data directory and save files
+    data_dir = Path("data")
+    data_dir.mkdir(exist_ok=True)
+
+    save_data_to_csv(china_ozone_data, str(data_dir / "china_ozone_data.csv"))
+    save_data_to_csv(jkeu_ozone_data, str(data_dir / "jkeu_ozone_data.csv"))
+\end{lstlisting}
+
+\textbf{\emph{\textcolor{DeepPurple}{Main Code with Incomplete Functions}}}
+
+\begin{lstlisting}
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Paper: Severe Surface Ozone Pollution in China: A Global Perspective
+Authors: Xiao Lu, Jiayun Hong, Lin Zhang, et al.
+Year: 2018
+
+Implementation of ozone pollution metrics calculation.
+Python Version: 3.10.12
+"""
+
+import sys
+
+assert sys.version_info >= (3, 10), "This code requires Python 3.10 or higher"
+
+# Dependencies
+# pip install numpy==1.24.3 pandas==2.0.3
+
+import numpy as np
+import pandas as pd
+
+
+def load_ozone_data(file_path: str) -> pd.DataFrame:
+    """
+    Load hourly ozone data from a CSV file.
+    Tag: [Data loading]
+
+    Args:
+        file_path (str): The path to the CSV data file.
+
+    Returns:
+        pd.DataFrame: A DataFrame with a datetime index and ozone data.
+
+    Examples:
+        >>> df = load_ozone_data('data/china_ozone_data.csv')
+        >>> print(df.columns)
+        Index(['site_id', 'ozone_ppb'], dtype='object')
+    """
+    df = pd.read_csv(file_path, parse_dates=['timestamp'])
+    df = df.set_index('timestamp')
+    return df
+
+
+def calculate_mda8(daily_hourly_data: pd.Series) -> float:
+    """
+    Calculate the Daily Maximum 8-hour Average (MDA8) ozone concentration.
+    Tag: [Numerical calculation]
+
+    Args:
+        daily_hourly_data (pd.Series): A Series of 24 hourly ozone values for a single day.
+
+    Returns:
+        float: The MDA8 value in ppb. Returns np.nan if data is insufficient.
+
+    Examples:
+        >>> hours = pd.to_datetime(pd.date_range('2023-07-01', periods=24, freq='h'))
+        >>> data = pd.Series(np.sin(np.linspace(0, 2*np.pi, 24)) * 20 + 50, index=hours)
+        >>> mda8 = calculate_mda8(data)
+        >>> print(round(mda8, 2))
+        67.68
+    """
+    pass # [Please complete the code]
+
+
+def calculate_4mda8(mda8_series: pd.Series) -> float:
+    """
+    Calculate the 4th highest MDA8 value for a given period.
+    Tag: [Numerical calculation]
+
+    Args:
+        mda8_series (pd.Series): A Series of daily MDA8 values.
+
+    Returns:
+        float: The 4th highest MDA8 value. Returns np.nan if data is insufficient.
+
+    Examples:
+        >>> data = pd.Series([80, 90, 70, 100, 110, 60])
+        >>> val = calculate_4mda8(data)
+        >>> print(val)
+        80.0
+    """
+    valid_mda8 = mda8_series.dropna()
+    if len(valid_mda8) < 4:
+        return np.nan
+    return valid_mda8.sort_values(ascending=False).iloc[3]
+
+
+def calculate_ndgt70(mda8_series: pd.Series) -> int:
+    """
+    Calculate the total number of days with MDA8 values > 70 ppb.
+    Tag: [Numerical calculation]
+
+    Args:
+        mda8_series (pd.Series): A Series of daily MDA8 values.
+
+    Returns:
+        int: The count of days where MDA8 > 70 ppb.
+
+    Examples:
+        >>> data = pd.Series([65, 71, 85, 70, 70.1])
+        >>> count = calculate_ndgt70(data)
+        >>> print(count)
+        3
+    """
+    return (mda8_series > 70).sum()
+
+
+def calculate_aot40(hourly_data: pd.Series) -> float:
+    """
+    Calculate the AOT40 (Accumulated Ozone over a Threshold of 40 ppb).
+    Tag: [Numerical calculation]
+
+    Args:
+        hourly_data (pd.Series): A Series of hourly ozone data for the entire period.
+                                 The function will filter for daytime hours (08:00-19:59).
+
+    Returns:
+        float: The total AOT40 value in ppb-hours.
+
+    Examples:
+        >>> hours = pd.to_datetime(pd.date_range('2023-07-01', periods=24, freq='h'))
+        >>> data = pd.Series(np.arange(30, 54), index=hours)
+        >>> aot40 = calculate_aot40(data)
+        >>> print(aot40)
+        91.0
+    """
+    daytime_data = hourly_data[(hourly_data.index.hour >= 8) & (hourly_data.index.hour <= 19)]
+    # Calculate the portion exceeding 40 ppb each hour
+    exceedances = np.maximum(0, daytime_data - 40)
+    return exceedances.sum()
+
+
+def calculate_w126(hourly_data: pd.Series) -> float:
+    """
+    Calculate the W126 metric, a weighted cumulative exposure index.
+    Tag: [Numerical calculation]
+
+    Args:
+        hourly_data (pd.Series): A Series of hourly ozone data for the entire period.
+                                 The function will filter for daytime hours (08:00-19:59).
+
+    Returns:
+        float: The total W126 value in ppb-hours.
+
+    Examples:
+        >>> hours = pd.to_datetime(pd.date_range('2023-07-01', periods=24, freq='h'))
+        >>> data = pd.Series(np.full(24, 80), index=hours) # Constant 80 ppb
+        >>> w126 = calculate_w126(data)
+        >>> print(round(w126, 2))
+        954.16
+    """
+    pass # [Please complete the code]
+
+
+def analyze_regional_metrics(df: pd.DataFrame) -> dict:
+    """
+    Analyze and compute all key ozone metrics for a given region's data.
+    Tag: [Statistical analysis]
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing hourly ozone data for a region.
+
+    Returns:
+        dict: A dictionary of regionally-averaged ozone metrics.
+
+    Examples:
+        >>> df = load_ozone_data('data/china_ozone_data.csv')
+        >>> metrics = analyze_regional_metrics(df)
+        >>> print(metrics.keys())
+        dict_keys(['avg_4mda8', 'avg_ndgt70', 'avg_aot40', 'avg_w126'])
+    """
+    site_metrics = []
+    # Group by site for calculation
+    for site_id, site_data in df.groupby('site_id'):
+        # Filter warm season data (April-September)
+        warm_season_data = site_data[(site_data.index.month >= 4) & (site_data.index.month <= 9)]
+
+        # Calculate daily MDA8
+        daily_mda8 = warm_season_data['ozone_ppb'].resample('D').apply(calculate_mda8).dropna()
+
+        if daily_mda8.empty:
+            continue
+
+        # Calculate various metrics
+        m4da8 = calculate_4mda8(daily_mda8)
+        ndgt70 = calculate_ndgt70(daily_mda8)
+        aot40 = calculate_aot40(warm_season_data['ozone_ppb'])
+        w126 = calculate_w126(warm_season_data['ozone_ppb'])
+
+        site_metrics.append({
+            'site_id': site_id,
+            '4mda8': m4da8,
+            'ndgt70': ndgt70,
+            'aot40': aot40,
+            'w126': w126
+        })
+
+    # Calculate regional averages
+    metrics_df = pd.DataFrame(site_metrics).dropna()
+    if metrics_df.empty:
+        return {
+            'avg_4mda8': 0, 'avg_ndgt70': 0, 'avg_aot40': 0, 'avg_w126': 0
+        }
+
+    regional_avg = {
+        'avg_4mda8': metrics_df['4mda8'].mean(),
+        'avg_ndgt70': metrics_df['ndgt70'].mean(),
+        'avg_aot40': metrics_df['aot40'].mean(),
+        'avg_w126': metrics_df['w126'].mean()
+    }
+    return regional_avg
+
+
+if __name__ == "__main__":
+    # Load data
+    try:
+        china_df = load_ozone_data('data/china_ozone_data.csv')
+        jkeu_df = load_ozone_data('data/jkeu_ozone_data.csv')
+    except FileNotFoundError:
+        print("Error: Data file not found. Please run data.py to generate the data first.")
+        sys.exit(1)
+
+    print("Analyzing China region data...")
+    china_metrics = analyze_regional_metrics(china_df)
+
+    print("Analyzing JKEU region data...")
+    jkeu_metrics = analyze_regional_metrics(jkeu_df)
+
+    # Display results comparison in text format
+    print("\n" + "=" * 60)
+    print("             Regional Comparison of Ozone Pollution Metrics (Warm Season Average)")
+    print("=" * 60)
+    print(f"{'Metric':<20} | {'China':>15} | {'JKEU':>15}")
+    print("-" * 60)
+    print(f"{'4th Highest MDA8 (ppb)':<20} | {china_metrics['avg_4mda8']:>15.2f} | {jkeu_metrics['avg_4mda8']:>15.2f}")
+    print(f"{'NDGT70 (days)':<20} | {china_metrics['avg_ndgt70']:>15.2f} | {jkeu_metrics['avg_ndgt70']:>15.2f}")
+    print(f"{'AOT40 (ppb-h)':<20} | {china_metrics['avg_aot40']:>15.2f} | {jkeu_metrics['avg_aot40']:>15.2f}")
+    print(f"{'W126 (ppb-h)':<20} | {china_metrics['avg_w126']:>15.2f} | {jkeu_metrics['avg_w126']:>15.2f}")
+    print("=" * 60)
+
+    # Calculate final output: ratio of China's NDGT70 metric relative to JKEU
+    # Add numerical stability check
+    epsilon = 1e-8
+    ndgt70_ratio = china_metrics['avg_ndgt70'] / (jkeu_metrics['avg_ndgt70'] + epsilon)
+
+    print("\nConclusion: Simulation results show that the frequency of high ozone pollution events (NDGT70)")
+    print(f"in China is approximately {ndgt70_ratio:.2f} times that of the JKEU region, consistent with the trend found in the original paper.")
+
+    print("[Final Output]")
+    print(ndgt70_ratio)
+\end{lstlisting}
+
+\textbf{\emph{\textcolor{DeepPurple}{Answer}}}
+
+\begin{lstlisting}
+def calculate_w126(hourly_data: pd.Series) -> float:
+    """
+    Calculate the W126 metric, a weighted cumulative exposure index.
+    Tag: [Numerical calculation]
+
+    Args:
+        hourly_data (pd.Series): A Series of hourly ozone data for the entire period.
+                                 The function will filter for daytime hours (08:00-19:59).
+
+    Returns:
+        float: The total W126 value in ppb-hours.
+
+    Examples:
+        >>> hours = pd.to_datetime(pd.date_range('2023-07-01', periods=24, freq='h'))
+        >>> data = pd.Series(np.full(24, 80), index=hours) # Constant 80 ppb
+        >>> w126 = calculate_w126(data)
+        >>> print(round(w126, 2))
+        954.16
+    """
+    epsilon = 1e-8
+    daytime_data = hourly_data[(hourly_data.index.hour >= 8) & (hourly_data.index.hour <= 19)]
+
+    # W126 weight function parameters
+    M = 4403
+    A = 126
+
+    # Calculate weights
+    # Using np.exp with negative input is usually safe, but epsilon is added to denominator
+    weights = 1 / (1 + M * np.exp(-A * daytime_data / 1000) + epsilon)
+
+    # Calculate weighted concentration and sum
+    w126 = (weights * daytime_data).sum()
+    return w126
+
+def calculate_mda8(daily_hourly_data: pd.Series) -> float:
+    """
+    Calculate the Daily Maximum 8-hour Average (MDA8) ozone concentration.
+    Tag: [Numerical calculation]
+
+    Args:
+        daily_hourly_data (pd.Series): A Series of 24 hourly ozone values for a single day.
+
+    Returns:
+        float: The MDA8 value in ppb. Returns np.nan if data is insufficient.
+
+    Examples:
+        >>> hours = pd.to_datetime(pd.date_range('2023-07-01', periods=24, freq='h'))
+        >>> data = pd.Series(np.sin(np.linspace(0, 2*np.pi, 24)) * 20 + 50, index=hours)
+        >>> mda8 = calculate_mda8(data)
+        >>> print(round(mda8, 2))
+        67.68
+    """
+    # At least 18 (75%) hours of data are required to calculate the 8-hour average
+    if daily_hourly_data.count() < 18:
+        return np.nan
+    # Calculate 8-hour rolling average
+    rolling_8hr_mean = daily_hourly_data.rolling(window=8, min_periods=6).mean()
+    if rolling_8hr_mean.empty or rolling_8hr_mean.isnull().all():
+        return np.nan
+    return rolling_8hr_mean.max()
+\end{lstlisting}
+
+\end{tcolorbox}
+%-----------------------------------------------------------%-----------------------------------------------------------

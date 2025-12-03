@@ -1,0 +1,55 @@
+\section{Introduction}
+
+Large language models (LLMs)~\cite{guo2025deepseek, zhao2023survey, naveed2025comprehensive, comanici2025gemini} are achieving and even exceeding human-level performance on a diverse array of tasks, spanning multidisciplinary knowledge understanding, mathematical reasoning, and programming. This rapid progress has ignited a vibrant debate: some view these models as early signals of artificial general intelligence (AGI)~\cite{fei2022towards, bubeck2023sparks}, whereas others dismiss them as mere ``stochastic parrots~\cite{bender2021dangers},'' fundamentally constrained by their training data. As these models evolve, the frontier of AGI research is shifting towards the most complex and structured of human endeavors: scientific inquiry. We argue that demonstrating genuine \textbf{scientific general intelligence (SGI)} represents a critical leap toward AGI, serving as a definitive testbed for advanced reasoning, planning, and knowledge creation capabilities. However, much like AGI, the concept of SGI remains frustratingly nebulous, often acting as a moving goalpost that hinders clear evaluation and progress.
+
+This paper aims to provide a comprehensive, quantifiable framework to cut through this ambiguity, starting with a concrete definition grounded in established theory:
+\begin{quote}
+\textbf{\emph{"SGI is an AI that can autonomously navigate the complete, iterative cycle of scientific inquiry with the versatility and proficiency of a human scientist"}}
+\end{quote}
+
+To operationalize this definition, we ground our approach in the \textbf{Practical Inquiry Model}~\cite{garrison1999critical, garrison2001critical}, a theoretical framework that deconstructs the scientific process into a cycle of four core cognitive activities. This model provides a taxonomic map of scientific cognition through four distinct, interdependent quadrants (Figure~\ref{fig:teaser}): \textbf{Deliberation} (the search, synthesis, and critical evaluation of knowledge), \textbf{Conception} (the generation of ideas), \textbf{Action} (the practical implementation via experiments), and \textbf{Perception} (the awareness and interpretation of results). An AI exhibiting true SGI must possess robust capabilities across this entire spectrum.
+This four-quadrant framework provides a conceptual taxonomy of scientific cognition and forms the foundation for an \emph{operational definition} of SGI—one that specifies what kinds of planning, knowledge creation and reasoning an AI must demonstrate to qualify as scientifically intelligent. Translating this operational definition into measurable criteria requires examining how current evaluations of AI intelligence align with, or deviate from, this framework. Identifying these gaps is essential for clarifying what existing assessments capture and what they overlook in defining \textbf{Scientific General Intelligence}.
+
+
+
+Grounded in this four-quadrant definition of SGI, we examine how existing benchmarks operationalize scientific reasoning. Most current evaluations capture only fragments of the SGI spectrum. For instance, MMLU~\cite{hendrycks2020measuring} and SuperGPQA~\cite{du2025supergpqa} focus on multidisciplinary knowledge understanding—corresponding mainly to the \textit{Deliberation} quadrant—while GAIA~\cite{mialon2023gaia} emphasizes procedural tool use aligned with \textit{Action}. HLE~\cite{phan2025humanity} further raises difficulty through complex reasoning, yet still isolates inquiry stages without integrating the practical or interpretive cycles that characterize real scientific investigation.
+Collectively, these benchmarks present a fragmented view of scientific intelligence. Their disciplinary scope remains narrow, their challenges seldom reach expert-level reasoning, and—most crucially—they frame inquiry as a static, closed-domain question-answering task. This abstraction neglects the creative, procedural, and self-corrective dimensions central to SGI, meaning that what is currently measured as “scientific ability” reflects only a limited slice of true Scientific General Intelligence.
+
+
+Thus, to concretize the proposed definition of \textbf{Scientific General Intelligence (SGI)}, we develop \textbf{SGI-Bench: A Scientific Intelligence Benchmark for LLMs via Scientist-Aligned Workflows}. Rather than serving as yet another performance benchmark, SGI-Bench functions as an \emph{operational instantiation} of the SGI framework, quantitatively evaluating LLMs across the full spectrum of scientific cognition defined by the \textbf{Practical Inquiry Model}. By design, SGI-Bench is comprehensive in its disciplinary breadth, challenging in its difficulty, and unique in its explicit coverage of all four capabilities central to our definition of SGI. The benchmark structure is therefore organized into four corresponding task categories:
+\begin{itemize}
+\item \textbf{Scientific Deep Research (Deliberation):} This task evaluates models’ ability to perform iterative, multi-step reasoning over complex scientific content.
+\item \textbf{Idea Generation (Conception):} This task assesses creativity and methodological planning by asking models to generate novel hypotheses or experimental designs.
+\item \textbf{AI-Assisted Scientific Experiment (Action):} This task evaluates the ability to plan and execute computational (dry) or laboratory-style (wet) experiments.
+\item \textbf{Scientific Experimental Reasoning (Perception):} This task requires models to analyze experimental results, interpret data trends, and identify meaningful conclusions.
+\end{itemize}
+
+Building upon our theoretical framework, the construction of SGI-Bench operationalizes the proposed definition of \textbf{Scientific General Intelligence (SGI)}. We began with foundational topics drawn from \textit{Science’s 125 Big Questions for the 21st Century}~\cite{sanders2021125}, spanning ten major disciplinary areas. Through multi-round collaborations with domain experts, we identified high-impact, AI-assisted research problems and curated raw source materials from leading journals such as \textit{Nature}, \textit{Science}, and \textit{Cell}. Together with PhD-level researchers, we implemented a multi-stage quality control pipeline involving human annotation, model-based verification, and rule-based consistency checks. The resulting benchmark comprises approximately 1,000 expert-curated samples that concretely instantiate the reasoning, creativity, and experimental competencies central to our definition of SGI.
+
+To evaluate performance across these four dimensions, we found that conventional “LLM-as-a-judge”~\cite{li2025generation} paradigms are insufficient to handle the diverse and specialized metrics required by SGI assessment. To address this, we developed an agent-based evaluation framework following an \textbf{Agent-as-a-judge}~\cite{zhuge2024agent} paradigm. Equipped with tools such as a web search interface, Python interpreter, file reader, PDF parser, and discipline-specific metric functions, this framework ensures rigor, scalability, and transparency. It operates through four interdependent stages—\textit{Question Selection}, \textit{Metric Customization}, \textit{Prediction \& Evaluation}, and \textit{Report Generation}—each coordinated by specialized agents aligned with different aspects of scientific inquiry.
+
+
+Applying SGI-Bench to a wide spectrum of state-of-the-art LLMs reveals a unified picture: while modern models achieve pockets of success, they fall far short of the integrated reasoning required for scientific intelligence.
+\begin{itemize}
+
+\item In deep scientific research, models can retrieve relevant knowledge but struggle to perform quantitative reasoning or integrate multi-source evidence; exact-match accuracy remains below 20\% and often collapses on numerical or mechanistic inference.
+
+\item  In idea generation, models show substantial deficits in realization. This manifests in underspecified implementation steps and frequent proposals that lack actionable detail or fail basic feasibility checks.
+
+\item  In dry experiments, even strong models fail on numerical integration, simulation fidelity, and scientific code correctness, revealing a gap between syntactic code fluency and scientific computational reasoning.
+
+\item In wet experiments, workflow planning shows low sequence similarity and error-prone parameter selection, with models frequently omitting steps, misordering actions, or collapsing multi-branch experimental logic.
+
+\item In multimodal experimental reasoning, models perform better on causal and perceptual reasoning but remain weak in comparative reasoning and across domains such as materials science and earth systems.
+
+\item Across tasks, closed-source models demonstrate only a marginal performance advantage over open-source models. Even the best closed-source system achieves an SGI-Score of around 30/100, reflecting that current AI models possess relatively low capability in multi-task scientific research workflows, and remain far from proficient for integrated, real-world scientific inquiry.
+
+\end{itemize}
+
+Collectively, these findings demonstrate that current LLMs instantiate only isolated fragments of scientific cognition. They remain constrained by their linguistic priors, lacking the numerical robustness, procedural discipline, multimodal grounding, and self-corrective reasoning loops essential for scientific discovery. 
+
+
+Because genuine scientific inquiry is inherently open-ended and adaptive, we further explore how SGI may emerge under test-time learning dynamics. Preliminary experiments using test-time scaling~\cite{zhang2025survey} and reinforcement learning~\cite{zuo2025ttrl} suggest that models can enhance hypothesis formation and reasoning through minimal unlabeled feedback. This adaptive improvement provides empirical support for viewing \textbf{Scientific General Intelligence} not as a static property, but as a dynamic capacity that can evolve through iterative, self-reflective reasoning cycles.
+
+
+In summary, this work provides a principle-grounded definition of \textbf{Scientific General Intelligence (SGI)} and a corresponding framework for its empirical study. By formalizing the cognitive cycle of scientific inquiry and operationalizing it through SGI-Bench, we clarify what it means for an AI to exhibit scientific intelligence in both theory and practice. While not a final answer, this definition establishes a concrete path for future research—linking conceptual understanding with measurable progress toward AI systems capable of genuine scientific reasoning and discovery.

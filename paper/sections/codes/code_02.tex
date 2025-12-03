@@ -1,0 +1,454 @@
+% [2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2]% [2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2][2]
+\begin{tcolorbox}[
+    breakable,
+    title=Example of Dry Experiment in Information,
+    colback=LighterGray,
+    colframe=DeepPurple,
+    colbacktitle=DeepPurple,
+    coltitle=White,
+]
+\textbf{\emph{\textcolor{DeepPurple}{Background}}}
+
+
+Multimodal Large Language Models (MM-LLMs) aim to integrate diverse sensory modalitiessuch as text, images, video, and audiointo a unified framework capable of both understanding and generating content across these modalities. Traditional MM-LLMs primarily focus on multimodal input comprehension, lacking the ability to produce outputs beyond text. However, human cognition and communication naturally involve seamless transitions and interactions among multiple modalities, motivating the development of any-to-any MM-LLMs that accept and generate content in arbitrary modality combinations.
+
+A promising approach involves connecting a powerful Large Language Model (LLM) with modality-specific encoders and decoders. Inputs from various modalities are first encoded by pre-trained models into feature representations, which are then projected into a language-like embedding space compatible with the LLM. The LLM performs semantic understanding and reasoning, generating both textual responses and special modality signal tokens that instruct downstream decoders on which modalities to generate and how. These decoders, often based on latent diffusion models, synthesize the corresponding multimodal outputs conditioned on the LLMs instructions.
+
+To efficiently train such a system without incurring prohibitive computational costs, only a small fraction (approximately 1\%) of parametersmainly in the input and output projection layers and some LLM adaptersare fine-tuned, while the large encoders, decoders, and the core LLM remain frozen. This lightweight alignment strategy includes an encoding-side LLM-centric alignment, where patch-level multimodal features are hierarchically grouped into semantic concept tokens to better match textual token semantics, and a decoding-side instruction-following alignment, where modality-specific signal tokens guide diffusion decoders through learned embeddings aligned with their conditioning inputs.
+
+To enhance the models ability to follow complex, cross-modal instructions and generate coherent multimodal content, modality-switching instruction tuning (MosIT) is introduced. This involves training on a curated dataset of multi-turn dialogues featuring dynamic modality shifts in both inputs and outputs, covering diverse scenarios requiring perception, reasoning, and generation across text, image, video, and audio. Instruction tuning leverages parameter-efficient fine-tuning techniques to adapt the model for faithful and flexible multimodal interactions.
+
+Empirical evaluations demonstrate that such any-to-any MM-LLMs achieve strong performance in multimodal perception tasks (e.g., image/video/audio captioning and question answering) and multimodal generation tasks (e.g., text-to-image/audio/video synthesis), often surpassing or matching state-of-the-art baselines. The system exhibits robust zero-shot generalization and effectively handles complex instructions involving implicit reasoning and modality transitions. Compared to pipeline-based systems that rely on intermediate textual captions to bridge modalities, end-to-end unified MM-LLMs reduce error propagation and better capture modality-specific nuances, leading to more accurate and contextually appropriate multimodal outputs.
+
+Overall, the integration of pre-trained encoders, a powerful LLM core, modality-specific diffusion decoders, and lightweight alignment and instruction tuning techniques enables the construction of versatile any-to-any MM-LLMs. These models represent a significant step toward human-like AI agents capable of universal multimodal understanding, reasoning, and generation, with potential for expansion to additional modalities and tasks in future research.
+
+\textbf{\emph{\textcolor{DeepPurple}{Data Code}}}
+
+\begin{lstlisting}
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Paper: NEXT-GPT: Any-to-Any Multimodal LLM
+Authors: Shengqiong Wu, Hao Fei, Leigang Qu, Wei Ji, Tat-Seng Chua
+Year: 2023
+
+Data generation script to simulate the multimodal datasets used in NEXT-GPT,
+such as CC3M, WebVid-2M, and AudioCaps.
+Python Version: 3.10.12
+"""
+
+import sys
+
+assert sys.version_info >= (3, 10), "This code requires Python 3.10 or higher"
+
+# Dependencies
+# pip install numpy==1.24.3 pandas==2.0.3
+
+import json
+import os
+import numpy as np
+import pandas as pd
+from pathlib import Path
+
+
+def generate_multimodal_metadata(output_dir: str, n_samples: int = 100):
+    """
+    Generates a metadata JSON file simulating a multimodal dataset.
+
+    This function creates a pandas DataFrame with metadata for a specified
+    number of samples, covering three modalities: image, audio, and video.
+    It then saves this metadata as a JSON file. The structure is designed
+    to mimic the 'Text-X' pair datasets like CC3M, WebVid, and AudioCaps
+    referenced in the NEXT-GPT paper.
+
+    Tag: [Data saving]
+
+    Args:
+        output_dir (str): The directory where the metadata JSON file will be saved.
+        n_samples (int): The total number of samples to generate.
+
+    Returns:
+        str: The file path of the generated JSON metadata file.
+
+    Examples:
+        >>> # Create a dummy directory for the example
+        >>> from pathlib import Path
+        >>> Path("dummy_data").mkdir(exist_ok=True)
+        >>> metadata_path = generate_multimodal_metadata("dummy_data", 10)
+        >>> print(Path(metadata_path).name)
+        metadata.json
+    """
+    # Ensure the output directory exists
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    # Set random seed to ensure reproducibility
+    np.random.seed(0+42)
+
+    data = []
+    modalities = ['image', 'audio', 'video']
+
+    # Generate metadata for each sample
+    for i in range(n_samples):
+        modality = np.random.choice(modalities)
+        sample_id = f"{i:04d}"
+
+        if modality == 'image':
+            file_path = f"data/images/img_{sample_id}.jpg"
+            caption = f"A descriptive caption for image {sample_id}."
+        elif modality == 'audio':
+            file_path = f"data/audio/aud_{sample_id}.wav"
+            caption = f"A transcript or description for audio {sample_id}."
+        else:  # video
+            file_path = f"data/videos/vid_{sample_id}.mp4"
+            caption = f"A summary of the content in video {sample_id}."
+
+        data.append({
+            "id": sample_id,
+            "modality": modality,
+            "file_path": file_path,
+            "caption": caption
+        })
+
+    # Convert to Pandas DataFrame for easier handling
+    df = pd.DataFrame(data)
+
+    # Save as JSON file
+    output_path = os.path.join(output_dir, "metadata.json")
+    records = df.to_dict(orient='records')
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(records, f, indent=4)
+
+    return output_path
+
+
+if __name__ == "__main__":
+    # Define number of samples and output directory
+    NUM_SAMPLES = 200
+    DATA_DIR = "data"
+
+    print(f"Generating simulated multimodal metadata...")
+    metadata_file = generate_multimodal_metadata(DATA_DIR, NUM_SAMPLES)
+    print(f"Metadata successfully generated and saved to: {metadata_file}")
+
+    # Verify file content
+    with open(metadata_file, 'r', encoding='utf-8') as f:
+        content = json.load(f)
+    print(f"A total of {len(content)} records generated.")
+    print("Sample of the first 3 records:")
+    print(json.dumps(content[:3], indent=2))
+\end{lstlisting}
+
+\textbf{\emph{\textcolor{DeepPurple}{Main Code with Incomplete Functions}}}
+
+\begin{lstlisting}
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Paper: NEXT-GPT: Any-to-Any Multimodal LLM
+Authors: Shengqiong Wu, Hao Fei, Leigang Qu, Wei Ji, Tat-Seng Chua
+Year: 2023
+
+Main script to simulate the LLM-centric alignment learning from NEXT-GPT.
+This script reads the multimodal metadata and simulates the process of
+aligning features from different modalities to a common textual feature space.
+Python Version: 3.10.12
+"""
+
+import sys
+
+assert sys.version_info >= (3, 10), "This code requires Python 3.10 or higher"
+
+# Dependencies
+# pip install numpy==1.24.3 pandas==2.0.3
+
+import json
+import numpy as np
+from typing import List, Dict, Any
+
+# Global constants and settings
+FEATURE_DIM = 128  # Assumed feature dimension
+LEARNING_RATE = 0.001
+EPOCHS = 5
+EPSILON = 1e-8  # Constant for numerical stability
+
+
+def load_metadata(file_path: str) -> List[Dict[str, Any]]:
+    """
+    Loads the multimodal metadata from a JSON file.
+    Tag: [Data loading]
+
+    Args:
+        file_path (str): The path to the metadata JSON file.
+
+    Returns:
+        List[Dict[str, Any]]: A list of dictionaries, where each dictionary
+                              represents a data sample.
+
+    Examples:
+        >>> # Create a dummy metadata file for the example
+        >>> import json
+        >>> dummy_data = [{"id": "0001", "modality": "image", "caption": "test"}]
+        >>> with open("dummy_metadata.json", "w") as f:
+        ...     json.dump(dummy_data, f)
+        >>> metadata = load_metadata("dummy_metadata.json")
+        >>> print(metadata[0]['modality'])
+        image
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            metadata = json.load(f)
+        return metadata
+    except FileNotFoundError:
+        print(f"Error: Metadata file not found at '{file_path}'")
+        print("Please run 'data.py' first to generate the metadata file.")
+        sys.exit(1)
+
+
+def simulate_feature_encoding(metadata: List[Dict[str, Any]], feature_dim: int) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Simulates the encoding of multimodal and text data into feature vectors.
+    Tag: [Simulation]
+
+    Args:
+        metadata (List[Dict[str, Any]]): The loaded metadata.
+        feature_dim (int): The dimensionality of the feature vectors.
+
+    Returns:
+        tuple: A tuple containing:
+            - np.ndarray: Simulated multimodal feature vectors.
+            - np.ndarray: Simulated text feature vectors.
+
+    Examples:
+        >>> metadata = [{"caption": "c1"}, {"caption": "c2"}]
+        >>> modal_f, text_f = simulate_feature_encoding(metadata, 64)
+        >>> print(modal_f.shape)
+        (2, 64)
+    """
+    # Set random seed for reproducibility
+    np.random.seed(42)
+    n_samples = len(metadata)
+
+    # Simulate features from multimodal encoders like ImageBind
+    multimodal_features = np.random.rand(n_samples, feature_dim)
+
+    # Simulate features from text encoders
+    text_features = np.random.rand(n_samples, feature_dim)
+
+    return multimodal_features, text_features
+
+
+def initialize_projection_layer(input_dim: int, output_dim: int) -> np.ndarray:
+    """
+    Initializes the weights for a simple linear projection layer.
+    Tag: [Numerical calculation]
+
+    Args:
+        input_dim (int): The input dimension of the layer.
+        output_dim (int): The output dimension of the layer.
+
+    Returns:
+        np.ndarray: The initialized weight matrix for the projection layer.
+
+    Examples:
+        >>> weights = initialize_projection_layer(128, 128)
+        >>> print(weights.shape)
+        (128, 128)
+    """
+    pass # [Please complete the code]
+
+
+def project_features(features: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    """
+    Projects features using the projection layer weights.
+    Tag: [Numerical calculation]
+
+    Args:
+        features (np.ndarray): The input feature vectors.
+        weights (np.ndarray): The weight matrix of the projection layer.
+
+    Returns:
+        np.ndarray: The projected feature vectors.
+
+    Examples:
+        >>> features = np.random.rand(10, 128)
+        >>> weights = np.random.rand(128, 128)
+        >>> projected = project_features(features, weights)
+        >>> print(projected.shape)
+        (10, 128)
+    """
+    return np.dot(features, weights)
+
+
+def calculate_alignment_loss(projected_features: np.ndarray, target_features: np.ndarray) -> float:
+    """
+    Calculates the alignment loss between projected and target features.
+
+    This function computes the Mean Squared Error (MSE) loss, simulating the
+    l2-distance loss mentioned in the paper for aligning feature representations.
+    Tag: [Metric calculation]
+
+    Args:
+        projected_features (np.ndarray): The features output by the projection layer.
+        target_features (np.ndarray): The target text features.
+
+    Returns:
+        float: The calculated MSE loss.
+
+    Examples:
+        >>> f1 = np.array([[1, 2], [3, 4]])
+        >>> f2 = np.array([[1, 1], [3, 3]])
+        >>> loss = calculate_alignment_loss(f1, f2)
+        >>> print(round(loss, 2))
+        0.5
+    """
+    # Mean Squared Error loss (MSE)
+    loss = np.mean((projected_features - target_features) ** 2)
+    return float(loss)
+
+
+def update_projection_weights(weights: np.ndarray,
+                              multimodal_features: np.ndarray,
+                              projected_features: np.ndarray,
+                              text_features: np.ndarray,
+                              learning_rate: float) -> np.ndarray:
+    """
+    Updates the projection layer weights using gradient descent.
+    Tag: [Numerical calculation]
+
+    Args:
+        weights (np.ndarray): The current weights of the projection layer.
+        multimodal_features (np.ndarray): The original multimodal features.
+        projected_features (np.ndarray): The projected multimodal features.
+        text_features (np.ndarray): The target text features.
+        learning_rate (float): The learning rate for the update.
+
+    Returns:
+        np.ndarray: The updated weights.
+
+    Examples:
+        >>> w = np.ones((2, 2))
+        >>> m_f = np.array([[1, 2]])
+        >>> p_f = np.array([[3, 3]])
+        >>> t_f = np.array([[2, 2]])
+        >>> new_w = update_projection_weights(w, m_f, p_f, t_f, 0.1)
+        >>> print(new_w.shape)
+        (2, 2)
+    """
+    pass # [Please complete the code]
+
+
+if __name__ == "__main__":
+    METADATA_PATH = "data/metadata.json"
+
+    # 1. Load data
+    print("Step 1: Loading simulated metadata...")
+    metadata = load_metadata(METADATA_PATH)
+    print(f"Loaded {len(metadata)} data records.")
+
+    # 2. Simulate feature encoding
+    print("\nStep 2: Simulating multimodal and text feature encoding...")
+    multimodal_features, text_features = simulate_feature_encoding(metadata, FEATURE_DIM)
+    print(f"Feature dimension: {FEATURE_DIM}")
+
+    # 3. Initialize projection layer
+    print("\nStep 3: Initializing alignment projection layer...")
+    projection_weights = initialize_projection_layer(FEATURE_DIM, FEATURE_DIM)
+    print(f"Projection layer weight matrix shape: {projection_weights.shape}")
+
+    # 4. Simulate training process
+    print("\nStep 4: Starting simulated alignment learning training...")
+    for epoch in range(EPOCHS):
+        # a. Feature projection
+        projected_modal_features = project_features(multimodal_features, projection_weights)
+
+        # b. Calculate loss
+        loss = calculate_alignment_loss(projected_modal_features, text_features)
+        print(f"  Epoch [{epoch + 1}/{EPOCHS}], Alignment loss: {loss:.6f}")
+
+        # c. Update weights
+        projection_weights = update_projection_weights(
+            weights=projection_weights,
+            multimodal_features=multimodal_features,
+            projected_features=projected_modal_features,
+            text_features=text_features,
+            learning_rate=LEARNING_RATE
+        )
+
+    # 5. Final loss
+    final_projected_features = project_features(multimodal_features, projection_weights)
+    final_loss = calculate_alignment_loss(final_projected_features, text_features)
+    print("\nTraining completed.")
+    print(f"Final alignment loss: {final_loss:.6f}")
+
+    print("\n[Final Output]")
+    print(final_loss)
+\end{lstlisting}
+
+\textbf{\emph{\textcolor{DeepPurple}{Answer}}}
+
+\begin{lstlisting}
+def update_projection_weights(weights: np.ndarray,
+                              multimodal_features: np.ndarray,
+                              projected_features: np.ndarray,
+                              text_features: np.ndarray,
+                              learning_rate: float) -> np.ndarray:
+    """
+    Updates the projection layer weights using gradient descent.
+    Tag: [Numerical calculation]
+
+    Args:
+        weights (np.ndarray): The current weights of the projection layer.
+        multimodal_features (np.ndarray): The original multimodal features.
+        projected_features (np.ndarray): The projected multimodal features.
+        text_features (np.ndarray): The target text features.
+        learning_rate (float): The learning rate for the update.
+
+    Returns:
+        np.ndarray: The updated weights.
+
+    Examples:
+        >>> w = np.ones((2, 2))
+        >>> m_f = np.array([[1, 2]])
+        >>> p_f = np.array([[3, 3]])
+        >>> t_f = np.array([[2, 2]])
+        >>> new_w = update_projection_weights(w, m_f, p_f, t_f, 0.1)
+        >>> print(new_w.shape)
+        (2, 2)
+    """
+    # Calculate gradient of loss with respect to projected_features
+    grad_loss = 2 * (projected_features - text_features) / projected_features.shape[0]
+
+    # Calculate gradient of projected_features with respect to weights
+    grad_weights = np.dot(multimodal_features.T, grad_loss)
+
+    # Update weights
+    updated_weights = weights - learning_rate * grad_weights
+    return updated_weights
+
+def initialize_projection_layer(input_dim: int, output_dim: int) -> np.ndarray:
+    """
+    Initializes the weights for a simple linear projection layer.
+    Tag: [Numerical calculation]
+
+    Args:
+        input_dim (int): The input dimension of the layer.
+        output_dim (int): The output dimension of the layer.
+
+    Returns:
+        np.ndarray: The initialized weight matrix for the projection layer.
+
+    Examples:
+        >>> weights = initialize_projection_layer(128, 128)
+        >>> print(weights.shape)
+        (128, 128)
+    """
+    # Set random seed for reproducibility
+    np.random.seed(123)
+    # Use Xavier/Glorot initialization
+    limit = np.sqrt(6 / (input_dim + output_dim))
+    return np.random.uniform(-limit, limit, (input_dim, output_dim))
+\end{lstlisting}
+
+\end{tcolorbox}
+%-----------------------------------------------------------%-----------------------------------------------------------
