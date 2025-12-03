@@ -18,9 +18,9 @@
 
 ![图片1：SGI 能力维度概览](md_images/teaser.png)
 
-- 项目主页 Page：https://prismax-team.github.io/SGI-Page/
-- 代码 Code：https://github.com/PrismaX-Team/SGI-Bench
-- 数据 Data：https://huggingface.co/collections/PrismaX/sgi-bench
+- 项目主页 Page：https://internscience.github.io/SGI-Page/
+- 代码 Code：https://github.com/InternScience/SGI-Bench
+- 数据 Data：https://huggingface.co/collections/InternScience/sgi-bench
 - 团队 Team：https://discovery.intern-ai.org.cn/sciprismax
 
 
@@ -218,13 +218,13 @@
 ## 如何使用：即刻上手
 
 - 浏览评测与可视化结果（Page）  
-  https://prismax-team.github.io/SGI-Page/
+  https://internscience.github.io/SGI-Page/
 
 - 获取数据（HuggingFace Collection）  
-  https://huggingface.co/collections/PrismaX/sgi-bench
+  https://huggingface.co/collections/InternScience/sgi-bench
 
 - 运行评测（Code）  
-  https://github.com/PrismaX-Team/SGI-Bench
+  https://github.com/InternScience/SGI-Bench
 
 
 
