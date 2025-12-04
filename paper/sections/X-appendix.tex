@@ -6,7 +6,7 @@
 
 \textbf{Lead Authors}
 
-Wanghan Xu$^{1,2}$, Yuhao Zhou$^{1,3}$, Yifan Zhou$^{1,2}$, Qinglong Cao$^{2}$, Shuo Li$^{1,4}$, Jia Bu$^{5}$
+Wanghan Xu$^{1,2}$, Yuhao Zhou$^{1,3}$, Yifan Zhou$^{1,2}$, Qinglong Cao$^{2}$, Shuo Li$^{1,4}$, Jia Bu$^{1,5}$
 
 \textbf{Core Authors}
 
@@ -36,7 +36,7 @@ Lihao Sun, Chengbo Li, Jinzhe Ma, Wanhao Liu,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 天文
 % 刘雅婷，巫国诚
-Yating Liu, Guocheng Wu,
+Yating Liu, Kuo-Cheng Wu,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 物理-苏茂组
 % 柴声都
@@ -815,7 +815,7 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Sloan Digital Sky Survey (SDSS): Large-area multi-band imaging survey with significant contributions to extragalactic and stellar astrophysics, but with relatively limited cadence and not optimized for rapid transient detection. \\
 • Pan-STARRS: Wide-field survey with high sensitivity, flexible cadence, and a broad range of science outputs. While highly productive, it does not reach ZTF's survey speed or alert distribution rate. \\
 • ATLAS, ASAS-SN, and CRTS: Dedicated time-domain surveys with wide fields and rapid cadences, enabling rapid transient detection. However, these typically have smaller apertures and shallower depth compared to ZTF, restricting discovery of fainter phenomena. \\
-• Dark Energy Survey (DES): Deep survey with the Dark Energy Camera, high image quality, and excellent photometric calibration. DES is less optimized for high-cadence wide-area transient monitoring due to smaller field of view and longer exposure times. \\
+• Dark Energy Survey (DES): Deep survey with the Dark Energy Camera, high image quality, and excellent photometric calibration. DES is less optimized for high-cadence wide-area transient monitoring due to smaller field of view and longer exposure times. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
@@ -823,7 +823,7 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Minimizing image artifacts and systematic errors to ensure precision in photometric and astrometric measurements across a large, curved focal plane. \\
 • Providing prompt, reliable, and information-rich alerts for real-time identification and classification of astrophysical transients and moving objects. \\
 • Efficiently handling massive data volumes and complex processing requirements to deliver near-real-time data products and alerts to the community. \\
-• Maintaining high photometric and astrometric accuracy in the presence of instrumental, atmospheric, and sky-background variability. \\
+• Maintaining high photometric and astrometric accuracy in the presence of instrumental, atmospheric, and sky-background variability. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -853,7 +853,7 @@ range of time-domain astrophysics.
 • PTF: Utilized a CCD camera on the Palomar 48-inch telescope for transient discovery with moderate areal coverage and cadence. Enabled systematic transient searches but constrained by small field of view and longer readout times. \\
 • SDSS and Pan-STARRS: Both provided large-scale sky mapping and multi-filter photometry, but with relatively slow cadence and areal throughput unsuitable for rapid time-domain science. \\
 • ATLAS and ASAS-SN: Optimized for rapid all-sky cadence and automated transient detection but limited in depth due to smaller apertures and less sensitive instrumentation. Alert and data distribution less feature-rich than ZTF's planned system. \\
-• DES: Leveraged a large, high-quality camera for deep imaging and science, but with a narrower field and less frequent temporal sampling, making it suboptimal for high-cadence transient monitoring. \\
+• DES: Leveraged a large, high-quality camera for deep imaging and science, but with a narrower field and less frequent temporal sampling, making it suboptimal for high-cadence transient monitoring. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -878,7 +878,7 @@ testbed for LSST-scale time-domain operations.
 • 9: Package candidates with contextual data (cross-matches, light curves, images) into Avro alert packets and distribute in real time via Kafka queues. \\
 • 10: Archive all processed data products, catalogs, and alerts at IRSA and provide public access according to survey data release policies. \\
 • 11: Publish light curves from direct imaging for variable and periodic sources, and implement dedicated pipelines for moving object detection and orbit determination. \\
-• 12: Conduct on-sky performance validation and commission the system with early science and rapid feedback loops for further optimization. \\
+• 12: Conduct on-sky performance validation and commission the system with early science and rapid feedback loops for further optimization. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -892,7 +892,7 @@ testbed for LSST-scale time-domain operations.
 • 8-9 \\
 • 5-10 \\
 • 7-11 \\
-• 1-12 \\
+• 1-12 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -914,7 +914,7 @@ variable and transient objects.
 • Alert Latency: Time from image acquisition to alert distribution (target: \~{}4 minutes). \\
 • Transient Yield: Number of confirmed supernovae and other transient discoveries per unit time. \\
 • Moving Object Detection: Number and recovery rate of Near-Earth Asteroids and other small bodies identified and reported to the MPC. \\
-• Data Throughput: Sustained image and alert processing rates under full survey cadence. \\
+• Data Throughput: Sustained image and alert processing rates under full survey cadence. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -949,14 +949,14 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Kusner et al. (2017): Introduced Grammar VAE (GVAE), extending SMILES-based VAE by integrating syntactic constraints derived from a context-free grammar, improving validity but still limited by the inability of grammar to fully encode chemical rules. \\
 • Dai et al. (2018): Syntax-directed VAE (SDVAE) incorporates both syntactic and semantic constraints using attribute grammars, yielding further validity gains, though chemical correctness is not entirely guaranteed. \\
 • Simonovsky \& Komodakis (2018): GraphVAE generates molecular graphs via adjacency matrices and atom label prediction. While it addresses the linearization problem of SMILES, validity and scalability for larger and more complex molecules remain challenging. \\
-• Li et al. (2018): Atom-by-atom graph generation via LSTM. This approach can model arbitrary graphs but often passes through chemically invalid intermediate states, resulting in incomplete validity guarantees and inefficiencies. \\
+• Li et al. (2018): Atom-by-atom graph generation via LSTM. This approach can model arbitrary graphs but often passes through chemically invalid intermediate states, resulting in incomplete validity guarantees and inefficiencies. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
 • Direct generation of molecular graphs from continuous latent representations is challenging due to the combinatorial nature of graph structures and strict chemical validity constraints. \\
 • SMILES-based generative models struggle to enforce chemical validity and do not offer smooth latent spaces for molecular similarity. \\
 • Atom-by-atom or edge-by-edge graph generation approaches often produce invalid intermediate structures, leading to low efficiency and limited chemical feasibility. \\
-• Capturing both coarse-grained (substructure) and fine-grained (atomic connectivity) molecular features in a unified generative framework. \\
+• Capturing both coarse-grained (substructure) and fine-grained (atomic connectivity) molecular features in a unified generative framework. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -985,7 +985,7 @@ molecular optimization.
 • GVAE (Kusner et al., 2017): Imposes syntactic constraints via grammar-based decoding, improving string validity but not fully encoding chemical rules. \\
 • SD-VAE (Dai et al., 2018): Incorporates additional semantic constraints with attribute grammars, further improving validity but still limited by the expressivity of the grammar in capturing chemical feasibility. \\
 • GraphVAE (Simonovsky \& Komodakis, 2018): Directly generates molecular graphs via adjacency matrices. Avoids string limitations but faces scalability and validity issues for larger molecules. \\
-• Atom-by-Atom LSTM (Li et al., 2018): Autoregressive graph generation at the atomic level. Capable of arbitrary graph synthesis but inefficient due to invalid intermediate structures. \\
+• Atom-by-Atom LSTM (Li et al., 2018): Autoregressive graph generation at the atomic level. Capable of arbitrary graph synthesis but inefficient due to invalid intermediate structures. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1007,7 +1007,7 @@ property-driven molecular graph synthesis.
 • 6: Assemble the molecular graph from the predicted junction tree by sequentially merging clusters using a graph decoder and scoring candidate subgraph combinations. \\
 • 7: For stereochemistry, enumerate possible isomers of the generated graph and select the best via neural scoring. \\
 • 8: For property-driven optimization, jointly train a property predictor with JT-VAE and perform gradient-based or Bayesian optimization in the latent space. \\
-• 9: Evaluate reconstruction, validity, property optimization, and neighborhood smoothness using standardized benchmarks. \\
+• 9: Evaluate reconstruction, validity, property optimization, and neighborhood smoothness using standardized benchmarks. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1022,7 +1022,7 @@ property-driven molecular graph synthesis.
 • 5-9 \\
 • 6-9 \\
 • 7-9 \\
-• 8-9 \\
+• 8-9 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1040,7 +1040,7 @@ generation and optimization.
 • Optimization Improvement: Average increase in target property (e.g., penalized logP) achieved via optimization, often reported with similarity constraints. \\
 • Similarity: Tanimoto similarity between original and optimized molecules, measured via Morgan fingerprints. \\
 • Predictive Performance: Log-likelihood and root mean squared error (RMSE) of property prediction models (e.g., sparse Gaussian process) trained on latent encodings. \\
-• Success Rate: Fraction of optimization trials where valid, property-improved molecules satisfying similarity constraints are found. \\
+• Success Rate: Fraction of optimization trials where valid, property-improved molecules satisfying similarity constraints are found. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1073,14 +1073,14 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Viljanen et al. (2018): Compared approaches using photogrammetric canopy height models, images, and vegetation indices from UAVs in estimating grass sward biomass, reporting strong results but site-specific dependencies. \\
 • Michez et al. (2019): Mapped and monitored pasture biomass and grazing using UAV-based sward height and reflectance data, demonstrating promise but limited by environmental variability and DTM availability. \\
 • Lussem et al. (2018): Evaluated RGB-based vegetation indices from UAV imagery for forage yield estimation, predominantly using NDVI and linear regression, revealing moderate-to-strong correlations but suffering from index saturation and reduced transferability. \\
-• Insua et al. (2019): Coupled UAV imagery with crop simulation for spatial-temporal pasture growth estimation, but introduced complexity by integrating simulation models and site-specific variables. \\
+• Insua et al. (2019): Coupled UAV imagery with crop simulation for spatial-temporal pasture growth estimation, but introduced complexity by integrating simulation models and site-specific variables. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
 • Accurate, spatially comprehensive, and temporally frequent estimation of forage biomass and vegetation cover in grasslands remains difficult due to the heterogeneity of growth stages, management regimes, and environmental variation. \\
 • Conventional field-based surveys are labor-intensive, spatially incomplete, and lack temporal resolution needed for dynamic grassland management. \\
 • Remote sensing solutions, particularly with satellite or manned aerial imagery, are limited by insufficient spatial and temporal resolution for plot-level or intra-seasonal monitoring. \\
-• Existing remote sensing models often do not generalize well due to site-specific calibrations, limited temporal coverage, and a reliance on linear relationships between indices and biophysical parameters. \\
+• Existing remote sensing models often do not generalize well due to site-specific calibrations, limited temporal coverage, and a reliance on linear relationships between indices and biophysical parameters. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1109,7 +1109,7 @@ forage biomass and vegetation cover in temperate grasslands across a full growin
 • Spectral Index Regression (NDVI, etc.): Relies on linear regression between vegetation indices (primarily NDVI) and biomass; easy to implement but limited by index saturation and oversimplification of non-linear relationships. Often requires site-specific calibration. \\
 • Height/Volumetric Models from Photogrammetry: Uses UAV structure from motion photogrammetry to estimate canopy or sward height as a proxy for biomass, offering strong correlation where precise DTMs are available but sensitive to terrain inaccuracies and not robust at low vegetation density. \\
 • Multi-Source and Simulation-Based Models: Integrate spectral, structural, and ancillary data (e.g., crop models or management records) for enhanced accuracy but increase methodological complexity and reduce operational ease. \\
-• Classification Approaches: Rarely applied to grassland biomass; when used, classification of vegetation cover is often qualitative and seldom linked directly to continuous biomass estimation. \\
+• Classification Approaches: Rarely applied to grassland biomass; when used, classification of vegetation cover is often qualitative and seldom linked directly to continuous biomass estimation. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1132,7 +1132,7 @@ management needs and data constraints.
 • 7: Selecting optimal vegetation index (GNDVI) and training non-linear regression models for fresh and dry biomass using 49 training samples. \\
 • 8: Validating regression models using 50 independent field samples; calculating performance statistics. \\
 • 9: Extracting GNDVI values from 248 polygons, applying cluster and discriminant analysis to classify vegetation cover into four classes. \\
-• 10: Comparing spatial and temporal patterns among the three approaches using visual and statistical analyses. \\
+• 10: Comparing spatial and temporal patterns among the three approaches using visual and statistical analyses. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1146,7 +1146,7 @@ management needs and data constraints.
 • 5-9 \\
 • 6-8 \\
 • 7-8 \\
-• 9-10 \\
+• 9-10 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1165,7 +1165,7 @@ classification, sampled across management regimes and growth stages.
 • Central Tendency Error: Assesses systematic bias between predicted and observed values. \\
 • Regression Error: Quantifies deviation of fitted regression from the 1:1 line. \\
 • Concordance Analysis: Statistical comparison of predicted vs. observed values for regression model validation. \\
-• Visual Qualitative Assessment: Comparison of predicted spatial patterns with RGB imagery and known management (e.g., growth duration). \\
+• Visual Qualitative Assessment: Comparison of predicted spatial patterns with RGB imagery and known management (e.g., growth duration). 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1199,14 +1199,14 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Sfetsos2000: Applied various forecasting techniques (statistical, time-series analysis) to mean hourly wind speed, finding that model performance varies with data characteristics; however, results demonstrate instability across sites and fail to leverage combined model strengths. \\
 • Kelouwani2004: Utilized nonlinear model identification with neural networks for wind turbine output prediction, yielding improved accuracy for specific datasets, but with limited robustness to operational variability. \\
 • Negnevitsky2007: Proposed a hybrid intelligent system for short-term wind power forecasting, integrating multiple AI approaches; achieved improved performance over single models but lacked dynamic adaptation to wind speed distribution features. \\
-• Shi2010: Combined wavelet transforms and support vector machines for short-term wind power prediction, enhancing performance for non-stationary series, yet exhibiting sensitivity to model parameterization and failing to generalize across varying wind speed segments. \\
+• Shi2010: Combined wavelet transforms and support vector machines for short-term wind power prediction, enhancing performance for non-stationary series, yet exhibiting sensitivity to model parameterization and failing to generalize across varying wind speed segments. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
 • Accurately forecasting very-short term (e.g., 15-minute-ahead) wind power output amidst inherent wind speed volatility and non-stationarity. \\
 • Capturing the nonlinear and regime-dependent relationship between wind speed distributions and wind farm power generation. \\
 • Integrating multiple predictive models in a manner that adaptively leverages their complementary strengths across varying meteorological conditions. \\
-• Minimizing computational burden while improving real-time forecasting reliability for grid operation and reserve planning. \\
+• Minimizing computational burden while improving real-time forecasting reliability for grid operation and reserve planning. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1234,7 +1234,7 @@ superior forecasting accuracy over individual models for 15-minute-ahead wind po
 
 • Persistence/MLR/ARMA: Statistical models, such as persistence, multiple linear regression, and ARMA, leverage historical data for short-term forecasting, offering simplicity but inadequate handling of nonlinearities and changing wind regimes. \\
 • ANN/SVM Approaches: Artificial neural networks and support vector machines have been applied for improved short-term prediction by capturing complex patterns, but their performance is sensitive to data characteristics, and single models often fail to generalize well. \\
-• Prior Hybrid Models: Some studies combine multiple models via fixed or learned weights (e.g., neural network-based combination), achieving moderate improvements but lacking integration with wind speed regime information, and often requiring heavy retraining for each new scenario. \\
+• Prior Hybrid Models: Some studies combine multiple models via fixed or learned weights (e.g., neural network-based combination), achieving moderate improvements but lacking integration with wind speed regime information, and often requiring heavy retraining for each new scenario. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1256,7 +1256,7 @@ wind power prediction.
 • 6: Compute model weights (correlations) within each wind speed regime and store in a monthly weight database. \\
 • 7: For new forecasts, use NWP wind speed prediction to identify wind speed regime and retrieve corresponding model weights. \\
 • 8: Combine LSSVM and RBFNN outputs using dynamic weights for final forecast output. \\
-• 9: Evaluate forecasting performance using MAPE and RMSE against actual measured data. \\
+• 9: Evaluate forecasting performance using MAPE and RMSE against actual measured data. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1267,7 +1267,7 @@ wind power prediction.
 • 5-6 \\
 • 6-7 \\
 • 7-8 \\
-• 8-9 \\
+• 8-9 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1280,7 +1280,7 @@ with wind speed segmented monthly and fitted to Weibull distributions for regime
 
 • MAPE: Mean Absolute Percentage Error; quantifies average absolute error as a percentage of actual wind farm rated capacity. \\
 • RMSE: Root Mean Square Error; quantifies the standard deviation of the prediction errors, normalized by wind farm capacity. \\
-• Visual Comparison: Graphical overlays of forecasted vs. actual power output for selected periods to assess tracking and volatility handling. \\
+• Visual Comparison: Graphical overlays of forecasted vs. actual power output for selected periods to assess tracking and volatility handling. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1312,7 +1312,7 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • InternVL2.5: Adopted a multi-stage pipeline with language-only pre-training, MLP warmup for multimodal alignment, and instruction tuning. Demonstrated strong open-source multimodal performance but faced training complexity and limited cross-modal parameter optimization. \\
 • Qwen2.5-VL: Uses a staged adaptation of text-only LLMs into MLLMs, integrating visual adapters and fine-tuning. Achieves strong performance on vision-language tasks but still requires complex alignment processes and suffers in long-context or multi-image scenarios. \\
 • LLaVA-OneVision: Focuses on easy visual task transfer via visual instruction tuning. Excels at adaptation efficiency but underperforms on challenging multimodal reasoning or spatial tasks compared to larger unified models. \\
-• Gemini 2.5 Pro: A proprietary closed-source MLLM employing advanced joint training and data curation, achieving state-of-the-art results. However, it lacks the transparency and reproducibility necessary for open research progress. \\
+• Gemini 2.5 Pro: A proprietary closed-source MLLM employing advanced joint training and data curation, achieving state-of-the-art results. However, it lacks the transparency and reproducibility necessary for open research progress. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
@@ -1320,7 +1320,7 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Overcoming the inefficiencies and alignment difficulties of post-hoc adaptation pipelines that start from text-only LLMs. \\
 • Scaling multimodal large language models (MLLMs) to handle longer contexts, multi-image input, and complex real-world tasks. \\
 • Balancing pure-language proficiency with robust multimodal reasoning and visual grounding. \\
-• Efficiently utilizing heterogeneous and imbalanced multimodal data during pre-training and post-training. \\
+• Efficiently utilizing heterogeneous and imbalanced multimodal data during pre-training and post-training. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1347,7 +1347,7 @@ across a spectrum of multimodal tasks, and narrows the gap to leading proprietar
 • InternVL2.5: Applies separate language pre-training followed by multimodal alignment (MLP warmup, visual adapters), then instruction tuning. Good on general benchmarks, but complex, inflexible, and less efficient for scaling. \\
 • Qwen2.5-VL: Uses visual adapters with staged fine-tuning. Strong visual-text integration, but depends on freezing strategies and additional modules. Moderate gains on long-context or diverse input. \\
 • LLaVA-OneVision: Visual instruction tuning for rapid adaptation. Simplicity and transferability prioritized, but lacking in deep joint optimization for reasoning and multi-modal context. \\
-• Gemini 2.5 Pro: Highly-curated, end-to-end joint pre-training but closed-source, with proprietary data curation and infrastructure. \\
+• Gemini 2.5 Pro: Highly-curated, end-to-end joint pre-training but closed-source, with proprietary data curation and infrastructure. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1368,7 +1368,7 @@ scalable, efficient, and unified multimodal reasoning with open-source reproduci
 • 6: Conduct Mixed Preference Optimization (MPO) using preference pairs and a composite loss (preference, quality, generation). \\
 • 7: Integrate Best-of-N test-time scaling with VisualPRM as the critic to select optimal outputs. \\
 • 8: Train with InternEVO for efficient large-scale distributed optimization, handling workload imbalances and maximizing resource utilization. \\
-• 9: Perform comprehensive evaluation on a battery of multimodal and language benchmarks. \\
+• 9: Perform comprehensive evaluation on a battery of multimodal and language benchmarks. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1379,7 +1379,7 @@ scalable, efficient, and unified multimodal reasoning with open-source reproduci
 • 5-6 \\
 • 6-7 \\
 • 7-8 \\
-• 8-9 \\
+• 8-9 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1400,7 +1400,7 @@ curated samples; MPO uses 300K preference pairs from MMPR v1.2.
 • MVBench/Video-MME/MLVU: Video and temporal understanding (score, \%). \\
 • ScreenSpot/ScreenSpot-V2: GUI grounding (accuracy, \%). \\
 • VSI-Bench: Spatial reasoning (composite score, \%). \\
-• Language Benchmarks: MMLU, CMMLU, C-Eval, GAOKAO, TriviaQA, NaturalQuestions, RACE, HellaSwag, GSM8K, MATH, HumanEval, MBPP (accuracy, pass@k, or other standard metrics). \\
+• Language Benchmarks: MMLU, CMMLU, C-Eval, GAOKAO, TriviaQA, NaturalQuestions, RACE, HellaSwag, GSM8K, MATH, HumanEval, MBPP (accuracy, pass@k, or other standard metrics). 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1432,7 +1432,7 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Senior et al. (2020): Introduced deep learning for predicting inter-residue distances, improving template-free protein structure prediction but still reliant on multiple post-processing stages and lacking atomic-level accuracy for novel folds. \\
 • Yang et al. (2020): Employed deep neural networks to predict inter-residue orientations, integrating orientation constraints but with limited end-to-end learning and lower performance on long or complex proteins. \\
 • AlQuraishi (2019): Proposed an end-to-end differentiable structure prediction model, directly outputting 3D coordinates; however, it exhibited lower accuracy than multi-stage pipelines and struggled without homologous templates. \\
-• Marks et al. (2011); Jones et al. (2012): Used coevolutionary analysis of MSAs to infer residue contacts, achieving improvements in contact prediction but failing to achieve accurate atomic models, especially for proteins lacking deep MSAs or templates. \\
+• Marks et al. (2011); Jones et al. (2012): Used coevolutionary analysis of MSAs to infer residue contacts, achieving improvements in contact prediction but failing to achieve accurate atomic models, especially for proteins lacking deep MSAs or templates. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
@@ -1440,7 +1440,7 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Integrating physical, geometric, and evolutionary information into a single, scalable, end-to-end deep learning model. \\
 • Handling cases with shallow or sparse multiple sequence alignments (MSAs), which limits evolutionary signal. \\
 • Providing robust structure prediction for large proteins and complex folds, including those with novel topologies. \\
-• Quantifying per-residue prediction confidence to enable reliable downstream biological applications. \\
+• Quantifying per-residue prediction confidence to enable reliable downstream biological applications. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1468,7 +1468,7 @@ absence of close structural homologues or deep sequence alignments.
 
 • Physics-based simulation: Uses molecular dynamics or statistical approximations to model protein folding but is computationally intractable for large proteins and sensitive to approximations in physical modeling. \\
 • Bioinformatics/homology modeling: Predicts structures via alignment to known protein templates and infers constraints from evolutionary sequence analysis; limited by template availability and reduced accuracy for novel or divergent proteins. \\
-• Deep learning with intermediate prediction: Predicts inter-residue distances/orientations from MSAs using CNNs or attention networks, then reconstructs structures through downstream heuristics; accuracy suffers in end-to-end integration and novel folds. \\
+• Deep learning with intermediate prediction: Predicts inter-residue distances/orientations from MSAs using CNNs or attention networks, then reconstructs structures through downstream heuristics; accuracy suffers in end-to-end integration and novel folds. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1490,7 +1490,7 @@ estimates.
 • 6: Apply frame-aligned point error (FAPE) loss, distogram loss, BERT-style MSA masking loss, and auxiliary side-chain/violation losses for end-to-end supervised training. \\
 • 7: Augment training with self-distillation: generate and filter high-confidence predictions on unlabelled sequences, then retrain with mixed supervised and distillation data. \\
 • 8: During inference, perform ensemble predictions (if required), select best models by predicted confidence scores, and relax final structures with Amber force field. \\
-• 9: Evaluate predictions using CASP14 targets and recent PDB structures, reporting backbone and all-atom metrics, and provide per-residue confidence (pLDDT) and TM-score estimates. \\
+• 9: Evaluate predictions using CASP14 targets and recent PDB structures, reporting backbone and all-atom metrics, and provide per-residue confidence (pLDDT) and TM-score estimates. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1501,7 +1501,7 @@ estimates.
 • 5-6 \\
 • 6-7 \\
 • 7-8 \\
-• 8-9 \\
+• 8-9 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1520,7 +1520,7 @@ redundant PDB chains (n=10,795), filtered to remove overlap with training data.
 • C$\alpha$ r.m.s.d.95: Root-mean-square deviation of C$\alpha$ atoms over the best-aligned 95\% of residues, reducing the impact of outliers/artifacts. \\
 • pLDDT (Predicted Local Distance Difference Test): Confidence score per residue, predicting local structural accuracy. \\
 • pTM (Predicted TM-score): Neural network–derived prediction of TM-score for a given model. \\
-• Error intervals: 95\% confidence intervals on reported metrics via bootstrapping. \\
+• Error intervals: 95\% confidence intervals on reported metrics via bootstrapping. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1560,14 +1560,14 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Cao et al. (2023, JACS, MOFormer): Introduced a self-supervised Transformer model for MOF property prediction, exhibiting improved accuracy and data efficiency, yet mainly focused on text-based molecular representations. \\
 • Kang et al. (2023, Nat. Mach. Intell., MOFTransformer): Developed a multimodal Transformer for universal transfer learning in MOFs, integrating graph and grid embeddings, achieving high transferability but requiring extensive pretraining data. \\
 • Park et al. (2024, Digital Discovery): Applied deep reinforcement learning with Transformers for inverse design of MOFs, enabling property-driven generative design but currently constrained by the diversity and validity of generated structures. \\
-• Dagdelen et al. (2024, Nat. Commun.): Proposed LLM-NERRE for structured chemical information extraction, advancing literature mining but dependent on fine-tuning and sample efficiency. \\
+• Dagdelen et al. (2024, Nat. Commun.): Proposed LLM-NERRE for structured chemical information extraction, advancing literature mining but dependent on fine-tuning and sample efficiency. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
 • The vast chemical and structural diversity of MOFs renders exhaustive experimental exploration infeasible, creating a high-dimensional, combinatorial synthesis landscape. \\
 • Traditional manual or even semi-automated high-throughput methodologies are bottlenecked by limited autonomy, data integration, and lack of feedback-driven optimization. \\
 • Existing AI models, though powerful, struggle with generalizability and interpretability due to sparse, noisy, or unstandardized data and the complexity of structure-property relationships. \\
-• Realizing fully autonomous, closed-loop self-driving laboratories (SDLs) for MOF discovery is impeded by hardware standardization issues, sample handling difficulties, and insufficient integration of intelligent decision-making. \\
+• Realizing fully autonomous, closed-loop self-driving laboratories (SDLs) for MOF discovery is impeded by hardware standardization issues, sample handling difficulties, and insufficient integration of intelligent decision-making. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1598,7 +1598,7 @@ on the progression toward self-driving laboratories.
 • Machine Learning (2012–present): Applies classical statistical learning (e.g., decision trees, SVMs) for property prediction and data analysis, limited by feature engineering and scalability. \\
 • Deep Learning (2020–present): Utilizes neural networks for property prediction and structure optimization, improving accuracy but often acts as a black box and needs large labeled datasets. \\
 • Transformers/LLMs (2023–present): Leverage self-attention for sequence and structural modeling, enabling multimodal integration and text-based knowledge mining, but require extensive training and face challenges in domain adaptation and resource consumption. \\
-• Generative Models (VAEs, GANs, Diffusion): Enable de novo MOF structure generation, but often struggle with chemical validity, diversity, and property conditioning. \\
+• Generative Models (VAEs, GANs, Diffusion): Enable de novo MOF structure generation, but often struggle with chemical validity, diversity, and property conditioning. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1618,7 +1618,7 @@ design of MOFs.
 • 4: Apply machine learning/deep learning models for property prediction and experimental guidance using accumulated data. \\
 • 5: Adopt Transformer-based models and LLMs for structure-property prediction, literature mining, synthesis condition extraction, and generative MOF design. \\
 • 6: Implement feedback-driven experimental planning via Bayesian optimization, reinforcement learning, or LLM-driven task planners. \\
-• 7: Iteratively refine models and protocols in a closed-loop SDL, autonomously updating synthesis/design strategies based on real-time outcomes. \\
+• 7: Iteratively refine models and protocols in a closed-loop SDL, autonomously updating synthesis/design strategies based on real-time outcomes. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1627,7 +1627,7 @@ design of MOFs.
 • 3-4 \\
 • 4-5 \\
 • 5-6 \\
-• 6-7 \\
+• 6-7 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1645,7 +1645,7 @@ synthesis/characterization platforms.
 • Structural Validity/Diversity: Percentage of generated MOF candidates that are synthetically accessible and chemically valid, structural diversity indices. \\
 • Automation Level: SDL autonomy score (Levels 1–5), extent of human intervention required. \\
 • Information Extraction F1 Score: Precision, recall, and F1 for chemical entity and relation extraction from literature. \\
-• Resource Efficiency: Computational and experimental resources expended per successful discovery or optimization cycle. \\
+• Resource Efficiency: Computational and experimental resources expended per successful discovery or optimization cycle. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1679,14 +1679,14 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • BellmanFord1958: Label-correcting algorithm with O(n·m) time; allows negative weights but is suboptimal in the worst case and shows little potential for efficient parallelization. \\
 • Han1997 / PaigeKruskal1985: Matrix multiplication-based SSSP achieves polylogarithmic parallel time at superlinear work complexity (O(n\^{}3 log n)); impractical for sparse graphs due to excessive work. \\
 • KleinSubramanian1997: Randomized parallel BFS-based SSSP for unweighted/weighted graphs; achieves sublinear time for certain approximations, but exact solutions still demand high work or multiple passes. \\
-• Crauser1998: Parallelizes Dijkstra by organizing computation into phases for random graphs; achieves O(n\^{}\{1/3\} log n) time and O(n log n + m) work on average for specific random graph classes. \\
+• Crauser1998: Parallelizes Dijkstra by organizing computation into phases for random graphs; achieves O(n\^{}\{1/3\} log n) time and O(n log n + m) work on average for specific random graph classes. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
 • No known work-efficient parallel SSSP algorithm achieves sublinear time for arbitrary directed graphs with nonnegative edge weights. \\
 • Existing parallel methods either settle nodes sequentially or incur superlinear work, limiting practical scalability on large graphs. \\
 • Traditional bucket-based or priority queue approaches struggle to balance parallelism and efficiency, especially with varied edge weights and node degrees. \\
-• Load balancing and minimizing redundant relaxations/reinsertions are unsolved for arbitrary, especially high-degree, graphs in parallel settings. \\
+• Load balancing and minimizing redundant relaxations/reinsertions are unsolved for arbitrary, especially high-degree, graphs in parallel settings. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1716,7 +1716,7 @@ parallel time for broad graph classes, while providing provable average-case gua
 • ApproximateBucket: Bucket-based variants for small integer weights; can be fast for restricted graphs but either devolve to label-correcting (with reinsertion overhead) or require auxiliary selection structures, limiting parallelism. \\
 • BellmanFord: Label-correcting, admits parallel edge relaxations, but incurs high redundancy and pseudo-polynomial time in the worst case. \\
 • MatrixMult: Reduces SSSP to matrix multiplications; achieves sublinear parallel time at cubic or worse work, impractical except for dense graphs. \\
-• ParallelBFS/Randomized: Suitable for unweighted or random graphs; offers fast approximate solutions but breaks down for exact computations or general edge weights. \\
+• ParallelBFS/Randomized: Suitable for unweighted or random graphs; offers fast approximate solutions but breaks down for exact computations or general edge weights. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1740,7 +1740,7 @@ edge weights.
 • 7: Advance to the next nonempty bucket and repeat. \\
 • 8: Parallelization: distribute nodes (and their bucket membership) across processors; generate and assign relaxation requests using randomized dart-throwing or explicit load balancing (semi-sorting); aggregate and execute requests. \\
 • 9: Distributed memory extension: replace global memory with message-passing; assign nodes and requests using hashing and tree-based collective operations. \\
-• 10: Parameter tuning: select $\Delta$ empirically or via doubling search to balance work and parallel time; for arbitrary weights, use adaptive bucket splitting. \\
+• 10: Parameter tuning: select $\Delta$ empirically or via doubling search to balance work and parallel time; for arbitrary weights, use adaptive bucket splitting. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1753,7 +1753,7 @@ edge weights.
 • 7-3 \\
 • 3-8 \\
 • 8-9 \\
-• 1-10 \\
+• 1-10 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1769,7 +1769,7 @@ independently with probability $\overline{d}$/n, edge weights i.i.d. uniform [0,
 • Speedup: Empirical wall-clock speedup relative to sequential Dijkstra or $\Delta$-stepping on real and synthetic graphs. \\
 • Phases/Reinsertions: Number of bucket phases and total reinsertions, correlated to $\Delta$ and graph/weight parameters. \\
 • Scalability: Ability to maintain work efficiency and speedup as the number of processors and graph size increase. \\
-• Robustness: Performance across random graphs, geometric graphs, and real-world networks with varying degree and weight distributions. \\
+• Robustness: Performance across random graphs, geometric graphs, and real-world networks with varying degree and weight distributions. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1798,18 +1798,18 @@ You are a top-tier researcher in your field. Based on the following context, ple
 
 \textbf{\emph{\textcolor{CaseOrange}{RelatedWork}}}
 
-• ConvNet [16]: A pioneering end-to-end CNN architecture employing temporal and spatial convolutional layers for EEG decoding, offering improved performance over traditional approaches but limited to local feature extraction due to restricted receptive field. \\
-• EEGNet [17]: A compact CNN model using temporal and depthwise spatial convolutions, exhibiting robust generalization across BCI paradigms; however, it also fails to capture long-term dependencies inherent in EEG time series. \\
-• Transformer-Based EEG Models [21,22,34]: Attention-based Transformers leverage global temporal dependencies for EEG decoding, achieving notable performance but neglecting local feature learning, necessitating additional pre-processing or feature extraction steps. \\
-• FBCSP [8]: A classical approach utilizing filter bank common spatial patterns to extract task-specific hand-crafted features for motor imagery classification, demonstrating strong performance but lacking generalization and requiring prior knowledge. \\
-• Hybrid and Graph-based Methods [28,29,30,41,43]: Combining CNNs with hand-crafted features or graph structures to enhance spatial-temporal modeling. These methods improve local-global representations but often involve complex architectures or task-dependent preprocessing. \\
+• ConvNet: A pioneering end-to-end CNN architecture employing temporal and spatial convolutional layers for EEG decoding, offering improved performance over traditional approaches but limited to local feature extraction due to restricted receptive field. \\
+• EEGNet: A compact CNN model using temporal and depthwise spatial convolutions, exhibiting robust generalization across BCI paradigms; however, it also fails to capture long-term dependencies inherent in EEG time series. \\
+• Transformer-Based EEG Models: Attention-based Transformers leverage global temporal dependencies for EEG decoding, achieving notable performance but neglecting local feature learning, necessitating additional pre-processing or feature extraction steps. \\
+• FBCSP: A classical approach utilizing filter bank common spatial patterns to extract task-specific hand-crafted features for motor imagery classification, demonstrating strong performance but lacking generalization and requiring prior knowledge. \\
+• Hybrid and Graph-based Methods: Combining CNNs with hand-crafted features or graph structures to enhance spatial-temporal modeling. These methods improve local-global representations but often involve complex architectures or task-dependent preprocessing. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
 • Accurately decoding EEG signals requires capturing both local features (temporal and spatial) and global dependencies due to the non-stationary and low signal-to-noise nature of EEG data. \\
 • CNN-based models are constrained by local receptive fields, failing to capture long-range temporal dependencies crucial for sequential EEG data. \\
 • Transformer-based models, though adept at modeling global dependencies, often disregard local feature representation, undermining the exploitation of fine-grained EEG information. \\
-• End-to-end frameworks for EEG decoding still lack sufficient interpretability regarding their decision process, particularly in identifying task-relevant neural substrates. \\
+• End-to-end frameworks for EEG decoding still lack sufficient interpretability regarding their decision process, particularly in identifying task-relevant neural substrates. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1835,11 +1835,11 @@ enhanced interpretability through visualization of learned representations.
 
 \textbf{\emph{\textcolor{CaseOrange}{ExistingSolutions}}}
 
-• ConvNet [16]: Applies sequential temporal and spatial convolutions to extract discriminative local features, yielding solid performance but limited by short-range context. \\
-• EEGNet [17]: Implements depthwise and separable convolutions for temporal and spatial filtering, achieving good generalization yet lacking mechanisms for modeling global dependencies. \\
-• RNN/LSTM-based Models [18,19]: Utilize sequential recurrence to encode long-term temporal dependencies but suffer from inefficient training and rapid decay of influence across time steps. \\
-• Transformer-Based Models [21,22,35]: Employ self-attention to directly capture long-range dependencies, improving performance for sequential tasks, but require additional modules or preprocessing to encode local information. \\
-• Hybrid Methods: Fuse hand-crafted features or graph-based encodings with deep learners, improving local-global feature integration but increasing architectural complexity and dependence on domain expertise. \\
+• ConvNet: Applies sequential temporal and spatial convolutions to extract discriminative local features, yielding solid performance but limited by short-range context. \\
+• EEGNet: Implements depthwise and separable convolutions for temporal and spatial filtering, achieving good generalization yet lacking mechanisms for modeling global dependencies. \\
+• RNN/LSTM-based Models: Utilize sequential recurrence to encode long-term temporal dependencies but suffer from inefficient training and rapid decay of influence across time steps. \\
+• Transformer-Based Models: Employ self-attention to directly capture long-range dependencies, improving performance for sequential tasks, but require additional modules or preprocessing to encode local information. \\
+• Hybrid Methods: Fuse hand-crafted features or graph-based encodings with deep learners, improving local-global feature integration but increasing architectural complexity and dependence on domain expertise. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1860,7 +1860,7 @@ by mapping activation to brain regions.
 • 5: Process tokens with the self-attention module: apply N layers of multi-head self-attention (h heads), followed by feed-forward sublayers. \\
 • 6: Pass aggregated features to the fully-connected classifier: two layers with Softmax output. \\
 • 7: Train the model with cross-entropy loss using Adam optimizer and perform subject-wise validation. \\
-• 8: Visualize feature distributions (t-SNE) and model attention via CAM and CAT for interpretability. \\
+• 8: Visualize feature distributions (t-SNE) and model attention via CAM and CAT for interpretability. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1870,7 +1870,7 @@ by mapping activation to brain regions.
 • 4-5 \\
 • 5-6 \\
 • 6-7 \\
-• 7-8 \\
+• 7-8 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -1886,7 +1886,7 @@ Each dataset covers distinct paradigms and acquisition settings, supporting mode
 • Cohen's Kappa: A statistical measure of inter-rater agreement accounting for chance, used to evaluate classification reliability. \\
 • Wilcoxon Signed-Rank Test: Non-parametric test for statistical significance of performance differences between models or ablation settings. \\
 • Training Efficiency: Measured as convergence speed (epochs to stable loss/accuracy) and per-epoch training time. \\
-• Interpretability: Qualitatively assessed via t-SNE clustering of learned features, CAM heatmaps, and CAT spatial-temporal mappings. \\
+• Interpretability: Qualitatively assessed via t-SNE clustering of learned features, CAM heatmaps, and CAT spatial-temporal mappings. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
@@ -1916,13 +1916,13 @@ You are a top-tier researcher in your field. Based on the following context, ple
 
 \textbf{\emph{\textcolor{CaseOrange}{RelatedWork}}}
 
-• eSEN-30M-OMat [23]: An equivariant graph neural network tailored for materials, achieving strong accuracy via large-scale message passing, but limited to domain-specific datasets and lacking generalization across molecules or surfaces. \\
-• GemNet-OC20 [24]: A graph neural network for catalysis using geometric embeddings, excelling in adsorption energy prediction but focused solely on catalysis, without material or molecular generalization. \\
-• MACE [6, 38]: A foundation model for atomistic materials chemistry that demonstrates excellent transferability within the organic molecule domain, but struggles to generalize simultaneously to diverse materials and catalytic systems. \\
-• EquiformerV2 [5, 45]: An advanced equivariant transformer model that achieves strong performance on domain-specific materials and catalysis benchmarks but is not trained for multi-domain or multi-DFT-task generalization. \\
-• ORB v3 [57]: A scalable neural network potential capable of efficient simulation at scale, but designed primarily for periodic materials, with limited multi-domain applicability. \\
-• Universal Graph Deep Learning Potentials [12]: Aim to provide comprehensive coverage across the periodic table, yet tend not to generalize to molecules or catalysis due to distribution shifts and differing DFT settings. \\
-• Pre-training with Fine-tuning [64, 76]: Large models are pre-trained on broad datasets and fine-tuned for specific tasks, yielding high accuracy but still requiring domain adaptation; true zero-shot generalization across tasks remains unproven. \\
+• eSEN-30M-OMat: An equivariant graph neural network tailored for materials, achieving strong accuracy via large-scale message passing, but limited to domain-specific datasets and lacking generalization across molecules or surfaces. \\
+• GemNet-OC20: A graph neural network for catalysis using geometric embeddings, excelling in adsorption energy prediction but focused solely on catalysis, without material or molecular generalization. \\
+• MACE: A foundation model for atomistic materials chemistry that demonstrates excellent transferability within the organic molecule domain, but struggles to generalize simultaneously to diverse materials and catalytic systems. \\
+• EquiformerV2 : An advanced equivariant transformer model that achieves strong performance on domain-specific materials and catalysis benchmarks but is not trained for multi-domain or multi-DFT-task generalization. \\
+• ORB v3: A scalable neural network potential capable of efficient simulation at scale, but designed primarily for periodic materials, with limited multi-domain applicability. \\
+• Universal Graph Deep Learning Potentials: Aim to provide comprehensive coverage across the periodic table, yet tend not to generalize to molecules or catalysis due to distribution shifts and differing DFT settings. \\
+• Pre-training with Fine-tuning: Large models are pre-trained on broad datasets and fine-tuned for specific tasks, yielding high accuracy but still requiring domain adaptation; true zero-shot generalization across tasks remains unproven. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Challenges}}}
 
@@ -1930,7 +1930,7 @@ You are a top-tier researcher in your field. Based on the following context, ple
 • Scaling model and dataset size without sacrificing inference speed or memory efficiency, especially for long-running atomistic simulations involving thousands to hundreds of thousands of atoms. \\
 • Reconciling and learning from datasets with heterogeneous DFT settings, label distributions, elemental coverage, and system sizes. \\
 • Maintaining energy conservation, physical symmetry (rotational equivariance), and smoothness of the potential energy surface during multi-task, multi-domain learning. \\
-• Efficiently training and deploying ultra-large models (up to billions of parameters) under memory and compute constraints. \\
+• Efficiently training and deploying ultra-large models (up to billions of parameters) under memory and compute constraints. 
 
 \textbf{\emph{\textcolor{CaseOrange}{Limitation}}}
 
@@ -1962,7 +1962,7 @@ materials domains, using the largest multi-domain atomic datasets to date.
 • MACE: Foundation model for molecules, demonstrates good transferability within molecular datasets; struggles with cross-domain and multi-task generalization. \\
 • EquiformerV2: Equivariant transformer with improved scaling for materials and catalysis, but not designed for simultaneous multi-domain learning. \\
 • ORB v3: Focuses on scalable neural network potentials for materials, achieving high throughput but lacks coverage of molecular and catalytic tasks. \\
-• Fine-tuned Foundation Models: Pre-train on large datasets, then fine-tune for each target domain; yields high performance but necessitates domain-specific adaptation and fails to provide universal zero-shot performance. \\
+• Fine-tuned Foundation Models: Pre-train on large datasets, then fine-tune for each target domain; yields high performance but necessitates domain-specific adaptation and fails to provide universal zero-shot performance. 
 
 \textbf{\emph{\textcolor{DeepPurple}{Reference Answer}}}
 
@@ -1983,7 +1983,7 @@ and speed across chemistry and materials science domains.
 • 5: Stage 2 fine-tuning: switch to FP32 precision and auto-grad conservative heads, increasing neighbor count for energy/force conservation. \\
 • 6: Memory/computation optimization: employ graph parallelism, FSDP, and activation checkpointing for large-scale training. \\
 • 7: Model selection: use empirical scaling laws to determine optimal model and dataset size for given compute budget. \\
-• 8: Evaluation: benchmark UMA models on held-out splits and established tasks across materials, catalysis, molecules, molecular crystals, and MOFs. \\
+• 8: Evaluation: benchmark UMA models on held-out splits and established tasks across materials, catalysis, molecules, molecular crystals, and MOFs. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ImplementationOrder}}}
 
@@ -1993,7 +1993,7 @@ and speed across chemistry and materials science domains.
 • 4-5 \\
 • 5-6 \\
 • 6-7 \\
-• 7-8 \\
+• 7-8 
 
 \textbf{\emph{\textcolor{CaseOrange}{Data}}}
 
@@ -2011,7 +2011,7 @@ near-complete elemental coverage and diverse DFT settings.
 • Energy Conservation: Degree to which predicted forces/energies conserve energy over molecular dynamics trajectories (NVE MD benchmarks). \\
 • Simulation Throughput: Number of inference steps per second for fixed system sizes (1k, 10k, 100k atoms) on a single GPU. \\
 • Out-of-Domain Generalization: Performance on OOD splits, such as high-entropy alloys and novel molecular/crystal structures. \\
-• Phonon and Elastic Property Accuracy: MAE for phonon frequencies, free energies, elastic moduli, and related properties pertinent to material science benchmarks. \\
+• Phonon and Elastic Property Accuracy: MAE for phonon frequencies, free energies, elastic moduli, and related properties pertinent to material science benchmarks. 
 
 \textbf{\emph{\textcolor{CaseOrange}{ExpectedOutcome}}}
 
