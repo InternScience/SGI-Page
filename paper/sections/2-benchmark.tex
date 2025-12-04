@@ -38,9 +38,9 @@ SGI-Bench departs from conventional benchmarks that emphasize factual recall or 
 \subsection{Task Definition in Scientific Workflow}
 
 \subsubsection{Scientific Deep Research}
-Scientific deep research refers to a thorough and comprehensive investigation of a specific scientific topic, combining elements of both AI-driven deep research and scientific meta-analysis. This task typically involves multi-step reasoning, web searches, document retrieval, and data analysis. Drawing inspiration from AI’s deep research, which often relies on multi-hop searches to gather diverse information across multiple sources, it also incorporates the methodology of meta-analysis from the scientific community. Meta-analysis, a rigorous form of scientific research, synthesizes existing literature to derive precise, data-driven conclusions and extract quantitative insights from a large body of studies. Unlike general deep research, which may focus on qualitative understanding, meta-analysis centers on aggregating and analyzing data to produce statistically significant results. By combining the multi-hop search nature of AI’s deep research with the systematic, evidence-based approach of meta-analysis, this task ensures results that are both scientifically precise and meaningful. The ability to perform scientific deep research is crucial for advancing scientific knowledge, as it enables AI models to replicate the process of reviewing, synthesizing, and analyzing existing research to formulate new, data-driven hypotheses.
+Scientific deep research refers to a thorough and comprehensive investigation of a specific scientific topic, combining elements of both AI-driven deep research~\cite{xu2025comprehensive, hu2025flowsearch, shi2025dualresearch} and scientific meta-analysis~\cite{field2010meta, xu2025manalyzer}. This task typically involves multi-step reasoning, web searches, document retrieval, and data analysis. Drawing inspiration from AI’s deep research, which often relies on multi-hop searches to gather diverse information across multiple sources, it also incorporates the methodology of meta-analysis from the scientific community. Meta-analysis, a rigorous form of scientific research, synthesizes existing literature to derive precise, data-driven conclusions and extract quantitative insights from a large body of studies. Unlike general deep research, which may focus on qualitative understanding, meta-analysis centers on aggregating and analyzing data to produce statistically significant results. By combining the multi-hop search nature of AI’s deep research with the systematic, evidence-based approach of meta-analysis, this task ensures results that are both scientifically precise and meaningful. The ability to perform scientific deep research is crucial for advancing scientific knowledge, as it enables AI models to replicate the process of reviewing, synthesizing, and analyzing existing research to formulate new, data-driven hypotheses.
 
-In order to capture the diversity of real-world scientific inquiries, we divide the task of scientific deep research into four representative types: data, properties, micro-experiments, and macro-experiments. This division reflects the major types of questions scientists often confront, ranging from data-centric queries to property characterization, and from small-scale controlled experiments to large-scale natural events. By organizing the task in this way, the benchmark ensures that AI systems are evaluated across the breadth of literature review and data-driven investigation.
+In order to capture the diversity of real-world scientific inquiries, we divide the task of scientific deep research into four representative types: data, properties, micro-experiments, and macro-experiments, as illustrated in Table~\ref{tab:deep_research_types}. This division reflects the major types of questions scientists often confront, ranging from data-centric queries to property characterization, and from small-scale controlled experiments to large-scale natural events. By organizing the task in this way, the benchmark ensures that AI systems are evaluated across the breadth of literature review and data-driven investigation.
 
 \begin{table}[ht]
 \centering
@@ -104,9 +104,11 @@ In real-world scientific workflows, deep research corresponds to the literature 
 
 \subsubsection{Idea Generation}
 \label{sec: Idea gen}
-Idea generation represents a pivotal stage in the scientific process, corresponding to the methodology design phase, where researchers synthesize knowledge to propose innovative approaches addressing existing challenges. To systematically evaluate the quality and relevance of generated ideas, we establish complementary metrics encompassing novelty, professionalism, completeness, rigor, feasibility, length conformity (penalizing overly brief or verbose outputs), and semantic repetition (penalizing redundant expressions).
+Idea generation is a critical component of the scientific process, corresponding to the stage of research methodology design. At this stage, researchers synthesize existing knowledge, engage in associative and creative thinking, and propose new approaches to address current challenges. It embodies the creative essence of scientific inquiry and shapes the direction and potential impact of subsequent research.
 
-In real-world scientific workflows, idea generation directly maps to the methodology design stage following the literature review. At this stage, scientists integrate prior findings with creative reasoning to develop novel hypotheses and methodological frameworks aimed at resolving identified knowledge gaps or limitations.
+In real-world scientific workflows, idea generation typically occurs after researchers have completed a thorough literature review. They integrate prior findings, identify limitations or knowledge gaps, and use creative reasoning to formulate new hypotheses, methods, or frameworks aimed at overcoming these shortcomings. In this sense, idea generation serves as the crucial link between literature understanding and methodological innovation.
+
+However, because idea generation is an open-ended and highly creative task, its evaluation is inherently challenging. To make the assessment more systematic and tractable, we decompose an originally holistic idea into several interrelated components, forming a structured representation of the idea. This decomposition enables more fine-grained evaluation along dimensions such as effectiveness, novelty, level of detail, and feasibility~\cite{moose}.
 
 \begin{tcolorbox}[
     breakable,
@@ -155,7 +157,7 @@ Scientific experimentation represents the core of the discovery process, bridgin
 \paragraph{Dry Experiment}
 Dry experiments emphasize computational problem-solving, reflecting the growing role of AI in automating simulation-driven science. Each task presents the model with incomplete or masked scientific code that encapsulates domain-specific computations, such as molecular dynamics, climate modeling, or numerical solvers in physics. The model must infer the missing logic, reconstruct executable code, and ensure that the resulting program produces correct and efficient outcomes. This task thus evaluates a model’s ability to integrate scientific understanding with code synthesis—testing not only syntactic correctness but also conceptual fidelity to the underlying scientific problem.
 
-To better characterize the scope of dry experiments, we categorize representative computational functions commonly encountered across disciplines, including numerical integration, differential equation solving, data preprocessing, and experimental result visualization. The completion or generation of these functions offers a rigorous measure of how well AI systems can operationalize scientific intent into executable form.
+To better characterize the scope of dry experiments, we categorize representative computational functions commonly encountered across disciplines, including numerical calculation, statistical analysis, simulation, metric calculation, data processing, and predictive modeling, as shown in Table~\ref{tab:dry_experiment_functions}. The completion or generation of these functions offers a rigorous measure of how well AI systems can operationalize scientific intent into executable form.
 
 \begin{table}[ht]
 \centering
@@ -176,7 +178,7 @@ Metric Calculation & Computing evaluation metrics such as accuracy, error, or pe
 \addlinespace
 \rowcolor{blue!5}Data Processing & Handling raw data before and after experiments, including normalization, cleaning, and feature extraction. \\
 \addlinespace
-Predictive modeling & Applying machine learning methods to categorize, predict, or group experimental results. \\
+Predictive Modeling & Applying machine learning methods to categorize, predict, or group experimental results. \\
 \bottomrule
 \end{tabular}
 }
@@ -256,7 +258,7 @@ In real scientific workflows, wet experiments correspond to the execution and va
 
 \subsubsection{Scientific Experimental Reasoning}
 
-Scientific experimental reasoning in this benchmark focuses on multi-modal scientific reasoning, requiring models to interpret heterogeneous information drawn from diverse sources. We consider five representative modalities: (1) process images that integrate symbolic and textual information to depict workflows or variable relationships; (2) observation images representing raw data captured by instruments such as telescopes, satellites, or microscopes; (3) experiment images documenting laboratory setups and procedures; (4) simulation images generated by computational models to visualize physical or chemical processes; and (5) visualization images such as plots or charts that reveal patterns within structured datasets. Collectively, these modalities reflect the multi-faceted and evidence-driven nature of scientific inquiry.
+Scientific experimental reasoning in this benchmark focuses on multi-modal scientific reasoning, requiring models to interpret heterogeneous information drawn from diverse sources. We consider five representative modalities as shown in Table~\ref{tab:modalities}: a) process images that integrate symbolic and textual information to depict workflows or variable relationships; b) observation images representing raw data captured by instruments such as telescopes, satellites, or microscopes; c) experiment images documenting laboratory setups and procedures; d) simulation images generated by computational models to visualize physical or chemical processes; and e) visualization images such as plots or charts that reveal patterns within structured datasets. Collectively, these modalities reflect the multi-faceted and evidence-driven nature of scientific inquiry.
 
 \begin{table}[ht]
 \centering
@@ -281,7 +283,7 @@ Simulation Images & Generated from computational models/software. & Visualize th
 }
 \end{table}
 
-To reason effectively over such diverse inputs, we define four complementary reasoning paradigms: (1) signal perception, focusing on the extraction of direct patterns from visual signals; (2) attribute understanding, which demands domain knowledge to interpret key visual or contextual features; (3) comparative reasoning, involving integration and comparison across multiple sources to ensure consistency and rigor; and (4) causal reasoning, aimed at uncovering underlying mechanisms and scientific principles. These paradigms collectively span the hierarchy from low-level perception to high-level scientific inference.
+To reason effectively over such diverse inputs, we define four complementary reasoning paradigms as shown in Table~\ref{tab:reasoning_paradigms}: a) signal perception, focusing on the extraction of direct patterns from visual signals; b) attribute understanding, which demands domain knowledge to interpret key visual or contextual features; c) comparative reasoning, involving integration and comparison across multiple sources to ensure consistency and rigor; and d) causal reasoning, aimed at uncovering underlying mechanisms and scientific principles. These paradigms collectively span the hierarchy from low-level perception to high-level scientific inference.
 
 \begin{table}[ht]
 \centering
@@ -339,7 +341,7 @@ In real-world scientific workflows, experimental reasoning corresponds to the da
 \end{figure}
 
 
-\subsection{Multi-dimensional Metrics}
+\subsection{Multi-Dimensional Metrics}
 \label{sec:Metrics}
 
 To align with the scientific characteristics of each task, we have designed multi-dimensional evaluation metrics for every task. This approach avoids a one-size-fits-all binary judgment and instead provides a more fine-grained assessment.
@@ -379,7 +381,7 @@ The Scientific Deep Research task draws inspiration from AI’s deep research pa
 \subsubsection{Metrics of Idea Generation}
 \label{Metrics: Idea Gen}
 
-To evaluate the open-ended nature of idea generation, we adopt a hybrid framework that integrates both subjective and objective metrics. We assess each idea along four dimensions---\textbf{effectiveness}, \textbf{novelty}, \textbf{detailedness}, and \textbf{feasibility}---which together characterize an idea's scientific quality, creativity, and executability.
+To evaluate the open-ended nature of idea generation, we adopt a hybrid framework that integrates both subjective and objective metrics. We assess each idea along four dimensions---\textbf{effectiveness}, \textbf{novelty}, \textbf{detailedness}, and \textbf{feasibility}---which together characterize an idea's scientific quality, creativity, and executability~\cite{moose}.
 
 \textbf{Subjective Evaluation via LLM Judges.}
 For subjective scoring, we perform pairwise comparisons between model-generated ideas and expert-written reference ideas. For each of the four dimensions, an LLM judge selects which idea is superior. To ensure fairness and robustness, we employ three different LLM judges, each casting two independent votes, resulting in a total of six votes per dimension. The pairwise win rate against the reference idea is then used as the subjective component of the score for each dimension.
@@ -604,7 +606,7 @@ Through these four steps, we guarantee that all benchmark questions are derived 
 
 
 
-\subsection{Benchmark Data Distribution}
+\subsection{Data Distribution}
 
 \begin{figure}[ht]
 % \vspace{-0.5em}

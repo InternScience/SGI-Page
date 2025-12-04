@@ -4,14 +4,6 @@ Given the inherent complexity of scientific discovery, evaluating the performanc
 Rather than merely employing LLMs as evaluators, we develope a comprehensive, agent-based evaluation framework augmented with diverse capabilities (\textit{e.g.}, web search, Python interpreter, file reader, PDF parser, metric-specific Python functions~\cite{SmolAgents_2025}) to ensure rigorous, accurate, and scalable evaluations. 
 As illustrated in Figure~\ref{fig:evaluation-framework}, this framework is structured into four interconnected stages: Question Selection, Metric Customization, Predict \& Eval, and Report Generation, each orchestrated by specialized agents to address distinct facets of the evaluation workflow.
 
-\begin{figure}[t]
-% \vspace{-0.5em}
-\centerline
-{\includegraphics[width=16cm]{paper/imgs/evaluation-framework.png}}
-\caption{\textbf{Evaluation Framework.}}
-\label{fig:evaluation-framework}
-% \vspace{-2em}
-\end{figure}
 
 \subsection{Question Selection}
 
@@ -42,6 +34,15 @@ This stage effectively defines the evaluation scope by specifying the precise se
 \end{itemize}
 
 \end{tcolorbox}
+
+\begin{figure}[t]
+% \vspace{-0.5em}
+\centerline
+{\includegraphics[width=16cm]{paper/imgs/evaluation-framework.png}}
+\caption{\textbf{Evaluation Framework.}}
+\label{fig:evaluation-framework}
+% \vspace{-2em}
+\end{figure}
 
 \subsection{Metric Customization}
 In the metric customization stage, a metric customization agent first dynamically generates novel evaluation metrics based on user queries and selected questions.

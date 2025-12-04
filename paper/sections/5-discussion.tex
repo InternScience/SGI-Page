@@ -18,7 +18,7 @@ To address the absence of ground truth in scientific idea generation, we propose
     \label{fig:train_process}
 \end{figure}
 
-We employ Group Relative Policy Optimization (GRPO) as our training backbone. For a given query $Q$, the policy model $\pi_\theta$ generates a group of $k$ outputs $\{o_1, \dots, o_k\}$. The optimization is guided by a composite reward function, defined as the unweighted sum of a format constraint and a novelty metric (labeled as \textbf{Idea Dissimilarity} in Figure \ref{fig:train_process}):
+We employ Group Relative Policy Optimization (GRPO)~\cite{guo2025deepseek} as our training backbone. For a given query $Q$, the policy model $\pi_\theta$ generates a group of $k$ outputs $\{o_1, \dots, o_k\}$. The optimization is guided by a composite reward function, defined as the unweighted sum of a format constraint and a novelty metric (labeled as \textbf{Idea Dissimilarity} in Figure \ref{fig:train_process}):
 \begin{equation}
     R(o) = R_{\text{format}}(o) + R_{\text{novelty}}(o, \mathcal{W})
 \end{equation}
@@ -97,7 +97,7 @@ The training dynamics of our TTRL framework are illustrated in Figure \ref{fig:r
 
 Quantitatively, this self-evolution process yields a significant improvement in the quality of generated ideas. The average novelty score of the model's outputs increased from a baseline of \textbf{49.36} to \textbf{62.06}. It is important to emphasize that this performance gain was achieved \textit{entirely without ground-truth labels}. The model improved solely by leveraging the online retrieval feedback loop, validating the hypothesis that LLMs can self-improve on open-ended scientific discovery tasks through test-time reinforcement learning.
 
-\subsubsection{Qualitative Analysis: Case Study}
+\subsubsection{Case Study of TTRL}
 
 To visually demonstrate the impact of TTRL on scientific idea generation, we present a comparative case study in Figure \ref{fig:case_study}. The task requires the model to propose a novel framework for RNA 3D structure prediction.
 
@@ -120,13 +120,13 @@ In conclusion, our experiments demonstrate that Test-Time Reinforcement Learning
 
 \subsection{Agent Tool Integrated Reasoning}
 
-\subsubsection{Agentic Workflow Analysis}
+\subsubsection{Retrieve–Browse Loop Analysis}
 Tool-Integrated Reasoning (TIR) in real tasks unfolds as a dynamic, opportunistic process rather than a fixed linear chain\cite{paranjape2023artautomaticmultistepreasoning}. As shown in \autoref{fig:agent_tool_compare} (left), the model-to-tool flow concentrates heavily on retrieval actions: \texttt{web\_search} is the most frequently invoked tool with 539 calls (33.98\% of all), followed by \texttt{visit\_webpage} (385, 24.27\%), \texttt{final\_answer} (358, 22.57\%), python\_interpreter (200, 12.61\%), and \texttt{wikipedia\_search} (104, 6.56\%). This distribution indicates that an external “retrieve-then-browse” loop remains the dominant path for contemporary agentic systems, reflecting persistent limits in time-sensitive and domain-specific knowledge available to base LLMs. Importantly, models differ in how efficiently they traverse this loop: for example, GPT-4.1 issues large volumes of \texttt{web\_search} (168) and \texttt{visit\_webpage} (110) that frequently land in slow tiers, whereas Qwen3-Max completes comparable coverage with far fewer retrieval and browsing steps (61 and 59, respectively). Practically, this pattern implies that reducing redundant retrieval iterations—via better query formulation and higher-quality extraction on the first pass—has immediate leverage on end-to-end latency, often exceeding gains from marginal improvements to raw model inference.
 
-\subsubsection{Tool-Specific Efficiency Benchmarks}
+\subsubsection{Tool Efficiency Analysis}
 Latency variation is predominantly tool-dependent, as visualized in \autoref{fig:agent_tool_compare} (right). The primary bottleneck is \texttt{visit\_webpage}, whose cross-model latency spans from 5.37s (Llama-4-Scout) to 114.29s (GPT-4.1), a 21.28× spread. This reflects the intrinsic cost of browser-level execution—network I/O, DOM parsing, and event replay—rather than LLM reasoning alone. In contrast, more atomic operations such as \texttt{wikipedia\_search} still exhibit a substantial 7.59× spread (3.69–28.03s), underscoring that I/O pathways and parsing routines meaningfully shape end-to-end time even for ostensibly simple tools. These observations suggest a design priority: engineering optimizations in the retrieval-and-rendering pipeline (e.g., smarter caching, incremental rendering, selective content extraction) will reduce both long-tail latencies and overall wall-clock time more reliably than tuning model-only parameters.
 
-\subsubsection{Model-Dependent Reasoning Cost}
+\subsubsection{Reasoning Cost Analysis}
 The \texttt{python\_interpreter} tool exhibits a 9.65× cross-model range (5.48–52.94s), indicating that measurements capture the full “reason–execute–debug–repair” loop rather than a single code run. The slowest average arises for DeepSeek-R1 (52.94s), consistent with more frequent multi-step error analysis and correction; the fastest is GPT-4o (5.48s), reflecting a low-latency, near single-shot execution path. This divergence reveals a strategic trade-off: systems optimized for first-attempt correctness minimize tool time but may forgo deeper self-correction, whereas systems favoring iterative refinement accrue longer tool-side latency while potentially achieving more robust final solutions. In practice, aligning tool routing, retry policy, and verification depth with a model’s characteristic behavior can reduce wasted cycles and sharpen the latency–quality frontier.
 
 \begin{figure}[ht]
@@ -174,7 +174,7 @@ The core takeaway is straightforward: closed-source models generally exhibit hig
 \section{Challenges and Future Directions}
 Grounded in our operational definition of SGI and instantiated through SGI-Bench, the evaluation results reveal a consistent message: contemporary LLMs and agentic systems exhibit \emph{localized scientific cognition and segmented scientific reasoning}
 They may solve isolated sub-problems, but fail to robustly close the iterative loop spanning \textit{Deliberation, Conception, Action, and Perception}. Below we summarize the main limitations across tasks and disciplines, connect them with our TTRL and tool-integrated reasoning analyses, and outline concrete future directions.
-% \emph{fragmented scientific cognition}. 
+
 
 \subsection{Fragmentation Across the Four Quadrants of SGI}
 
