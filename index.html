@@ -600,7 +600,6 @@
     <section id="leaderboard" class="py-8 px-4 max-w-7xl mx-auto scroll-mt-8 md:scroll-mt-12">
         <div class="text-center mb-12 fade-in-up">
             <h2 class="text-3xl font-bold text-slate-900">Leaderboard</h2>
-            <p class="text-slate-500 mt-2">Tables below reflect the exact results reported in SGI-Bench Evaluation.</p>
         </div>
 
         <!-- Table - Overview (硬编码，交集模型；结构与其他表一致) -->
@@ -610,7 +609,9 @@
                     <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-sm"><i class="fas fa-table"></i></span>
                     Overview
                 </h3>
-                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
+            </div>
+            <div class="flex justify-center mb-3">
+                <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
                     <button onclick="filterTable('t-ov', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t-ov" data-f="all">All Models</button>
                     <button onclick="filterTable('t-ov', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t-ov" data-f="open">Open Source</button>
                     <button onclick="filterTable('t-ov', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t-ov" data-f="closed">Proprietary</button>
@@ -647,15 +648,17 @@
                     <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fas fa-magnifying-glass"></i></span>
                     Deep Research
                 </h3>
-                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
-                    <button onclick="filterTable('t0', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t0" data-f="all">All Models</button>
-                    <button onclick="filterTable('t0', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t0" data-f="open">Open Source</button>
-                    <button onclick="filterTable('t0', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t0" data-f="closed">Proprietary</button>
-                </div>
             </div>
 
             <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
                 <img src="paper/imgs/deepresearch_case1.png" alt="Deep Research Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Deep+Research+Case'">
+            </div>
+            <div class="flex justify-center mb-3">
+                <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
+                    <button onclick="filterTable('t0', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t0" data-f="all">All Models</button>
+                    <button onclick="filterTable('t0', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t0" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t0', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t0" data-f="closed">Proprietary</button>
+                </div>
             </div>
 
             <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
@@ -685,15 +688,17 @@
                     <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-sm"><i class="fas fa-lightbulb"></i></span>
                     Idea Generation
                 </h3>
-                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
-                    <button onclick="filterTable('t1', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t1" data-f="all">All Models</button>
-                    <button onclick="filterTable('t1', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t1" data-f="open">Open Source</button>
-                    <button onclick="filterTable('t1', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t1" data-f="closed">Proprietary</button>
-                </div>
             </div>
 
             <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
                 <img src="paper/imgs/idea_case.png" alt="Idea Generation Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Idea+Generation+Case'">
+            </div>
+            <div class="flex justify-center mb-3">
+                <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
+                    <button onclick="filterTable('t1', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t1" data-f="all">All Models</button>
+                    <button onclick="filterTable('t1', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t1" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t1', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t1" data-f="closed">Proprietary</button>
+                </div>
             </div>
             <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
                 <div class="overflow-x-auto">
@@ -725,15 +730,17 @@
                     <span class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center text-sm"><i class="fas fa-code"></i></span>
                     Dry Experiment (Code Generation)
                 </h3>
-                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
-                    <button onclick="filterTable('t2', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t2" data-f="all">All Models</button>
-                    <button onclick="filterTable('t2', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t2" data-f="open">Open Source</button>
-                    <button onclick="filterTable('t2', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t2" data-f="closed">Proprietary</button>
-                </div>
             </div>
 
             <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
                 <img src="paper/imgs/code_case1.png" alt="Dry Experiment Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Dry+Experiment+Case'">
+            </div>
+            <div class="flex justify-center mb-3">
+                <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
+                    <button onclick="filterTable('t2', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t2" data-f="all">All Models</button>
+                    <button onclick="filterTable('t2', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t2" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t2', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t2" data-f="closed">Proprietary</button>
+                </div>
             </div>
             <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
                 <div class="overflow-x-auto">
@@ -765,15 +772,17 @@
                     <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center text-sm"><i class="fas fa-flask"></i></span>
                     Wet Experiment (Lab Protocol)
                 </h3>
-                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
-                    <button onclick="filterTable('t3', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t3" data-f="all">All Models</button>
-                    <button onclick="filterTable('t3', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t3" data-f="open">Open Source</button>
-                    <button onclick="filterTable('t3', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t3" data-f="closed">Proprietary</button>
-                </div>
             </div>
 
             <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
                 <img src="paper/imgs/wet_case1.png" alt="Wet Experiment Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Wet+Experiment+Case'">
+            </div>
+            <div class="flex justify-center mb-3">
+                <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
+                    <button onclick="filterTable('t3', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t3" data-f="all">All Models</button>
+                    <button onclick="filterTable('t3', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t3" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t3', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t3" data-f="closed">Proprietary</button>
+                </div>
             </div>
             <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
                 <div class="overflow-x-auto">
@@ -803,15 +812,17 @@
                     <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center text-sm"><i class="fas fa-brain"></i></span>
                     Experimental Reasoning
                 </h3>
-                <div class="glass p-1 rounded-lg flex text-sm w-full sm:w-auto overflow-x-auto">
-                    <button onclick="filterTable('t4', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t4" data-f="all">All Models</button>
-                    <button onclick="filterTable('t4', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t4" data-f="open">Open Source</button>
-                    <button onclick="filterTable('t4', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t4" data-f="closed">Proprietary</button>
-                </div>
             </div>
 
             <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
                 <img src="paper/imgs/mm_case_1.png" alt="Experimental Reasoning Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Experimental+Reasoning+Case'">
+            </div>
+            <div class="flex justify-center mb-3">
+                <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
+                    <button onclick="filterTable('t4', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t4" data-f="all">All Models</button>
+                    <button onclick="filterTable('t4', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t4" data-f="open">Open Source</button>
+                    <button onclick="filterTable('t4', 'closed')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t4" data-f="closed">Proprietary</button>
+                </div>
             </div>
             <div class="glass rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-sm">
                 <div class="overflow-x-auto">
