@@ -1,9 +1,8 @@
 # 从 AGI 到 SGI：Gemini‑3‑Pro 拿下 SOTA，却仍然显著不及格
 
-- 项目主页 Page：https://internscience.github.io/SGI-Page/
+- 项目主页 Page：https://InternScience.github.io/SGI-Page/
 - 代码 Code：https://github.com/InternScience/SGI-Bench
 - 数据 Data：https://huggingface.co/collections/InternScience/sgi-bench
-- 团队 Team：https://discovery.intern-ai.org.cn/sciprismax
 
 近年来，大模型在多学科知识理解、数学推理、编程等任务上频频刷榜，但AI的“科学通用能力”仍没有统一刻度：它是多学科、长链路、跨模态且要求严谨可验证的。许多现有 benchmark 只覆盖碎片能力（如学科问答、单步工具操作），难以映射到真实科研中的循环与自纠错过程。为此，我们通过引入实践探究模型（PIM），将科学探究过程拆解为四个循环的阶段，并与AI的能力维度进行了对应：
 
