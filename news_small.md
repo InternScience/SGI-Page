@@ -1,8 +1,8 @@
 # 从 AGI 到 SGI：Gemini‑3‑Pro 拿下 SOTA，却仍然显著不及格
 
-- 项目主页 Page：https://InternScience.github.io/SGI-Page/
-- 代码 Code：https://github.com/InternScience/SGI-Bench
-- 数据 Data：https://huggingface.co/collections/InternScience/sgi-bench
+- 主页：https://InternScience.github.io/SGI-Page/
+- 代码：https://github.com/InternScience/SGI-Bench
+- 数据：https://huggingface.co/collections/InternScience/sgi-bench
 
 如今，大模型在理解、推理、编程等方面表现突出，但AI的“科学通用能力”（SGI）尚无统一标准。SGI强调多学科、长链路、跨模态与严谨可验证性，而现有基准仅覆盖碎片能力（如学科问答、单步工具操作），难以反映真实科研中的循环与自纠错。为此，上海人工智能实验室通过引入实践探究模型（PIM），将科学探究拆解为四个循环阶段，并与 AI 能力维度对应：
 
@@ -17,6 +17,8 @@
 
 ![图片2：SGI-Score 总览](md_images/sgi_score.png)
 
+---
+
 ## SGI-Bench：以科学家工作流对齐的全流程评测
 
 SGI‑Bench 采用“科学家对齐（scientist-aligned）”的任务构造：多学科专家提供原始语料与示例需求（研究方向、图文材料等）及少量种子问题（seed questions）；研究生/博士生标注者据输入输出结构与种子问题生成题目；经规则校验、模型校验、专家复核三重清洗；最终再以多模型难度筛选剔除简单样本。最终得到 1000 多个覆盖 10 大学科（化学、生命、物理、数学等）的评测样本。
@@ -25,6 +27,7 @@ SGI‑Bench 采用“科学家对齐（scientist-aligned）”的任务构造：
 
 ![图片4：SGI-Bench 学科分布](md_images/subjects.png)
 
+---
 
 ## 核心结果与洞见：今天的“强模型”，尚未成为“强科学家”
 
@@ -36,12 +39,12 @@ SGI‑Bench 采用“科学家对齐（scientist-aligned）”的任务构造：
 
 实验结果：
 
-- 步骤准确率达 50%–65%，但长链条步骤中的错误导致最终结论频繁错误，答案严格匹配仅 10%–20%。  
 ![图片6：LLMs 在深度研究任务的表现](md_images/LLMs_deep_research_metrics.png)
-- 工具增强的多智能体在逐步准确率略优，但与纯模型差距并不显著。  
+- 步骤准确率达 50%–65%，但长链条步骤中的错误导致最终结论频繁错误，答案严格匹配仅 10%–20%。  
 ![图片7：Agents 在深度研究任务的表现](md_images/Agents_deep_research_metrics.png)
-- 类型上，“数据/性质”题最难，需跨文献精确检索与数值聚合；“微/宏实验”类相对较好但整体仍低于 30%，体现元分析难度的严苛性。  
+- 工具增强的多智能体在逐步准确率略优，但与纯模型差距并不显著。  
 ![图片8：LLMs 与 Agents 在四类深度研究问题上的差异](md_images/LLMs_Agents_task_metric.png)
+- 类型上，“数据/性质”题最难，需跨文献精确检索与数值聚合；“微/宏实验”类相对较好但整体仍低于 30%，体现元分析难度的严苛性。  
 
 ### 创意生成（Idea Generation）：新颖度尚可，但可行性偏低
 
@@ -80,9 +83,9 @@ SGI‑Bench 采用“科学家对齐（scientist-aligned）”的任务构造：
 
 实验结果：
 
+![图片16：湿实验顺序相似度与参数准确率](md_images/wet_metrics.png)
 - 序列相似度整体偏低，最佳闭源约 35.5；参数准确率最高约 40.6；部分闭源参数准确率显著下跌（约 20.7）。  
 - 高发错误：插入多余步骤、遗漏关键步骤、打乱有效步骤顺序。  
-![图片16：湿实验顺序相似度与参数准确率](md_images/wet_metrics.png)
 - 在 NSCLC 抗 PD‑1 流程中，常见错误包括：将纵向采样简化为一次采血；PBMC 只在单一时间点分离；功能测定未按时间/刺激分组；基因组测序与免疫表型流程混用样本等，反映时间协调、分支规划与样本管理薄弱。  
 ![图片17：复杂湿实验案例，动作时间与分支管理的失败](md_images/wet_case2.png)
 
@@ -96,14 +99,14 @@ SGI‑Bench 采用“科学家对齐（scientist-aligned）”的任务构造：
 
 实验结果：
 
+![图片20：多模态科学推理的整体表现](md_images/mcq_metric.png)
 - 闭源整体更强：最佳闭源答案准确率约 41.9、推理有效性最高约 57.1。
 - 多数模型推理有效性高于答案准确率：难以实现推理链条的完全正确。
-![图片20：多模态科学推理的整体表现](md_images/mcq_metric.png)
 - 推理类型上，因果推断与感知识别较稳；比较型最弱，涉及跨样本细粒度对比与一致性判别。学科上，天文最佳，物理、生命等学科挑战较大。
 ![图片21：按推理类型与学科的拆解](md_images/mcp_task_metric.png)
 
 
-## 实时进化：测试时强化学习（TTRL）带来“无需答案”的增长
+### 实时进化：测试时强化学习（TTRL）带来“无需答案”的增长
 
 科学创意生成无“标准答案”，传统离线监督难奏效。团队提出在推理时以“新颖性奖励”自我优化的 TTRL：
 
@@ -114,6 +117,8 @@ SGI‑Bench 采用“科学家对齐（scientist-aligned）”的任务构造：
 ![图片23：奖励曲线，先满足格式，再拉升新颖](md_images/grpo_reward_curves.png)
 
 这表明 SGI‑Bench 不止静态评测，还可在测试时借弱反馈不断涌现与进化。
+
+---
 
 ## 结语：SGI-Bench 不止一个基准，更是一条路线图
 
