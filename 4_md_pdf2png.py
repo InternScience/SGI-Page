@@ -5,8 +5,8 @@ from PIL import Image
 # ============ 配置区 ============
 scan_dir = r"D:\xwh\ailab记录\工作\25年10月\cline网页\SGI-Page\md_images"
 out_dir  = r"D:\xwh\ailab记录\工作\25年10月\cline网页\SGI-Page\md_images"  # 与 scan_dir 完全一致
-zoom_x = 2  # 🔥 超高清
-zoom_y = 2
+zoom_x = 5  # 🔥 超高清
+zoom_y = 5
 # ===============================
 
 def get_unique_path(path):
