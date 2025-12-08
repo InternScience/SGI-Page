@@ -653,7 +653,15 @@
             <div class="glass p-2 rounded-2xl hover:shadow-lg transition-shadow duration-300 mb-4 leaderboard-figure-wrap">
                 <img src="paper/imgs/deepresearch_case1.png" alt="Deep Research Case" class="rounded-xl cursor-pointer hover:opacity-95 transition leaderboard-figure" onclick="openModal(this.src)" onerror="this.src='https://placehold.co/1200x500?text=Deep+Research+Case'">
             </div>
-            <div class="flex justify-center mb-3">
+            <div class="flex items-center justify-center relative mb-3">
+                <!-- Left: LLMs/Agents toggle -->
+                <div class="absolute left-0">
+                    <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
+                        <button onclick="setDeepGroup('llms')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all deep-btn active whitespace-nowrap" data-g="llms">LLMs</button>
+                        <button onclick="setDeepGroup('agents')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all deep-btn whitespace-nowrap" data-g="agents">Agents</button>
+                    </div>
+                </div>
+                <!-- Center: Existing type filter (unchanged position) -->
                 <div class="glass p-1 rounded-lg flex gap-2 text-sm w-fit overflow-x-auto">
                     <button onclick="filterTable('t0', 'all')" class="px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all filter-btn active whitespace-nowrap" data-t="t0" data-f="all">All Models</button>
                     <button onclick="filterTable('t0', 'open')" class="px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all filter-btn whitespace-nowrap" data-t="t0" data-f="open">Open Source</button>
@@ -951,9 +959,61 @@
             { model: "Grok-3", type: "Closed", em: 13.52, sla: 64.43 },
             { model: "Grok-4", type: "Closed", em: 13.31, sla: 50.03 },
         ];
+        const DEEP_AGENT_DATA = [
+            // Open-source Agents (前7个)
+            { model: "SmolAgents(GPT-4.1)",            type: "Open", em: 14.47, sla: 40.56 },
+            { model: "SmolAgents(Gemini-2.5-Flash)",   type: "Open", em: 17.3,  sla: 24.82 },
+            { model: "Owl(GPT-4.1)",                   type: "Open", em: 11.95, sla: 53.89 },
+            { model: "Owl(Gemini-2.5-Flash)",          type: "Open", em: 9.36,  sla: 40.99 },
+            { model: "WebThinker",                     type: "Open", em: 14.78, sla: 65.36 },
+            { model: "XMaster",                        type: "Open", em: 13.84, sla: 57.92 },
+            { model: "InternAgent",                    type: "Open", em: 17.35, sla: 46.59 },
+            // Closed-source Agents
+            { model: "OpenAI Deep Research(o3)",       type: "Closed", em: 14.15, sla: 60.65 },
+            { model: "OpenAI Deep Research(o4-mini)",  type: "Closed", em: 16.98, sla: 52.38 },
+            { model: "Grok-Search(Grok-4)",            type: "Closed", em: 16.72, sla: 49.15 },
+            { model: "Kimi-Search(Kimi-k2)",           type: "Closed", em: 14.56, sla: 53.45 },
+            { model: "Doubao-Search(Seed-1-6)",        type: "Closed", em: 9.21,  sla: 31.62 },
+            { model: "Perplexity(Sonar-Pro)",          type: "Closed", em: 11.95, sla: 49.35 },
+        ];
         const Task1_Mapping = Object.fromEntries(
             DEEP_DATA.map(item => [item.model, item.em])
         );
+        // Deep Research group toggle state and helpers
+        let CURRENT_DEEP_GROUP = 'llms';
+        function getDeepDataset() {
+            return CURRENT_DEEP_GROUP === 'agents' ? DEEP_AGENT_DATA : DEEP_DATA;
+        }
+        function setDeepGroup(group) {
+            CURRENT_DEEP_GROUP = group === 'agents' ? 'agents' : 'llms';
+            // toggle button UI
+            document.querySelectorAll('.deep-btn').forEach(btn => {
+                const isActive = btn.getAttribute('data-g') === CURRENT_DEEP_GROUP;
+                btn.className = isActive
+                    ? "px-4 py-1.5 rounded-md bg-slate-900 text-white shadow transition-all deep-btn active whitespace-nowrap"
+                    : "px-4 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-all deep-btn whitespace-nowrap";
+            });
+            // re-render deep table rows
+            const t0Body = document.getElementById('t0-body');
+            if (t0Body) {
+                t0Body.innerHTML = getDeepDataset().map(row => `
+                <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
+                    <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs ${row.type === 'Open' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 border border-slate-200'} font-medium">
+                            ${row.type}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700">${row.em === "" ? "" : row.em.toFixed(2)}</td>
+                    <td class="p-4 text-slate-700">${row.sla === "" ? "" : row.sla.toFixed(2)}</td>
+                </tr>
+                `).join('');
+                // keep current All/Open/Closed filter
+                const activeBtn = document.querySelector('button.filter-btn.active[data-t="t0"]');
+                const cur = activeBtn ? activeBtn.getAttribute('data-f') : 'all';
+                filterTable('t0', cur);
+            }
+        }
 
         // Idea Generation
         const IDEA_DATA = [
@@ -1133,7 +1193,7 @@
         function renderTables() {
             // Deep Research
             const t0Body = document.getElementById('t0-body');
-            t0Body.innerHTML = DEEP_DATA.map(row => `
+            t0Body.innerHTML = getDeepDataset().map(row => `
                 <tr class="hover:bg-white/80 transition-colors" data-type="${row.type.toLowerCase() === 'open' ? 'open' : 'closed'}">
                     <td class="p-4 pl-6 font-medium text-slate-900">${row.model}</td>
                     <td class="p-4">
@@ -1240,6 +1300,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             renderTables();
+            setDeepGroup('llms');
             renderOverview();
             initAgentDemo();
         });
