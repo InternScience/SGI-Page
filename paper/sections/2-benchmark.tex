@@ -24,6 +24,7 @@ This concept manifests in several ways:
 
 SGI-Bench departs from conventional benchmarks that emphasize factual recall or single-turn reasoning. Instead, it operationalizes the long-horizon workflow of scientific discovery into four interdependent stages: literature review(Deliberation), methodology design(conception), experiment implementation(Action), and experimental analysis(Perception). These stages correspond to fundamental capabilities required of AI systems: information integration and understanding(Scientific Deep Research), design and planning(Idea Generation), experimental execution(AI-Assisted Scientific Experiment), and reasoning-based interpretation(Scientific Experimental Reasoning). Together, they form a unified framework that measures not only what models know but how they think, plan, and adapt in pursuit of new knowledge. 
 
+
 \begin{figure}[ht]
 % \vspace{-0.5em}
 \centerline
@@ -462,7 +463,7 @@ Taken together, the hybrid subjective--objective design provides a robust, inter
 
 \paragraph{Dry Experiment}
 \label{sec: Metric of Dry Experiment}
-Dry experiments focus on code generation task. Specifically, each problem includes background information, data code, and main code with certain functions masked. The model is tasked with completing the missing functions. Each problem contains 5 unit tests. Our metrics capture both correctness and execution behavior of the generated code.~\cite{jain2024livecodebenchholisticcontaminationfree}
+Dry experiments focus on code generation task. Specifically, each problem includes background information, data code, and main code with certain functions masked. The model is tasked with completing the missing functions. Each problem contains 5 unit tests. Our metrics capture both correctness and execution behavior of the generated code~\cite{jain2024livecodebenchholisticcontaminationfree}.
 
 \begin{tcolorbox}[
     breakable,
