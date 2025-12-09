@@ -39,7 +39,7 @@ SGI-Bench departs from conventional benchmarks that emphasize factual recall or 
 \subsection{Task Definition in Scientific Workflow}
 
 \subsubsection{Scientific Deep Research}
-Scientific deep research refers to a thorough and comprehensive investigation of a specific scientific topic, combining elements of both AI-driven deep research~\cite{xu2025comprehensive, hu2025flowsearch, shi2025dualresearch} and scientific meta-analysis~\cite{field2010meta, xu2025manalyzer}. This task typically involves multi-step reasoning, web searches, document retrieval, and data analysis~\cite{ac1f09077393404a8bea5141d8710259,trivedi-etal-2023-interleaving,asai2024selfrag}. Drawing inspiration from AI’s deep research, which often relies on multi-hop searches to gather diverse information across multiple sources~\cite{shao-etal-2024-assisting}, it also incorporates the methodology of meta-analysis from the scientific community. Meta-analysis, a rigorous form of scientific research, synthesizes existing literature to derive precise, data-driven conclusions and extract quantitative insights from a large body of studies. Unlike general deep research, which may focus on qualitative understanding, meta-analysis centers on aggregating and analyzing data to produce statistically significant results. By combining the multi-hop search nature of AI’s deep research with the systematic, evidence-based approach of meta-analysis, this task ensures results that are both scientifically precise and meaningful. The ability to perform scientific deep research is crucial for advancing scientific knowledge, as it enables AI models to replicate the process of reviewing, synthesizing, and analyzing existing research to formulate new, data-driven hypotheses.~\cite{Wang2023,lu2024aiscientistfullyautomated}
+Scientific deep research refers to a thorough and comprehensive investigation of a specific scientific topic, combining elements of both AI-driven deep research~\cite{xu2025comprehensive, hu2025flowsearch, shi2025dualresearch} and scientific meta-analysis~\cite{field2010meta, xu2025manalyzer}. This task typically involves multi-step reasoning, web searches, document retrieval, and data analysis~\cite{ac1f09077393404a8bea5141d8710259,trivedi-etal-2023-interleaving,asai2024selfrag}. Drawing inspiration from AI's deep research, which often relies on multi-hop searches to gather diverse information across multiple sources~\cite{shao-etal-2024-assisting}, it also incorporates the methodology of meta-analysis from the scientific community. Meta-analysis, a rigorous form of scientific research, synthesizes existing literature to derive precise, data-driven conclusions and extract quantitative insights from a large body of studies. Unlike general deep research, which may focus on qualitative understanding, meta-analysis centers on aggregating and analyzing data to produce statistically significant results. By combining the multi-hop search nature of AI's deep research with the systematic, evidence-based approach of meta-analysis, this task ensures results that are both scientifically precise and meaningful. The ability to perform scientific deep research is crucial for advancing scientific knowledge, as it enables AI models to replicate the process of reviewing, synthesizing, and analyzing existing research to formulate new, data-driven hypotheses.~\cite{Wang2023,lu2024aiscientistfullyautomated}
 
 In order to capture the diversity of real-world scientific inquiries, we divide the task of scientific deep research into four representative types: data, properties, micro-experiments, and macro-experiments, as illustrated in Table~\ref{tab:deep_research_types}. This division reflects the major types of questions scientists often confront, ranging from data-centric queries to property characterization, and from small-scale controlled experiments to large-scale natural events. By organizing the task in this way, the benchmark ensures that AI systems are evaluated across the breadth of literature review and data-driven investigation.
 
@@ -156,7 +156,7 @@ However, because idea generation is an open-ended and highly creative task, its 
 Scientific experimentation represents the core of the discovery process, bridging theoretical formulation and empirical validation~\cite{Wang2023}. Within SGI-Bench, we formalize this process into two complementary categories: \textit{dry} and \textit{wet} experiments. Dry experiments capture computational and simulation-based studies—where AI assists in generating, refining, or executing scientific code that models physical phenomena.~\cite{RomeraParedes2023,ma2024eureka} Wet experiments, by contrast, simulate laboratory-based workflows, requiring the model to plan and reason about sequences of actions involving physical instruments, reagents, and procedural parameters~\cite{Boiko2023,bran2023augmenting}. Together, these two categories span the continuum from theoretical abstraction to empirical realization, offering a holistic evaluation of how AI can assist scientists in both virtual and physical experimentation.
 
 \paragraph{Dry Experiment}
-Dry experiments emphasize computational problem-solving, reflecting the growing role of AI in automating simulation-driven science. Each task presents the model with incomplete or masked scientific code that encapsulates domain-specific computations, such as molecular dynamics, climate modeling, or numerical solvers in physics~\cite{cox2025mdcrow}. The model must infer the missing logic, reconstruct executable code, and ensure that the resulting program produces correct and efficient outcomes. This task thus evaluates a model’s ability to integrate scientific understanding with code synthesis—testing not only syntactic correctness but also conceptual fidelity to the underlying scientific problem~\cite{tian2024scicoderesearchcodingbenchmark}.
+Dry experiments emphasize computational problem-solving, reflecting the growing role of AI in automating simulation-driven science. Each task presents the model with incomplete or masked scientific code that encapsulates domain-specific computations, such as molecular dynamics, climate modeling, or numerical solvers in physics~\cite{cox2025mdcrow}. The model must infer the missing logic, reconstruct executable code, and ensure that the resulting program produces correct and efficient outcomes. This task thus evaluates a model's ability to integrate scientific understanding with code synthesis—testing not only syntactic correctness but also conceptual fidelity to the underlying scientific problem~\cite{tian2024scicoderesearchcodingbenchmark}.
 
 To better characterize the scope of dry experiments, we categorize representative computational functions commonly encountered across disciplines, including numerical calculation, statistical analysis, simulation, metric calculation, data processing, and predictive modeling, as shown in Table~\ref{tab:dry_experiment_functions}. The completion or generation of these functions offers a rigorous measure of how well AI systems can operationalize scientific intent into executable form.
 
@@ -349,7 +349,7 @@ To align with the scientific characteristics of each task, we have designed mult
 
 \subsubsection{Metrics of Scientific Deep Research}
 
-The Scientific Deep Research task draws inspiration from AI’s deep research paradigms~\cite{wenxiaobai,DeepResearch_OpenAI2025,Perplexity_DeepResearch_2025,KimiResearcher_2025,GrokDeepSearch_2025} while incorporating methodologies from meta-analysis in the scientific domain. The former emphasizes multi-step reasoning, where solving a problem often requires iterative searches, calculations, and inferences; the correctness of each step directly impacts the accuracy of the final answer. The latter focuses on systematically extracting and synthesizing data from literature, requiring highly precise results. Accordingly, our metrics capture both step-by-step reasoning fidelity and final answer accuracy.
+The Scientific Deep Research task draws inspiration from AI's deep research paradigms~\cite{wenxiaobai,DeepResearch_OpenAI2025,Perplexity_DeepResearch_2025,KimiResearcher_2025,GrokDeepSearch_2025} while incorporating methodologies from meta-analysis in the scientific domain. The former emphasizes multi-step reasoning, where solving a problem often requires iterative searches, calculations, and inferences; the correctness of each step directly impacts the accuracy of the final answer. The latter focuses on systematically extracting and synthesizing data from literature, requiring highly precise results. Accordingly, our metrics capture both step-by-step reasoning fidelity and final answer accuracy.
 
 \begin{tcolorbox}[
     breakable,
@@ -359,7 +359,7 @@ The Scientific Deep Research task draws inspiration from AI’s deep research pa
     colbacktitle=DeepPurple,
     coltitle=White
 ]
-\textbf{Exact Match (EM)}: Since the Scientific Deep Research tasks are designed to have short, unique, and easily verifiable answers, we use exact match as a hard metric to assess whether the model’s final answer is correct. The model receives a score of 1 if the output exactly matches the reference answer, and 0 otherwise.
+\textbf{Exact Match (EM)}: Since the Scientific Deep Research tasks are designed to have short, unique, and easily verifiable answers, we use exact match as a hard metric to assess whether the model's final answer is correct. The model receives a score of 1 if the output exactly matches the reference answer, and 0 otherwise.
 \end{tcolorbox}
 
 \begin{tcolorbox}[
@@ -473,7 +473,7 @@ Dry experiments focus on code generation task. Specifically, each problem includ
     colbacktitle=DeepPurple,
     coltitle=White
 ]
-\textbf{Pass all k Unit Tests(PassAll@k)}: This metric measures the proportion of problems with k or more unit tests passed successfully. It’s important to distinguish this from Pass@k. While Pass@k requires only one successful attempt out of k trials, PassAll@k demands that at least k attempts pass the unit tests. Consequently, PassAll@5 represents the most challenging criterion. The score is calculated as
+\textbf{Pass all k Unit Tests(PassAll@k)}: This metric measures the proportion of problems with k or more unit tests passed successfully. It's important to distinguish this from Pass@k. While Pass@k requires only one successful attempt out of k trials, PassAll@k demands that at least k attempts pass the unit tests. Consequently, PassAll@5 represents the most challenging criterion. The score is calculated as
 \[
 \text{PassAll@k} = \frac{\text{Number of problems with k or more unit tests passed}}{\text{Total number of problems}}.
 \]
@@ -560,7 +560,7 @@ Therefore, two evaluation metrics are adopted, as detailed below.
 ]
 \textbf{Multi-choice Accuracy (MCA)}: Given several options, the model receives a score of 1 if the selected option exactly matches the reference answer, and 0 otherwise.
 The final score of MCA is the average of all individual scores across all test samples. 
-This metric directly quantifies the model’s ability to pinpoint the correct solution from a large candidate pool, serving as a foundational measure of its end-to-end scientific reasoning accuracy in the multi-modal task.
+This metric directly quantifies the model's ability to pinpoint the correct solution from a large candidate pool, serving as a foundational measure of its end-to-end scientific reasoning accuracy in the multi-modal task.
 \end{tcolorbox}
 
 \begin{tcolorbox}[
@@ -576,7 +576,7 @@ Models are required to generate step-by-step logical reasoning to justify their 
 An LLM-based judge is utilized to assess the model-generated reasoning against a reference reasoning. 
 For each test sample, the LLM judge assigns a validity score ranging from 0 (completely invalid, contradictory, or irrelevant) to 10 (fully rigorous, logically coherent, and perfectly aligned with the reference reasoning), accompanied by justifications for the assigned score. 
 This fine-grained scoring paradigm circumvents the limitations of binary correctness assessments, enabling precise quantification of reasoning quality, including the validity of premises, logical transitions, and alignment with scientific principles. 
-The final RV score is computed as the mean of individual sample scores across the entire test set, reflecting the model’s overall capability to perform interpretable and reliable scientific reasoning.
+The final RV score is computed as the mean of individual sample scores across the entire test set, reflecting the model's overall capability to perform interpretable and reliable scientific reasoning.
 \end{tcolorbox}
 
 
@@ -603,7 +603,7 @@ Once all questions were constructed, we applied three layers of data cleaning:
 \paragraph{Difficulty Filtering}  
 After data cleaning, we filtered questions based on difficulty using mainstream LLMs. We evaluated each question with six high-performance models (e.g., GPT-5~\cite{GPT5_SystemCard2025}, Gemini-2.5-Pro~\cite{comanici2025gemini}, DeepSeek-R1~\cite{Guo2025}, Kimi-k2~\cite{team2025kimi}) under a setup allowing web search and deep-reasoning modes. Questions that more than half of the models could correctly answer were removed. This process ensures that the benchmark remains highly challenging.
 
-Through these four steps, we guarantee that all benchmark questions are derived from authentic scientific data, aligned with domain scientists’ judgment of scientific value, and maintain both high quality and high challenge.
+Through these four steps, we guarantee that all benchmark questions are derived from authentic scientific data, aligned with domain scientists' judgment of scientific value, and maintain both high quality and high challenge.
 
 
 
