@@ -22,7 +22,7 @@ This concept manifests in several ways:
     \item The final evaluation scores are aligned with the checklist based on the needs of real scientific research scenarios from scientists, which ensures that the assessments genuinely reflect the scientific utility of the models.
 \end{itemize}
 
-SGI-Bench departs from conventional benchmarks that emphasize factual recall or single-turn reasoning. Instead, it operationalizes the long-horizon workflow of scientific discovery into four interdependent stages: literature review(Deliberation), methodology design(conception), experiment implementation(Action), and experimental analysis(Perception). These stages correspond to fundamental capabilities required of AI systems: information integration and understanding(Scientific Deep Research), design and planning(Idea Generation), experimental execution(AI-Assisted Scientific Experiment), and reasoning-based interpretation(Scientific Experimental Reasoning). Together, they form a unified framework that measures not only what models know but how they think, plan, and adapt in pursuit of new knowledge. 
+SGI-Bench departs from conventional benchmarks that emphasize factual recall or single-turn reasoning. Instead, it operationalizes the long-horizon workflow of scientific discovery into four interdependent stages: literature review(Deliberation), methodology design(conception), experiment implementation(Action), and experimental analysis(Perception). These stages correspond to fundamental capabilities required of AI systems: information integration and understanding(Scientific Deep Research), design and planning(Idea Generation), experimental execution(Dry/Wet Experiment), and reasoning-based interpretation(Experimental Reasoning). Together, they form a unified framework that measures not only what models know but how they think, plan, and adapt in pursuit of new knowledge. 
 
 
 \begin{figure}[ht]
@@ -40,6 +40,8 @@ SGI-Bench departs from conventional benchmarks that emphasize factual recall or 
 
 \subsubsection{Scientific Deep Research}
 Scientific deep research refers to a thorough and comprehensive investigation of a specific scientific topic, combining elements of both AI-driven deep research~\cite{xu2025comprehensive, hu2025flowsearch, shi2025dualresearch} and scientific meta-analysis~\cite{field2010meta, xu2025manalyzer}. This task typically involves multi-step reasoning, web searches, document retrieval, and data analysis~\cite{ac1f09077393404a8bea5141d8710259,trivedi-etal-2023-interleaving,asai2024selfrag}. Drawing inspiration from AI's deep research, which often relies on multi-hop searches to gather diverse information across multiple sources~\cite{shao-etal-2024-assisting}, it also incorporates the methodology of meta-analysis from the scientific community. Meta-analysis, a rigorous form of scientific research, synthesizes existing literature to derive precise, data-driven conclusions and extract quantitative insights from a large body of studies. Unlike general deep research, which may focus on qualitative understanding, meta-analysis centers on aggregating and analyzing data to produce statistically significant results. By combining the multi-hop search nature of AI's deep research with the systematic, evidence-based approach of meta-analysis, this task ensures results that are both scientifically precise and meaningful. The ability to perform scientific deep research is crucial for advancing scientific knowledge, as it enables AI models to replicate the process of reviewing, synthesizing, and analyzing existing research to formulate new, data-driven hypotheses.~\cite{Wang2023,lu2024aiscientistfullyautomated}
+
+Deep Research comprises multiple forms including literature inquiry~\cite{Bosse2025DeepRB}, report-style reasoning~\cite{du2025deepresearchbenchcomprehensivebenchmark} and so on. In this benchmark, we focus on literature-inquiry–centric deep research, where the model identifies and integrates relevant scientific knowledge from provided sources. This process often involves unit verification, quantitative interpretation, and causal assessment—abilities fundamental to scientific reasoning and still challenging for current AI systems. By constraining the task to literature inquiry rather than broader report-generation settings, we ensure greater reproducibility and more reliable evaluation, while still probing a core component of scientific inquiry.
 
 In order to capture the diversity of real-world scientific inquiries, we divide the task of scientific deep research into four representative types: data, properties, micro-experiments, and macro-experiments, as illustrated in Table~\ref{tab:deep_research_types}. This division reflects the major types of questions scientists often confront, ranging from data-centric queries to property characterization, and from small-scale controlled experiments to large-scale natural events. By organizing the task in this way, the benchmark ensures that AI systems are evaluated across the breadth of literature review and data-driven investigation.
 
@@ -107,9 +109,13 @@ In real-world scientific workflows, deep research corresponds to the literature 
 \label{sec: Idea gen}
 Idea generation is a critical component of the scientific process, corresponding to the stage of research methodology design. At this stage, researchers synthesize existing knowledge, engage in associative and creative thinking, and propose new approaches to address current challenges. It embodies the creative essence of scientific inquiry and shapes the direction and potential impact of subsequent research.
 
-In real-world scientific workflows, idea generation typically occurs after researchers have completed a thorough literature review. They integrate prior findings, identify limitations or knowledge gaps, and use creative reasoning to formulate new hypotheses, methods, or frameworks aimed at overcoming these shortcomings. In this sense, idea generation serves as the crucial link between literature understanding and methodological innovation.
+In real-world scientific workflows, idea generation typically occurs after researchers have completed a thorough literature review. They integrate prior findings, identify limitations or knowledge gaps, and use creative reasoning to formulate new hypotheses, methods, or frameworks aimed at overcoming these shortcomings. In this sense, idea generation serves as the crucial link between literature understanding and methodological innovation. 
 
-However, because idea generation is an open-ended and highly creative task, its evaluation is inherently challenging. To make the assessment more systematic and tractable, we decompose an originally holistic idea into several interrelated components, forming a structured representation of the idea. This decomposition enables more fine-grained evaluation along dimensions such as effectiveness, novelty, level of detail, and feasibility~\cite{moose}.
+However, because idea generation is an open-ended and highly creative task, its evaluation is inherently challenging. In principle, scientific ideas span a wide spectrum from high-level hypotheses to fully specified methodological plans~\cite{Wan2025DeepResearchAT, popper2005logic, yang2024moose}. Evaluating the quality of open-ended hypotheses—those with substantial conceptual freedom and without explicit implementation structure—requires extensive human expert review to achieve even a modest degree of inter-rater reliability and public defensibility. Such large-scale expert adjudication is beyond the practical scope of this version of the benchmark.
+
+Consequently, our current Idea Generation evaluation focuses on the methodological-design component of an idea—i.e., how a proposed approach is operationalized through data usage, step-by-step procedures, evaluation protocols, and expected outcomes. This component offers a more constrained structure that enables measurable, partially automatable assessment while still reflecting an essential aspect of scientific ideation. We view this as a pragmatic starting point, and future versions of the benchmark may incorporate broader hypothesis-level evaluation once sufficiently robust expert-sourced ground truth becomes feasible.
+
+To make the assessment more systematic and tractable, we decompose an originally holistic idea into several interrelated components, forming a structured representation of the idea. This decomposition enables more fine-grained evaluation along dimensions such as effectiveness, novelty, level of detail, and feasibility~\cite{moose}.
 
 \begin{tcolorbox}[
     breakable,
@@ -151,9 +157,13 @@ However, because idea generation is an open-ended and highly creative task, its 
     \label{fig:Task Definition of Idea Generation}
 \end{figure}
 
-\subsubsection{AI-Assisted Scientific Experiment}
+\subsubsection{Dry/Wet Experiment}
 \label{sec: Task Definition of Experiment}
 Scientific experimentation represents the core of the discovery process, bridging theoretical formulation and empirical validation~\cite{Wang2023}. Within SGI-Bench, we formalize this process into two complementary categories: \textit{dry} and \textit{wet} experiments. Dry experiments capture computational and simulation-based studies—where AI assists in generating, refining, or executing scientific code that models physical phenomena.~\cite{RomeraParedes2023,ma2024eureka} Wet experiments, by contrast, simulate laboratory-based workflows, requiring the model to plan and reason about sequences of actions involving physical instruments, reagents, and procedural parameters~\cite{Boiko2023,bran2023augmenting}. Together, these two categories span the continuum from theoretical abstraction to empirical realization, offering a holistic evaluation of how AI can assist scientists in both virtual and physical experimentation.
+
+Computational and laboratory experiments take many forms in real scientific practice. For dry experiments, possible tasks range from full pipeline construction to simulation design and multi-module scientific computing; in this benchmark, we adopt a code-completion–based formulation~\cite{tian2024scicoderesearchcodingbenchmark}, where the model fills in missing components of an existing scientific script rather than generating an entire project from scratch. For wet experiments, laboratory workflows span diverse operational activities, yet we focus on the protocol-design aspect~\cite{Liu2025BioProBenchCD}, where the model composes a sequence of experimental actions and parameters from a predefined action space.
+
+By constraining dry and wet experiments to code completion and protocol design respectively, we retain core aspects of computational and laboratory reasoning while ensuring reproducibility, controlled variability, and reliable evaluation across models.
 
 \paragraph{Dry Experiment}
 Dry experiments emphasize computational problem-solving, reflecting the growing role of AI in automating simulation-driven science. Each task presents the model with incomplete or masked scientific code that encapsulates domain-specific computations, such as molecular dynamics, climate modeling, or numerical solvers in physics~\cite{cox2025mdcrow}. The model must infer the missing logic, reconstruct executable code, and ensure that the resulting program produces correct and efficient outcomes. This task thus evaluates a model's ability to integrate scientific understanding with code synthesis—testing not only syntactic correctness but also conceptual fidelity to the underlying scientific problem~\cite{tian2024scicoderesearchcodingbenchmark}.
@@ -257,13 +267,15 @@ In real scientific workflows, wet experiments correspond to the execution and va
     \label{fig:Task Definition of Wet Experiment}
 \end{figure}
 
-\subsubsection{Scientific Experimental Reasoning}
+\subsubsection{Experimental Reasoning}
 
-Scientific experimental reasoning in this benchmark focuses on multi-modal scientific reasoning, requiring models to interpret heterogeneous information drawn from diverse sources~\cite{zhang2024cmmmuchinesemassivemultidiscipline}. We consider five representative modalities as shown in Table~\ref{tab:modalities}: a) process images that integrate symbolic and textual information to depict workflows or variable relationships; b) observation images representing raw data captured by instruments such as telescopes, satellites, or microscopes; c) experiment images documenting laboratory setups and procedures; d) simulation images generated by computational models to visualize physical or chemical processes; and e) visualization images such as plots or charts that reveal patterns within structured datasets. Collectively, these modalities reflect the multi-faceted and evidence-driven nature of scientific inquiry.
+Experimental reasoning refers to the process of interpreting scientific observations and data to reach justified conclusions. In this benchmark, we focus on data-analysis–oriented reasoning~\cite{zhou2025scientistsexamprobingcognitive}, where the model must extract relevant visual or numerical cues from multi-modal sources~\cite{zhang2024cmmmuchinesemassivemultidiscipline}, compare conditions, and identify causal or descriptive patterns. This formulation emphasizes analytical interpretation rather than open-form scientific narrative, enabling reliable assessment while capturing an essential part of empirical scientific reasoning.
+
+We consider five representative modalities as shown in Table~\ref{tab:modalities}: a) process images that integrate symbolic and textual information to depict workflows or variable relationships; b) observation images representing raw data captured by instruments such as telescopes, satellites, or microscopes; c) experiment images documenting laboratory setups and procedures; d) simulation images generated by computational models to visualize physical or chemical processes; and e) visualization images such as plots or charts that reveal patterns within structured datasets. Collectively, these modalities reflect the multi-faceted and evidence-driven nature of scientific inquiry.
 
 \begin{table}[ht]
 \centering
-\caption{\textbf{Scientific Experimental Reasoning Modalities}: Five visual modalities used for multi-modal evidence and analysis.}
+\caption{\textbf{Experimental Reasoning Modalities}: Five visual modalities used for multi-modal evidence and analysis.}
 \label{tab:modalities}
 \resizebox{16.0cm}{!}{
 \begin{tabular}{p{4cm}p{6cm}p{6cm}}
@@ -288,7 +300,7 @@ To reason effectively over such diverse inputs, we define four complementary rea
 
 \begin{table}[ht]
 \centering
-\caption{\textbf{Scientific Experimental Reasoning Paradigms}: Four reasoning paradigms spanning perception to causality with examples and requirements.}
+\caption{\textbf{Experimental Reasoning Paradigms}: Four reasoning paradigms spanning perception to causality with examples and requirements.}
 \label{tab:reasoning_paradigms}
 \resizebox{16.0cm}{!}{
 \begin{tabular}{p{4cm}p{6cm}p{6cm}}
@@ -311,7 +323,7 @@ In real-world scientific workflows, experimental reasoning corresponds to the da
 
 \begin{tcolorbox}[
     breakable,
-    title=Task Definition of Scientific Experimental Reasoning,
+    title=Task Definition of Experimental Reasoning,
     colback=LighterGray,
     colframe=DeepPurple,
     colbacktitle=DeepPurple,
@@ -337,8 +349,8 @@ In real-world scientific workflows, experimental reasoning corresponds to the da
 
 \begin{figure}[ht]
     \vspace{0.01cm}
-    \caption{\textbf{Scientific Experimental Reasoning Task}: Inputs, outputs, and formulation for multi-modal analysis with step-by-step reasoning and final answers.}
-    \label{fig:Task Definition of Scientific Experimental Reasoning}
+    \caption{\textbf{Experimental Reasoning Task}: Inputs, outputs, and formulation for multi-modal analysis with step-by-step reasoning and final answers.}
+    \label{fig:Task Definition of Experimental Reasoning}
 \end{figure}
 
 
@@ -459,7 +471,7 @@ For each research direction, domain experts provide a standardized \textit{imple
 
 Taken together, the hybrid subjective--objective design provides a robust, interpretable, and comprehensive assessment of LLMs' scientific idea generation capabilities across creativity, structural clarity, and practical executability.
 
-\subsubsection{Metrics of AI-Assisted Scientific Experiment}
+\subsubsection{Metrics of Dry/Wet Experiment}
 
 \paragraph{Dry Experiment}
 \label{sec: Metric of Dry Experiment}
@@ -544,8 +556,8 @@ where \(\frac{n(n-1)}{2}\) is the maximum possible number of inversions. By defi
 
 
 
-\subsubsection{Metrics of Scientific Experimental Reasoning}
-The Scientific Experimental Reasoning task assesses the multi-modal scientific reasoning capabilities of LLMs and agents. 
+\subsubsection{Metrics of Experimental Reasoning}
+The Experimental Reasoning task assesses the multi-modal scientific reasoning capabilities of LLMs and agents. 
 Specifically, given several images and a corresponding question, the model is required to select the correct option from no fewer than 10 candidates. 
 For evaluation, the correctness of the final answer and the validity of intermediate reasoning are equally critical. 
 Therefore, two evaluation metrics are adopted, as detailed below.
@@ -590,7 +602,7 @@ Subsequently, we collected raw data provided by experts and researchers, primari
 In addition, these experts and researchers will provide seed questions and annotation requirements for annotation, which provide initial examples for the subsequent annotation process, as illustrated in Figure~\ref{fig: pipeline} (G).
 
 \paragraph{Question Construction}  
-After gathering the raw data, we recruited over 100 graduate students and PhD candidates from different disciplines to construct benchmark questions according to the task definitions. Annotators first analyzed the collected texts and images, and then created questions according to annotation requirements and seed questions. Several rules were applied to ensure scientific validity and authenticity. Specifically, annotators were required to reference the original data source and paragraph for each question, ensuring traceability to scientist-provided data. Furthermore, all questions are constructed by at least two annotators, one of whom is responsible for generating complex draft questions, and the other is responsible for refining them, as shown in Figure~\ref{fig: pipeline} (G).
+After gathering the raw data, we recruited over 100 Master's and PhD holders from different disciplines to construct benchmark questions according to the task definitions. Annotators first analyzed the collected texts and images, and then created questions according to annotation requirements and seed questions. Several rules were applied to ensure scientific validity and authenticity. Specifically, annotators were required to reference the original data source and paragraph for each question, ensuring traceability to scientist-provided data. Furthermore, all questions are constructed by at least two annotators, one of whom is responsible for generating complex draft questions, and the other is responsible for refining them, as shown in Figure~\ref{fig: pipeline} (G).
 
 During question construction, experts continuously reviewed the generated questions. Each question was immediately submitted to the relevant expert for evaluation, who assessed its scientific value. For instance, a question with an experiment configuration that lacks general applicability would be deemed scientifically invalid. Experts provided feedback to annotators, who then revised the questions accordingly, ensuring that the constructed questions remain aligned with the perspectives and standards of domain scientists.
 
@@ -619,17 +631,17 @@ Through these four steps, we guarantee that all benchmark questions are derived 
 % \vspace{-2em}
 \end{figure}
 
-After the data construction process, we obtained the complete SGI-Bench benchmark, which contains 318 Scientific Deep Research questions, 315 Idea Generation questions, 271 AI-Assisted Scientific Dry Experiment questions, 68 Wet Experiment questions, and 291 Scientific Experimental Reasoning questions. The discipline distributions for Scientific Deep Research, Idea Generation, and Scientific Experimental Reasoning are identical, as shown in Figure~\ref{fig: data_distribution} (a). The discipline distributions for Dry and Wet Experiments are presented in Figure~\ref{fig: data_distribution} (b) and Figure~\ref{fig: data_distribution} (c), respectively, with Wet Experiments covering only a subset of disciplines, such as Biology and Chemistry.
+After the data construction process, we obtained the complete SGI-Bench benchmark, which contains 318 Scientific Deep Research questions, 315 Idea Generation questions, 271 Dry Experiment questions, 68 Wet Experiment questions, and 291 Experimental Reasoning questions. The discipline distributions for Scientific Deep Research, Idea Generation, and Experimental Reasoning are identical, as shown in Figure~\ref{fig: data_distribution} (a). The discipline distributions for Dry and Wet Experiments are presented in Figure~\ref{fig: data_distribution} (b) and Figure~\ref{fig: data_distribution} (c), respectively, with Wet Experiments covering only a subset of disciplines, such as Biology and Chemistry.
 
 \begin{figure}[ht]
 % \vspace{-0.5em}
 \centerline
 {\includegraphics[width=15cm]{paper/imgs/data_distribution.png}}
-\caption{\textbf{Benchmark Data Distribution}: (a) Overall discipline distribution; (b) Dry experiment discipline distribution; (c) Wet experiment discipline distribution; (d) Scientific Deep Research question types; (e) Dry Experiment function types; (f) Scientific Experimental Reasoning image modalities; (g) Scientific Experimental Reasoning reasoning paradigms.}
+\caption{\textbf{Benchmark Data Distribution}: (a) Overall discipline distribution; (b) Dry experiment discipline distribution; (c) Wet experiment discipline distribution; (d) Scientific Deep Research question types; (e) Dry Experiment function types; (f) Experimental Reasoning image modalities; (g) Experimental Reasoning reasoning paradigms.}
 \label{fig: data_distribution}
 % \vspace{-2em}
 \end{figure}
 
-In addition to discipline-level distributions, we further categorized the tasks at a finer granularity. For Scientific Deep Research, questions are grouped based on the type of target being investigated into four categories: Data, Properties, Micro-Experiments, and Macro-Experiments, as detailed in Table~\ref{tab:deep_research_types}. The distribution of these types is illustrated in Figure~\ref{fig: data_distribution} (d). For Dry Experiments, questions are classified into six types according to the masked function type, as shown in Table~\ref{tab:dry_experiment_functions}, with the corresponding distribution displayed in Figure~\ref{fig: data_distribution} (e). In Scientific Experimental Reasoning, the task inputs include images spanning multiple modalities, including Process Images, Observation Images, Experiment Images, Simulation Images, and Visualization Images, summarized in Table~\ref{tab:modalities} and visualized in Figure~\ref{fig: data_distribution} (f). Moreover, based on the type of reasoning required, questions are further categorized into Signal Perception, Attribute Understanding, Comparative Reasoning, and Causal Reasoning, as detailed in Table~\ref{tab:reasoning_paradigms}, with distributions shown in Figure~\ref{fig: data_distribution} (g).
+In addition to discipline-level distributions, we further categorized the tasks at a finer granularity. For Scientific Deep Research, questions are grouped based on the type of target being investigated into four categories: Data, Properties, Micro-Experiments, and Macro-Experiments, as detailed in Table~\ref{tab:deep_research_types}. The distribution of these types is illustrated in Figure~\ref{fig: data_distribution} (d). For Dry Experiments, questions are classified into six types according to the masked function type, as shown in Table~\ref{tab:dry_experiment_functions}, with the corresponding distribution displayed in Figure~\ref{fig: data_distribution} (e). In Experimental Reasoning, the task inputs include images spanning multiple modalities, including Process Images, Observation Images, Experiment Images, Simulation Images, and Visualization Images, summarized in Table~\ref{tab:modalities} and visualized in Figure~\ref{fig: data_distribution} (f). Moreover, based on the type of reasoning required, questions are further categorized into Signal Perception, Attribute Understanding, Comparative Reasoning, and Causal Reasoning, as detailed in Table~\ref{tab:reasoning_paradigms}, with distributions shown in Figure~\ref{fig: data_distribution} (g).
 
 These fine-grained categorizations by discipline and task type facilitate a detailed analysis of the limitations of evaluated LLMs and agents across scientific domains and research tasks. Such insights provide clear directions for advancing AI-assisted scientific discovery.

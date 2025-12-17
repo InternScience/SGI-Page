@@ -4,7 +4,7 @@
 To comprehensively evaluate different models throughout the scientific discovery workflow, we performed quantitative assessments across diverse LLMs and agents using scientist-aligned metrics.
 \begin{itemize}
     \item For open-weight LLMs, we evaluated DeepSeek-V3.2~\cite{DeepSeekV3.2_2025}, DeepSeek-R1~\cite{Guo2025}, Intern-S1 and Intern-S1-mini~\cite{bai2025intern}, Kimi-k2~\cite{team2025kimi}, Qwen3-VL-235B-A22B~\cite{bai2025qwen3}, Qwen3-235B-A22B, Qwen3-Max, and Qwen3-8B~\cite{yang2025qwen3}, and Llama-4-Scout~\cite{Llama4_Release2025}.
-    \item For closed-weight LLMs, we assessed GPT-4o~\cite{GPT4o_SystemCard2024}, GPT-4.1~\cite{GPT4.1_Docs2025}, GPT-5~\cite{GPT5_SystemCard2025}, GPT-5.1~\cite{GPT5.1_Addendum2025}, o3 and o4-mini~\cite{OpenAI_o3_2025}, Gemini-2.5-Flash and Gemini-2.5-Pro~\cite{comanici2025gemini}, Gemini-3-Pro~\cite{Gemini3_DeepMind2025}, Claude-Opus-4.1~\cite{ClaudeOpus4.1_2025}, Claude-Sonnet-4.5~\cite{ClaudeSonnet4.5_2025}, Grok-3~\cite{Grok3_2025}, and Grok-4~\cite{Grok4_ModelCard2025}.
+    \item For closed-weight LLMs, we assessed GPT-4o~\cite{GPT4o_SystemCard2024}, GPT-4.1~\cite{GPT4.1_Docs2025}, GPT-5~\cite{GPT5_SystemCard2025}, GPT-5.1~\cite{GPT5.1_Addendum2025}, GPT-5.2-Pro~\cite{GPT5.2}, o3 and o4-mini~\cite{OpenAI_o3_2025}, Gemini-2.5-Flash and Gemini-2.5-Pro~\cite{comanici2025gemini}, Gemini-3-Pro~\cite{Gemini3_DeepMind2025}, Claude-Opus-4.1~\cite{ClaudeOpus4.1_2025}, Claude-Sonnet-4.5~\cite{ClaudeSonnet4.5_2025}, Grok-3~\cite{Grok3_2025}, and Grok-4~\cite{Grok4_ModelCard2025}.
     \item For open-source agents, we tested SmolAgents(GPT-4.1) and SmolAgents(Gemini-2.5-Flash)~\cite{SmolAgents_2025}, Owl(GPT-4.1) and Owl(Gemini-2.5-Flash)~\cite{hu2025owl}, WebThinker~\cite{WebThinker_NeurIPS2025}, XMaster~\cite{XMaster_Arxiv2025}, and InternAgent~\cite{team2025novelseek}.
     \item For closed-source agents, we evaluated OpenAI DeepResearch(o3) and OpenAI DeepResearch(o4-mini)~\cite{DeepResearch_OpenAI2025}, Kimi-Search(Kimi-k2)~\cite{KimiResearcher_2025}, Doubao-Search(Seed-1-6), Grok-Search(Grok-4)~\cite{GrokDeepSearch_2025}, and Perplexity(Sonar-Pro)~\cite{Perplexity_DeepResearch_2025}.
 \end{itemize}
@@ -57,7 +57,7 @@ Grok-4 & 13.31 & 37.12 & 33.71 & 29.01 & 30.24 & \cellcolor{red!10}28.68 \\
 \arrayrulecolor{black!100}\bottomrule
 \end{tabular}
 }
-\caption{\textbf{Overview Results Across SGI-Bench Tasks}: Aggregated performance across Deep Research, Idea Generation, Dry/Wet Experiment, and Scientific Experimental Reasoning. The scores for Deep Research are based on the exact match metric (the strictest metric). Idea Generation scores are the average of four metrics evaluating ideas. Dry Experiment scores are based on PassAll@5 (the strictest metric). Wet Experiment scores are the average of action sequence similarity and parameter accuracy. Experimental Reasoning scores are based on the multi-choice accuracy metric (the strictest metric). The SGI-Score is the average across these tasks, reflecting the overall capability of an AI model in various scientific research scenarios. An asterisk $^{*}$ indicates results from different versions of the same series of multimodal models.}
+\caption{\textbf{Overview Results Across SGI-Bench Tasks}: Aggregated performance across Deep Research, Idea Generation, Dry/Wet Experiment, and Experimental Reasoning. The scores for Deep Research are based on the exact match metric (the strictest metric). Idea Generation scores are the average of four metrics evaluating ideas. Dry Experiment scores are based on PassAll@5 (the strictest metric). Wet Experiment scores are the average of action sequence similarity and parameter accuracy. Experimental Reasoning scores are based on the multi-choice accuracy metric (the strictest metric). The SGI-Score is the average across these tasks, reflecting the overall capability of an AI model in various scientific research scenarios. An asterisk $^{*}$ indicates results from different versions of the same series of multimodal models.}
 \label{tab:llm_comparison}
 \end{table}
 
@@ -194,7 +194,7 @@ Overall, the Idea Generation results indicate that contemporary LLMs are adept a
 
 
 
-\subsection{AI-Assisted Scientific Experiment}
+\subsection{Dry/Wet Experiment}
 
 Experiments form the critical bridge between idea generation and scientific reasoning, providing the most direct avenue for validating hypotheses and uncovering new phenomena. Within SGI-Bench, we evaluate two complementary forms of experiments: \emph{dry experiments}, which involve computational analyses or simulations, and \emph{wet experiments}, which require laboratory procedures and operational planning. Across both categories, current AI models exhibit substantial limitations, revealing a persistent gap between linguistic fluency and experimentally actionable competence.
 
@@ -346,24 +346,24 @@ Overall, the deviations highlight a critical limitation of current AI models: wh
 
 
 
-\subsection{Scientific Experimental Reasoning}
+\subsection{Experimental Reasoning}
 
 \begin{figure}[ht]
 % \vspace{-0.5em}
 \centerline
 {\includegraphics[width=16cm]{paper/imgs/mm_case1.png}}
-\caption{\textbf{Scientific Experimental Reasoning Modalities}: Examples of process, visualization, observation, simulation, and experiment images used as multi-modal evidence.}
+\caption{\textbf{Experimental Reasoning Modalities}: Examples of process, visualization, observation, simulation, and experiment images used as multi-modal evidence.}
 \label{fig: image_case1}
 % \vspace{-2em}
 \end{figure}
 
-Scientific Experimental Reasoning evaluates the ability of multimodal LLMs to interpret experimental observations, integrate heterogeneous scientific evidence, and refine testable hypotheses. As illustrated in Figure~\ref{fig: image_case1}, the visual inputs span five representative modalities in scientific practice—process diagrams, data visualizations, natural observations, numerical simulations, and laboratory experiments—reflecting the diversity of multimodal information that underpins real-world scientific inquiry.
+Experimental Reasoning evaluates the ability of multimodal LLMs to interpret experimental observations, integrate heterogeneous scientific evidence, and refine testable hypotheses. As illustrated in Figure~\ref{fig: image_case1}, the visual inputs span five representative modalities in scientific practice—process diagrams, data visualizations, natural observations, numerical simulations, and laboratory experiments—reflecting the diversity of multimodal information that underpins real-world scientific inquiry.
 
 \begin{figure}[ht]
 % \vspace{-0.5em}
 \centerline
 {\includegraphics[width=16cm]{paper/imgs/mm_case_1.png}}
-\caption{\textbf{Scientific Experimental Reasoning Case}: Multi-image question requiring cross-modal synthesis and step-wise reasoning.}
+\caption{\textbf{Experimental Reasoning Case}: Multi-image question requiring cross-modal synthesis and step-wise reasoning.}
 \label{fig: mm_case1}
 % \vspace{-2em}
 \end{figure}
@@ -374,7 +374,7 @@ In this task, models are provided with several images accompanied by a question 
 % \vspace{-0.5em}
 \centerline
 {\includegraphics[width=16cm]{paper/imgs/mcq_metric.png}}
-\caption{\textbf{Scientific Experimental Reasoning Evaluation}: Multi-Choice Accuracy (MCA) and Reasoning Validity (RV) across models on multimodal tasks.}
+\caption{\textbf{Experimental Reasoning Evaluation}: Multi-Choice Accuracy (MCA) and Reasoning Validity (RV) across models on multimodal tasks.}
 \label{fig: mm_results}
 % \vspace{-2em}
 \end{figure}
@@ -387,7 +387,7 @@ As shown in Figure~\ref{fig: mm_results}, closed-source LLMs generally outperfor
 % \vspace{-0.5em}
 \centerline
 {\includegraphics[width=16cm]{paper/imgs/mcp_task_metric.png}}
-\caption{\textbf{Scientific Experimental Reasoning Performance by Type and Discipline}: Breakdown across reasoning paradigms (signal, attribute, comparative, causal) and 10 scientific domains.}
+\caption{\textbf{Experimental Reasoning Performance by Type and Discipline}: Breakdown across reasoning paradigms (signal, attribute, comparative, causal) and 10 scientific domains.}
 \label{fig: mm_tasks_subjects}
 % \vspace{-2em}
 \end{figure}
@@ -397,4 +397,4 @@ To further dissect these capabilities, we analyze performance across reasoning t
 From the perspective of reasoning categories, including signal perception, attribute understanding, comparative reasoning, and causal reasoning, LLMs perform consistently well in causal reasoning and perceptual recognition. In contrast, comparative reasoning emerges as a persistent weakness. This indicates that models struggle when required to contrast subtle quantitative or qualitative differences, a cognitive operation fundamental to scientific evaluation and hypothesis discrimination.
 When examining performance across 10 scientific disciplines, an intriguing pattern emerges. Models achieve their highest accuracy in astronomy, followed by chemistry, energy science, and neuroscience. These domains often feature structured visual patterns or canonical experimental setups, which may align well with LLMs' prior training data. Conversely, performance declines substantially in materials science, life sciences, and Earth sciences, where visual cues are more heterogeneous, context-dependent, or experimentally nuanced. This divergence suggests that domain-specific complexity and representation diversity strongly influence multimodal reasoning performance.
 
-Overall, these findings reveal that while current LLMs demonstrate encouraging abilities in integrating scientific evidence and conducting basic causal analyses, they still fall short in tasks requiring precise discrimination, cross-sample comparison, and nuanced interpretation of domain-specific observations. The relatively narrow performance gap among leading models underscores that scale alone is insufficient; advancing scientific experimental reasoning will require improved multimodal grounding, finer-grained visual understanding, and training paradigms explicitly aligned with scientific inquiry.
+Overall, these findings reveal that while current LLMs demonstrate encouraging abilities in integrating scientific evidence and conducting basic causal analyses, they still fall short in tasks requiring precise discrimination, cross-sample comparison, and nuanced interpretation of domain-specific observations. The relatively narrow performance gap among leading models underscores that scale alone is insufficient; advancing experimental reasoning will require improved multimodal grounding, finer-grained visual understanding, and training paradigms explicitly aligned with scientific inquiry.

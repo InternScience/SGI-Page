@@ -265,7 +265,7 @@
             </h1>
 
             <p class="fade-in-up delay-200 text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed px-4">
-                Scientific General Intelligence (SGI) is defined as an AI system that can autonomously navigate the full, iterative cycle of scientific inquiry—Deliberation, Conception, Action, and Perception—with the versatility and proficiency of a human scientist. SGI-Bench operationalizes this definition via four scientist-aligned task families: deep research, idea generation, AI-assisted experiments (dry/wet), and multimodal experimental reasoning. The benchmark spans 10 disciplines and more than 1,000 expert-curated samples inspired by Science's 125 Big Questions.
+                Scientific General Intelligence (SGI) is defined as an AI system that can autonomously navigate the full, iterative cycle of scientific inquiry—Deliberation, Conception, Action, and Perception—with the versatility and proficiency of a human scientist. SGI-Bench operationalizes this definition via four scientist-aligned task families: deep research, idea generation, dry/wet experiments, and multimodal experimental reasoning. The benchmark spans 10 disciplines and more than 1,000 expert-curated samples inspired by Science's 125 Big Questions.
             </p>
 
             <div class="fade-in-up delay-300 mt-12 p-2 glass rounded-2xl mx-auto max-w-full sm:max-w-4xl">
@@ -309,7 +309,7 @@
                         <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600"><i class="fas fa-code"></i></div>
                         <div>
                             <h4 class="font-semibold text-slate-900">Action</h4>
-                            <p class="text-sm text-slate-500">AI-assisted experiments: dry (code/simulation) and wet (lab protocol).</p>
+                            <p class="text-sm text-slate-500">Scientific experiments: dry (code generation) and wet (lab protocol development).</p>
                         </div>
                     </div>
                     <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-orange-500">
@@ -347,7 +347,7 @@
                         <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="fas fa-pen-nib"></i></div>
                         <div>
                             <h4 class="font-semibold text-slate-900">Question Construction</h4>
-                            <p class="text-sm text-slate-500">100+ graduate/PhD annotators; continuous expert review for scientific value.</p>
+                            <p class="text-sm text-slate-500">100+ Master's and PhD holders; continuous expert review for scientific value.</p>
                         </div>
                     </div>
                     <div class="flex gap-4 p-4 glass rounded-xl border-l-4 border-amber-500">
@@ -366,7 +366,7 @@
                     </div>
                 </div>
                 <p class="text-base md:text-base text-slate-600 leading-relaxed">
-                    SGI-Bench data is scientist-aligned and high-fidelity: an expert-sourced corpus spanning 10 disciplines (inspired by Science’s 125 Big Questions), questions constructed by 100+ graduate/PhD annotators with continuous scientist-in-the-loop review, multi-stage cleaning (rules + model checks + expert QA) to ensure executability and unique answers, and difficulty filtering that removes items solved by >50% strong LLMs—yielding authentic, challenging, and broadly representative scientific tasks.
+                    SGI-Bench data is scientist-aligned and high-fidelity: an expert-sourced corpus spanning 10 disciplines (inspired by Science’s 125 Big Questions), questions constructed by 100+ Master's and PhD holders with continuous scientist-in-the-loop review, multi-stage cleaning (rules + model checks + expert QA) to ensure executability and unique answers, and difficulty filtering that removes items solved by >50% strong LLMs—yielding authentic, challenging, and broadly representative scientific tasks.
                 </p>
             </div>
         </div>
@@ -637,7 +637,7 @@
                 </div>
             </div>
             <div class="mt-4 text-slate-500 text-sm leading-relaxed bg-white/50 p-4 rounded-lg border border-slate-100">
-                <p><strong class="text-slate-700">Overview Results Across SGI-Bench Tasks:</strong> Aggregated performance across Deep Research, Idea Generation, Dry/Wet Experiment, and Scientific Experimental Reasoning. The scores for Deep Research are based on the exact match metric (the strictest metric). Idea Generation scores are the average of four metrics evaluating ideas. Dry Experiment scores are based on PassAll@5 (the strictest metric). Wet Experiment scores are the average of action sequence similarity and parameter accuracy. Experimental Reasoning scores are based on the multi-choice accuracy metric (the strictest metric). The SGI-Score is the average across these tasks, reflecting the overall capability of an AI model in various scientific research scenarios. Note: The Experimental Reasoning metrics for Qwen3-Max and Qwen3-8B come from their multimodal versions.</p>
+                <p><strong class="text-slate-700">Overview Results Across SGI-Bench Tasks:</strong> Aggregated performance across Deep Research, Idea Generation, Dry/Wet Experiment, and Experimental Reasoning. The scores for Deep Research are based on the exact match metric (the strictest metric). Idea Generation scores are the average of four metrics evaluating ideas. Dry Experiment scores are based on PassAll@5 (the strictest metric). Wet Experiment scores are the average of action sequence similarity and parameter accuracy. Experimental Reasoning scores are based on the multi-choice accuracy metric (the strictest metric). The SGI-Score is the average across these tasks, reflecting the overall capability of an AI model in various scientific research scenarios. Note: The Experimental Reasoning metrics for Qwen3-Max and Qwen3-8B come from their multimodal versions.</p>
             </div>
         </div>
 
@@ -646,7 +646,7 @@
             <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-4">
                 <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
                     <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm"><i class="fas fa-magnifying-glass"></i></span>
-                    Deep Research
+                    Scientific Deep Research
                 </h3>
             </div>
 
@@ -862,7 +862,7 @@
             <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Conclusion</h2>
             <div class="text-slate-600 leading-relaxed space-y-4">
                 <p>
-                    This work advances the study of Scientific General Intelligence (SGI) from both theory and practice. Grounded in the Practical Inquiry Model, we formalize SGI as the capacity to navigate the iterative cycle of Deliberation, Conception, Action, and Perception with the versatility of a human scientist. Building on this principle-grounded definition, we operationalize SGI through SGI-Bench, a comprehensive, scientist-aligned benchmark that instantiates four core task families: Scientific Deep Research, Idea Generation, AI-Assisted Scientific Experiment (dry/wet), and Scientific Experimental Reasoning. Complemented by our agentic evaluation framework and multi-metric protocol, SGI-Bench enables scalable, transparent, and domain-faithful assessment.
+                    This work advances the study of Scientific General Intelligence (SGI) from both theory and practice. Grounded in the Practical Inquiry Model, we formalize SGI as the capacity to navigate the iterative cycle of Deliberation, Conception, Action, and Perception with the versatility of a human scientist. Building on this principle-grounded definition, we operationalize SGI through SGI-Bench, a comprehensive, scientist-aligned benchmark that instantiates four core task families: Scientific Deep Research, Idea Generation, Dry/Wet Experiment, and Experimental Reasoning. Complemented by our agentic evaluation framework and multi-metric protocol, SGI-Bench enables scalable, transparent, and domain-faithful assessment.
                 </p>
                 <p>
                     Experiments reveal a consistent pattern: in Deep Research, models show step-level alignment but low exact-match accuracy (10--20%), with brittleness in quantitative reasoning; in Idea Generation, hypotheses are fluent but underspecified and infeasible; in Dry Experiment, code is executable but PassAll@k remains low; in Wet Experiment, sequences show omissions and misordering; and in Experimental Reasoning, causal reasoning outperforms comparative, with persistent multimodal challenges. These highlight gaps between linguistic fluency and integrated scientific cognition. Moreover, SGI exhibits dynamic capacity: Test-Time Reinforcement Learning with novelty rewards improves idea generation without reference answers.

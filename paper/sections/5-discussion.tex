@@ -202,7 +202,7 @@ Importantly, code executability is not the bottleneck: most frontier models achi
 For \textbf{Wet Experiments}, although Parameter Accuracy improves slightly under permutation-equivalence evaluation, \textbf{Sequence Similarity remains uniformly low} across both open and closed models (Figure~\ref{fig: wet_metrics}). Models frequently insert redundant steps, omit critical actions, or misorder multi-branch protocols. The complex oncology workflow case (Figure~\ref{fig: wet_case2}) illustrates that models cannot reliably manage temporal design, branching logic, or multi-sample coordination. Thus, wet-lab action planning remains a profound gap toward embodied SGI.
 
 \paragraph{Perception: Multimodal reasoning is improving, but comparison is a hard frontier.}
-In Scientific Experimental Reasoning, closed-source models consistently outperform open-source ones (Figure~\ref{fig: mm_results}). Across nearly all models, \textbf{Reasoning Validity (RV) exceeds Multi-choice Accuracy (MCA)}, showing that models can often produce partially coherent narratives even when selecting the wrong option. This echoes the SLA--EM gap in Deep Research and suggests a general pattern: models are better at producing plausible \emph{local reasoning} than globally correct scientific decisions.
+In Experimental Reasoning, closed-source models consistently outperform open-source ones (Figure~\ref{fig: mm_results}). Across nearly all models, \textbf{Reasoning Validity (RV) exceeds Multi-choice Accuracy (MCA)}, showing that models can often produce partially coherent narratives even when selecting the wrong option. This echoes the SLA--EM gap in Deep Research and suggests a general pattern: models are better at producing plausible \emph{local reasoning} than globally correct scientific decisions.
 
 Reasoning-type breakdown reveals that models perform relatively well on \textbf{Signal Perception} and \textbf{Causal Reasoning}, but \textbf{Comparative Reasoning is persistently weakest} (Figure~\ref{fig: mm_tasks_subjects}). Scientific comparison requires subtle cross-sample discrimination and quantitative contrast---a cognitive operation central to scientist judgment but not yet robustly captured by current MLLMs. Discipline-wise, astronomy and chemistry are easier, while materials science, life science, and Earth science remain hardest (Figure~\ref{fig: mm_tasks_subjects}), reflecting the mismatch between real scientific visual heterogeneity and training priors.
 
@@ -242,3 +242,28 @@ Given retrieval dominance and tool latency (Figure~\ref{fig:agent_tool_compare})
 
 \paragraph{Summary.}
 SGI-Bench reveals that modern LLMs exhibit partial competencies in each SGI quadrant but lack integrated, numerically robust, and methodologically disciplined scientific cognition. Bridging this gap requires progress on long-horizon meta-analysis, executable planning, numerically faithful experimentation, branch-aware wet-lab reasoning, comparative multimodal inference, and dynamic test-time self-improvement---all supported by efficient and trustworthy tool ecosystems. These directions collectively chart a concrete path from fragmented scientific skills toward genuine Scientific General Intelligence.
+
+
+\subsection{Limitations}
+
+Despite providing a structured framework for evaluating scientific capabilities across four workflow stages, the current version of SGI-Bench has several limitations:
+
+\paragraph{(1) Partial coverage of real scientific workflows.}
+The four stages in our benchmark function as probes for different components of scientific inquiry rather than a complete representation of real-world scientific practice. Many aspects of scientific work—such as integration across scientific disciplines and risk and safety assessment~\cite{Zhou2024LabSafetyBB}—remain outside our current scope.
+
+\paragraph{(2) Scientific Deep Research currently emphasizes literature-inquiry–centric tasks.}
+Deep Research spans activities such as literature inquiry~\cite{Bosse2025DeepRB}, report-style reasoning~\cite{du2025deepresearchbenchcomprehensivebenchmark}, and related scientific analyses. In this benchmark, we focus on the literature-inquiry–centric subset, as identifying, interpreting, and integrating existing scientific knowledge is a foundational prerequisite for methodological design and experimental planning. This focus enables standardized, reproducible, and scalable evaluation while still probing a core component of real scientific workflows. More open-form variants—such as argumentative evidence synthesis or report generation—are also important but require substantial expert-based scoring, and are therefore reserved for future versions.
+
+\paragraph{(3) Idea Generation evaluation focuses on methodology design.}
+Fully open-ended hypothesis generation involves substantial conceptual freedom and requires extensive expert adjudication to achieve reliable judgments. Due to practical constraints, our current evaluation focuses on the method-design component of scientific ideas~\cite{Wan2025DeepResearchAT, popper2005logic, yang2024moose}. Future extensions may incorporate hypothesis-level evaluation through a combination of arena-style model comparisons and expert review.
+
+\paragraph{(4) Limited code and action space coverage.}
+Dry Experiment tasks currently support only Python~\cite{tian2024scicoderesearchcodingbenchmark}, lacking adaptation to other programming languages and computational paradigms. The action space for Wet Experiments is an early-stage abstraction; scaling it requires constructing a large, standardized library of atomic actions grounded in real laboratory protocols~\cite{Liu2025BioProBenchCD}.
+
+\paragraph{(5) Experimental reasoning in enclosed spaces.}
+We employ a multiple-choice design to ensure objective, automatable evaluation~\cite{zhou2025scientistsexamprobingcognitive}. While practical, this structure constrains the model’s ability to express diverse reasoning paths and limits assessment of open-form scientific explanations.
+
+\paragraph{(6) Partial coverage of deductive and inductive paradigms of scientific discovery.}
+Scientific discovery is commonly understood to follow two broad paradigms: \textit{deduction} and \textit{induction}~\cite{bacon1878novum, popper2014conjectures}. Deductive processes begin from prior knowledge or theoretical propositions and proceed through reasoning to experimental verification. Inductive processes, in contrast, originate from new observational data or unexpected empirical phenomena and generalize toward broader patterns or hypotheses.  
+
+The PIM-grounded~\cite{garrison1999critical, garrison2001critical} workflow in this version of SGI-Bench primarily reflects the deductive paradigm, as tasks begin with literature-based information and guide models toward reasoning and experiment planning. Inductive scientific discovery---which relies on data-driven pattern formation and hypothesis emergence---remains outside the scope of the current benchmark and represents an important direction for future expansion.
