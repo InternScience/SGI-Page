@@ -1851,6 +1851,16 @@ if (align === 'right') {
             }
             updateThemeIcons();
         })();
+
+        // Listen for theme changes from parent SGIWorld
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'sgiworld-theme') {
+                const theme = event.data.theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('sgi-theme', theme);
+                updateThemeIcons();
+            }
+        });
     </script>
 </body>
 </html>
