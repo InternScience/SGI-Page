@@ -15,20 +15,23 @@
         // 说明：Tailwind 配置仅用于样式定制（字体、颜色、动画等），不会改变页面逻辑或文本内容。
         // 动画滚动速度：下方 'scroll' 与 'scroll-reverse' 的持续时间为 60s（越小越快，越大越慢）。
         tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: { 50: '#f8fafc', 900: '#0f172a' },
                         sgi: '#6366f1',
-                        seevo: '#06b6d4'
+                        seevo: '#06b6d4',
+                        sfe: '#10b981',
+                        claw: '#f59e0b',
+                        mark: '#ec4899'
                     },
                     animation: {
-                        'scroll': 'scroll 60s linear infinite',          // 轮播滚动动画（60秒一轮）
-                        'scroll-reverse': 'scrollReverse 60s linear infinite', // 反向滚动动画（60秒一轮）
+                        'scroll': 'scroll 60s linear infinite',
+                        'scroll-reverse': 'scrollReverse 60s linear infinite',
                     },
                     keyframes: {
-                        // 横向滚动关键帧（Gallery 使用）。如需更快滚动，将 60s 改小；如需更慢，将其改大。
                         scroll: {
                             '0%': { transform: 'translateX(0)' },
                             '100%': { transform: 'translateX(-50%)' },
@@ -45,50 +48,86 @@
 
     <style>
         /* ================================================================================================
-           全局图片尺寸变量（单位：px）—— 仅影响 Gallery 卡片大小，安全修改不会改变逻辑或文本
-           修改方法：直接更改下方四个数值即可生效
-             - 桌面端：--img-h-desktop（高度）、--img-w-desktop（宽度）
-             - 移动端：--img-h-mobile（高度）、--img-w-mobile（宽度）
-           提示：如果希望所有卡片更大，适当增大宽度与高度；若希望更小则减小。
+           SGIWorld Theme System - Light/Dark Mode Support
            ================================================================================================ */
         :root {
             --img-h-desktop: 220px;
             --img-w-desktop: 330px;
             --img-h-mobile: 140px;
             --img-w-mobile: 210px;
+            /* SGIWorld Light Theme */
+            --color-bg: #f8fafc;
+            --color-bg-alt: #ffffff;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            --color-border: rgba(0, 0, 0, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --dot-color: #e2e8f0;
+            --color-sgi: #6366f1;
+        }
+
+        [data-theme="dark"] {
+            --color-bg: #0B0F19;
+            --color-bg-alt: #111827;
+            --color-text: #f1f5f9;
+            --color-text-muted: #94a3b8;
+            --color-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(17, 24, 39, 0.75);
+            --glass-border: rgba(55, 65, 81, 0.5);
+            --dot-color: #1e293b;
         }
 
         body {
-            background-color: #f8fafc;
+            background-color: var(--color-bg);
             background-image:
-                radial-gradient(#e2e8f0 1px, transparent 1px),
-                radial-gradient(#e2e8f0 1px, transparent 1px);
+                radial-gradient(var(--dot-color) 1px, transparent 1px),
+                radial-gradient(var(--dot-color) 1px, transparent 1px);
             background-size: 40px 40px;
             background-position: 0 0, 20px 20px;
-            color: #1e293b;
+            color: var(--color-text);
             overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.75);
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--glass-border);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        /* 入场动画（元素从下向上淡入）：时长 0.8s
-           新手提示：如果希望更快显示，将 0.8s 改为更小（如 0.5s）；更慢则增大该值。 */
+        [data-theme="dark"] .glass {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Dark mode text color overrides */
+        [data-theme="dark"] .text-slate-900 { color: #f1f5f9 !important; }
+        [data-theme="dark"] .text-slate-800 { color: #e2e8f0 !important; }
+        [data-theme="dark"] .text-slate-700 { color: #cbd5e1 !important; }
+        [data-theme="dark"] .text-slate-600 { color: #94a3b8 !important; }
+        [data-theme="dark"] .text-slate-500 { color: #64748b !important; }
+        [data-theme="dark"] .bg-white { background-color: var(--color-bg-alt) !important; }
+        [data-theme="dark"] .bg-slate-50 { background-color: rgba(30, 41, 59, 0.5) !important; }
+        [data-theme="dark"] .bg-slate-100 { background-color: rgba(30, 41, 59, 0.8) !important; }
+        [data-theme="dark"] .border-slate-200 { border-color: var(--color-border) !important; }
+        [data-theme="dark"] .border-slate-100 { border-color: var(--color-border) !important; }
+        [data-theme="dark"] .divide-slate-100 > * + * { border-color: var(--color-border) !important; }
+        [data-theme="dark"] .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.2) !important; }
+        [data-theme="dark"] .hover\:bg-slate-50:hover { background-color: rgba(30, 41, 59, 0.5) !important; }
+        [data-theme="dark"] .bg-white\/95 { background-color: rgba(17, 24, 39, 0.95) !important; }
+        [data-theme="dark"] th.cursor-pointer:hover { background-color: rgba(255, 255, 255, 0.05) !important; }
+        [data-theme="dark"] th i { color: #475569; }
+        [data-theme="dark"] th:hover i { color: #94a3b8; }
+        [data-theme="dark"] th.asc i.fa-sort-up { color: #f1f5f9; }
+        [data-theme="dark"] th.desc i.fa-sort-down { color: #f1f5f9; }
+
         .fade-in-up {
             animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
             transform: translateY(20px);
         }
-        /* 延迟时间类（仅影响动画开始时间）
-           - delay-100：延迟 0.1s
-           - delay-200：延迟 0.2s
-           - delay-300：延迟 0.3s
-           修改方式：改写对应数值即可调整动画延时，不会改变功能或文本。 */
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
@@ -97,31 +136,25 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Gallery 悬停时暂停滚动（仅视觉效果，不影响数据或逻辑） */
         .group:hover .animate-scroll, .group:hover .animate-scroll-reverse {
             animation-play-state: paused;
         }
 
-        /* 表头排序样式说明：鼠标悬停颜色变化，升序/降序图标颜色强调；仅视觉提示。 */
         th.cursor-pointer:hover { background-color: rgba(0,0,0,0.02); }
         th i { color: #cbd5e1; transition: color 0.2s; margin-left: 6px; }
         th:hover i { color: #64748b; }
         th.asc i.fa-sort-up { color: #0f172a; }
         th.desc i.fa-sort-down { color: #0f172a; }
 
-        /* 灯箱淡入淡出过渡：0.3s。更改时长仅影响打开/关闭速度，不影响图片内容或功能。 */
         #lightbox { transition: opacity 0.3s ease; }
         #lightbox.hidden { opacity: 0; pointer-events: none; }
         #lightbox:not(.hidden) { opacity: 1; pointer-events: auto; }
 
-        /* Gallery 卡片 —— 使用上方 CSS 变量控制尺寸 */
         .gallery-item {
-            /* 将 Tailwind 的 @apply 展开为原生 CSS，避免 CDN 模式下无法处理构建期指令 */
-            /* glass 效果（与 .glass 类一致） */
-            background: rgba(255, 255, 255, 0.75);
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--glass-border);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             /* 间距与圆角 */
             padding: 0.5rem;            /* p-2 */
@@ -226,6 +259,10 @@
                     </button>
                 </div>
                 <div class="hidden md:flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-slate-100 transition-colors" title="Toggle theme">
+                        <i class="fas fa-moon text-slate-600 theme-icon-dark"></i>
+                        <i class="fas fa-sun text-slate-600 theme-icon-light hidden"></i>
+                    </button>
                     <a href="https://arxiv.org/pdf/2512.16969" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity" title="arXiv">
                         <img src="images/arxiv.jpg" alt="arXiv" class="w-8 h-8 rounded-full border border-slate-200">
                     </a>
@@ -1789,9 +1826,37 @@ if (align === 'right') {
 
         function escapeHtml(str) {
             return str.replace(/[&<>\"']/g, function(m) {
-                return ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[m]);
+                return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
             });
         }
+    </script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('sgi-theme', isDark ? 'light' : 'dark');
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.querySelectorAll('.theme-icon-dark').forEach(el => el.classList.toggle('hidden', isDark));
+            document.querySelectorAll('.theme-icon-light').forEach(el => el.classList.toggle('hidden', !isDark));
+        }
+
+        // Initialize theme from localStorage or system preference
+        (function initTheme() {
+            const saved = localStorage.getItem('sgi-theme');
+            if (saved) {
+                document.documentElement.setAttribute('data-theme', saved);
+            } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            updateThemeIcons();
+        })();
     </script>
 </body>
 </html>
